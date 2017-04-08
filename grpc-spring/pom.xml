@@ -9,7 +9,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.salesforce.grpc.contrib</groupId>
     <artifactId>grpc-spring</artifactId>
 
 

@@ -4,11 +4,15 @@
  * Company Confidential
  */
 
-package com.salesforce.jprotoc;
+package com.salesforce.jprotoc.jdk8;
 
 import com.google.common.base.Strings;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.compiler.PluginProtos;
+import com.salesforce.jprotoc.Generator;
+import com.salesforce.jprotoc.GeneratorException;
+import com.salesforce.jprotoc.ProtoTypeMap;
+import com.salesforce.jprotoc.ProtocPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +22,10 @@ import java.util.stream.Stream;
  * Generates a set of gRPC stubs that support JDK8 {@link java.util.concurrent.CompletableFuture}.
  */
 public class Jdk8Generator extends Generator {
+    public static void main(String[] args) {
+        ProtocPlugin.generate(new Jdk8Generator());
+    }
+
     private static final String CLASS_SUFFIX = "Grpc8";
 
     @Override

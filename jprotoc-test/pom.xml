@@ -101,7 +101,7 @@
                                     <groupId>com.salesforce.grpc.contrib</groupId>
                                     <artifactId>jprotoc</artifactId>
                                     <version>${project.version}</version>
-                                    <mainClass>com.salesforce.jprotoc.ProtocPlugin</mainClass>
+                                    <mainClass>com.salesforce.jprotoc.jdk8.Jdk8Generator</mainClass>
                                 </protocPlugin>
                             </protocPlugins>
                         </configuration>

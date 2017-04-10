@@ -6,11 +6,13 @@
 
 package com.salesforce.jprotoc;
 
+import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
 import com.google.protobuf.compiler.PluginProtos;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,17 +20,28 @@ import java.util.stream.Collectors;
  * ProtocPlugin is the main entry point for running one or more java-base protoc plugins. This class handles
  * I/O marshaling and error reporting.
  */
-public class ProtocPlugin {
-    public static void main(String[] args) {
-        List<Generator> generators = new ArrayList<>();
+public final class ProtocPlugin {
+    private ProtocPlugin() {
 
-        generators.add(new Jdk8Generator());
-        // TODO: Future generators go here.
-
-        new ProtocPlugin().generate(generators);
     }
 
-    public void generate(List<Generator> generators) {
+    /**
+     * Apply a single generator to the parsed proto descriptor.
+     * @param generator The generator to run.
+     */
+    public static void generate(@Nonnull Generator generator) {
+        Preconditions.checkNotNull(generator, "generator");
+        generate(Collections.singletonList(generator));
+    }
+
+    /**
+     * Apply multiple generators to the parsed proto descriptor, aggregating their results.
+     * @param generators The list of generators to run.
+     */
+    public static void generate(@Nonnull List<Generator> generators) {
+        Preconditions.checkNotNull(generators, "generators");
+        Preconditions.checkArgument(!generators.isEmpty(), "generators.isEmpty()");
+
         try {
             // Parse the input stream to extract the generator request
             byte[] generatorRequestBytes = ByteStreams.toByteArray(System.in);
@@ -62,7 +75,7 @@ public class ProtocPlugin {
         }
     }
 
-    private void abort(Throwable ex) {
+    private static void abort(Throwable ex) {
         ex.printStackTrace(System.err);
         System.exit(1);
     }

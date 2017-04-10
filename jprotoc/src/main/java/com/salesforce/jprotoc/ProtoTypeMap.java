@@ -1,6 +1,7 @@
 package com.salesforce.jprotoc;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
@@ -9,11 +10,12 @@ import com.google.protobuf.DescriptorProtos;
 import java.util.Collection;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * {@code ProtoTypeMap} maintains a dictionary for looking up Java type names when given proto types.
  */
-class ProtoTypeMap {
+public class ProtoTypeMap {
 
     private final ImmutableMap<String, String> types;
 
@@ -29,7 +31,10 @@ class ProtoTypeMap {
      *
      * @param fileDescriptorProtos the full collection of files descriptors from the code generator request
      */
-    public static ProtoTypeMap of(Collection<DescriptorProtos.FileDescriptorProto> fileDescriptorProtos) {
+    public static ProtoTypeMap of(@Nonnull Collection<DescriptorProtos.FileDescriptorProto> fileDescriptorProtos) {
+        Preconditions.checkNotNull(fileDescriptorProtos, "fileDescriptorProtos");
+        Preconditions.checkArgument(!fileDescriptorProtos.isEmpty(), "fileDescriptorProtos.isEmpty()");
+
         final ImmutableMap.Builder<String, String> types = ImmutableMap.builder();
 
         for (final DescriptorProtos.FileDescriptorProto fileDescriptor : fileDescriptorProtos) {
@@ -48,12 +53,12 @@ class ProtoTypeMap {
             fileDescriptor.getEnumTypeList().forEach(
                     e -> types.put(
                             protoPackage + "." + e.getName(),
-                            ProtoTypeUtils.toJavaTypeName(e.getName(), enclosingClassName, javaPackage)));
+                            toJavaTypeName(e.getName(), enclosingClassName, javaPackage)));
 
             fileDescriptor.getMessageTypeList().forEach(
                     m -> types.put(
                             protoPackage + "." + m.getName(),
-                            ProtoTypeUtils.toJavaTypeName(m.getName(), enclosingClassName, javaPackage)));
+                            toJavaTypeName(m.getName(), enclosingClassName, javaPackage)));
         }
 
         return new ProtoTypeMap(types.build());
@@ -64,8 +69,27 @@ class ProtoTypeMap {
      *
      * @param protoTypeName the proto type to be converted to a Java type
      */
-    String toJavaTypeName(String protoTypeName) {
+    public String toJavaTypeName(@Nonnull String protoTypeName) {
+        Preconditions.checkNotNull(protoTypeName, "protoTypeName");
         return types.get(protoTypeName);
+    }
+
+    /**
+     * Returns the full Java type name based on the given protobuf type parameters.
+     *
+     * @param className the protobuf type name
+     * @param enclosingClassName the optional enclosing class for the given type
+     * @param javaPackage the proto file's configured java package name
+     */
+    public static String toJavaTypeName(
+            @Nonnull String className,
+            @Nullable String enclosingClassName,
+            @Nullable String javaPackage) {
+
+        Preconditions.checkNotNull(className, "className");
+
+        Joiner dotJoiner = Joiner.on('.').skipNulls();
+        return dotJoiner.join(javaPackage, enclosingClassName, className);
     }
 
     private static String getJavaOuterClassname(

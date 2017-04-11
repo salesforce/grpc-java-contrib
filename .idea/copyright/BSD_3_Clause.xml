@@ -1,0 +1,6 @@
+<component name="CopyrightManager">
+  <copyright>
+    <option name="myName" value="BSD 3-Clause" />
+    <option name="notice" value=" Copyright (c) &amp;#36;{today.year}, salesforce.com, inc.&#10; All rights reserved.&#10; Licensed under the BSD 3-Clause license. &#10; For full license text, see LICENSE.txt file in the repo root  or https://opensource.org/licenses/BSD-3-Clause" />
+  </copyright>
+</component>

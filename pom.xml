@@ -17,16 +17,21 @@
     </modules>
 
     <properties>
+        <!-- Dependency Versions -->
         <grpc.version>1.1.2</grpc.version>
         <protobuf.version>3.2.0</protobuf.version>
         <findbugs.version>3.0.1</findbugs.version>
         <guava.version>20.0</guava.version>
         <mustache-java.version>0.9.4</mustache-java.version>
+        <spring.version>4.3.2.RELEASE</spring.version>
+        <slf4j.version>1.7.7</slf4j.version>
 
+        <!-- Test Dependency Versions -->
         <junit.version>4.12</junit.version>
         <assertj.version>3.6.2</assertj.version>
         <commons-lang.version>2.6</commons-lang.version>
         <awaitility.version>2.0.0</awaitility.version>
+        <mockito.version>2.7.5</mockito.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -85,6 +90,16 @@
                 <artifactId>compiler</artifactId>
                 <version>${mustache-java.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
             <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>
@@ -108,6 +123,18 @@
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
                 <version>${commons-lang.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

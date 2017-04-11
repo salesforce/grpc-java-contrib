@@ -14,7 +14,7 @@ public class ProtoTypeUtilsTest {
         final String enclosingClassName = randomAlphabetic(ThreadLocalRandom.current().nextInt(5, 10));
         final String javaPackage = randomAlphabetic(ThreadLocalRandom.current().nextInt(5, 10));
 
-        assertThat(ProtoTypeUtils.toJavaTypeName(className, enclosingClassName, javaPackage))
+        assertThat(ProtoTypeMap.toJavaTypeName(className, enclosingClassName, javaPackage))
                 .isEqualTo(javaPackage + "." + enclosingClassName + "." + className);
     }
 
@@ -23,7 +23,7 @@ public class ProtoTypeUtilsTest {
         final String className = randomAlphabetic(ThreadLocalRandom.current().nextInt(5, 10));
         final String enclosingClassName = randomAlphabetic(ThreadLocalRandom.current().nextInt(5, 10));
 
-        assertThat(ProtoTypeUtils.toJavaTypeName(className, enclosingClassName, null))
+        assertThat(ProtoTypeMap.toJavaTypeName(className, enclosingClassName, null))
                 .isEqualTo(enclosingClassName + "." + className);
     }
 
@@ -32,7 +32,7 @@ public class ProtoTypeUtilsTest {
         final String className = randomAlphabetic(ThreadLocalRandom.current().nextInt(5, 10));
         final String javaPackage = randomAlphabetic(ThreadLocalRandom.current().nextInt(5, 10));
 
-        assertThat(ProtoTypeUtils.toJavaTypeName(className, null, javaPackage))
+        assertThat(ProtoTypeMap.toJavaTypeName(className, null, javaPackage))
                 .isEqualTo(javaPackage + "." + className);
     }
 }

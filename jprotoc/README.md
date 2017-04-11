@@ -22,7 +22,7 @@ Create a main class similar to this:
 ```java
 public class MyGenerator extends Generator {
     public static void main(String[] args) {
-        ProtocPlugin.generate(new Jdk8Generator());
+        ProtocPlugin.generate(new MyGenerator());
     }
 
     @Override

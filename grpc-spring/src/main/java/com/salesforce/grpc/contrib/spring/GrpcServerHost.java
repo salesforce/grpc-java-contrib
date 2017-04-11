@@ -59,13 +59,31 @@ public class GrpcServerHost implements AutoCloseable, ApplicationContextAware {
 
     private volatile Server server;
 
-    GrpcServerHost(int port, long shutdownWaitTimeInMillis)
+    /**
+     * Construct a GrpcServerHost on a given port with a three second shutdown timeout.
+     * @param port The port to listen on
+     */
+    public GrpcServerHost(int port) {
+        this(port, TimeUnit.SECONDS.toMillis(3));
+    }
+
+    /**
+     * Construct a GrpcServerHost on a given port with a given shutdown timeout.
+     * @param port The port to listen on
+     * @param shutdownWaitTimeInMillis Timeout for shutdown
+     */
+    public GrpcServerHost(int port, long shutdownWaitTimeInMillis)
     {
         this(port, shutdownWaitTimeInMillis, null);
     }
 
-    @VisibleForTesting
-    GrpcServerHost(int port, long shutdownWaitTimeInMillis, GrpcServerFactory serverFactory) {
+    /**
+     * Construct a GrpcServerHost on a given port with a given shutdown timeout and {@link GrpcServerFactory}.
+     * @param port The port to listen on
+     * @param shutdownWaitTimeInMillis Timeout for shutdown
+     * @param serverFactory A factory to construct gRPC {@link Server} instances
+     */
+    public GrpcServerHost(int port, long shutdownWaitTimeInMillis, GrpcServerFactory serverFactory) {
         Preconditions.checkArgument(
                 port >= MIN_PORT && port <= MAX_PORT,
                 "port must be between %s and %s, inclusive",

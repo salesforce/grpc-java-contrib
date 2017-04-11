@@ -105,8 +105,8 @@ public class GrpcServerHostEndToEndTest {
         }
 
         @Bean
-        public GrpcServerHost grpcServerRunner() throws IOException {
-            return new GrpcServerHost(9999, 1000);
+        public GrpcServerHost serverHost() throws IOException {
+            return new GrpcServerHost(9999);
         }
     }
 

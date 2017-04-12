@@ -4,16 +4,18 @@ Useful extensions for using the grpc-java library.
 
 This project is broken down into multiple sub-modules, each solving a different sub-problem.
 
-* *grpc-contrib* - A collection of utility classes to work with grpc-java.
+* [*grpc-contrib*](https://github.com/salesforce/grpc-java-contrib/blob/master/grpc-contrib) - A collection of utility classes to work with grpc-java.
 
-* *grpc-srping* - Tools for automatically wiring up and starting a grpc service using Spring.
+* [*grpc-srping*](https://github.com/salesforce/grpc-java-contrib/tree/master/grpc-spring) - Tools for automatically wiring up and starting a grpc service using Spring.
 
-* *jprotoc* - A framework for building protoc extension plugins in Java.
+* [*jprotoc*](https://github.com/salesforce/grpc-java-contrib/tree/master/jprotoc) - A framework for building protoc extension plugins in Java.
 
 Usage
 =====
 These libraries are still fairly immature. For now, you will have to clone this repo and build it yourself. Setting
 up CI and deploying to Maven Central is still in our future.
+
+See each respective module for documentation on its usage.
 
 Contributing
 ============

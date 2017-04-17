@@ -129,6 +129,35 @@ public final class MoreFutures {
     }
 
     /**
+     * Returns the result of the input {@code Future}, which must have already completed.
+     *
+     * <p>The benefits of this method are twofold. First, the name "getDoneUnchecked" suggests to readers that the
+     * {@code Future} is already done. Second, if buggy code calls {@code getDone} on a {@code Future} that is still
+     * pending, the program will throw instead of block.
+     *
+     * <p>If you are looking for a method to determine whether a given {@code Future} is done, use the instance method
+     * {@link Future#isDone()}.
+     *
+     * @throws UncheckedExecutionException if the {@code Future} failed with an exception
+     * @throws IllegalStateException if the {@code Future} is not done
+     */
+    public static <V> V getDoneUnchecked(Future<V> future) {
+    /*
+     * We throw IllegalStateException, since the call could succeed later. Perhaps we "should" throw
+     * IllegalArgumentException, since the call could succeed with a different argument. Those
+     * exceptions' docs suggest that either is acceptable. Google's Java Practices page recommends
+     * IllegalArgumentException here, in part to keep its recommendation simple: Static methods
+     * should throw IllegalStateException only when they use static state.
+     *
+     *
+     * Why do we deviate here? The answer: We want for fluentFuture.getDone() to throw the same
+     * exception as Futures.getDone(fluentFuture).
+     */
+        checkState(future.isDone(), "Future was expected to be done: %s", future);
+        return Futures.getUnchecked(future);
+    }
+
+    /**
      * Converts a Guava {@link ListenableFuture} into a JDK {@link CompletableFuture}, preserving value, exception,
      * and cancellation propagation.
      *

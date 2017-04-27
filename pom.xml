@@ -14,7 +14,7 @@
     <groupId>com.salesforce.servicelibs</groupId>
     <artifactId>grpc-contrib-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.4.0</version>
 
     <modules>
         <module>grpc-contrib</module>

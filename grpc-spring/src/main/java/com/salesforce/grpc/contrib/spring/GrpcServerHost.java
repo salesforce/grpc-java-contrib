@@ -15,8 +15,6 @@ import com.google.common.base.Preconditions;
 import io.grpc.BindableService;
 import io.grpc.Server;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -34,8 +32,6 @@ import java.util.stream.Collectors;
  * are annotated with {@link GrpcService}.
  */
 public class GrpcServerHost implements AutoCloseable, ApplicationContextAware {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GrpcServerHost.class);
 
     static final int MAX_PORT = 65535;
     static final int MIN_PORT = 0;
@@ -137,8 +133,6 @@ public class GrpcServerHost implements AutoCloseable, ApplicationContextAware {
         }
         server = serverFactory.buildServerForServices(port, services);
         server.start();
-
-        LOGGER.info("gRPC server is running on port {}.", getPort());
     }
 
     private GrpcServerFactory findServerFactory() {
@@ -164,8 +158,6 @@ public class GrpcServerHost implements AutoCloseable, ApplicationContextAware {
         if (server != null) {
             final int port = getPort();
 
-            LOGGER.info("gRPC server running on port {} is being shut down.", port);
-
             server.shutdown();
 
             try {
@@ -176,8 +168,6 @@ public class GrpcServerHost implements AutoCloseable, ApplicationContextAware {
 
                 this.server = null;
             }
-
-            LOGGER.info("gRPC server running on port {} has been shut down.", port);
         }
     }
 

@@ -24,7 +24,9 @@
     </modules>
 
     <properties>
-        <repo>scm:git:git@github.com:salesforce/grpc-java-contrib.git</repo>
+        <gitRepo>scm:git:git@github.com:salesforce/grpc-java-contrib.git</gitRepo>
+        <mavenRepoId>unknown</mavenRepoId>
+        <mavenBaseUrl>unknown</mavenBaseUrl>
 
         <!-- Dependency Versions -->
         <grpc.version>1.1.2</grpc.version>
@@ -48,8 +50,8 @@
     </properties>
 
     <scm>
-        <connection>${repo}</connection>
-        <developerConnection>${repo}</developerConnection>
+        <connection>${gitRepo}</connection>
+        <developerConnection>${gitRepo}</developerConnection>
         <url>https://github.com/salesforce/grpc-java-contrib</url>
     </scm>
 
@@ -154,4 +156,15 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <distributionManagement>
+        <repository>
+            <id>${mavenRepoId}</id>
+            <url>${mavenBaseUrl}/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>${mavenRepoId}</id>
+            <url>${mavenBaseUrl}/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

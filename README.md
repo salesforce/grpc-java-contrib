@@ -1,5 +1,7 @@
 grpc-java-contrib
 =================
+[![Build Status](https://travis-ci.org/salesforce/grpc-java-contrib.svg?branch=master)](https://travis-ci.org/salesforce/grpc-java-contrib)
+
 Useful extensions for using the grpc-java library.
 
 This project is broken down into multiple sub-modules, each solving a different sub-problem.

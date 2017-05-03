@@ -12,6 +12,7 @@ import org.junit.Test;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -47,18 +48,19 @@ public class StaticResolverProviderTest {
 
         resolver.start(new NameResolver.Listener() {
             @Override
+            @Deprecated
             public void onUpdate(List<ResolvedServerInfoGroup> servers, Attributes attributes) {
-                isResolved.set(true);
-                assertThat(attributes).isEqualTo(Attributes.EMPTY);
-
-                ResolvedServerInfo resolved = servers.get(0).getResolvedServerInfoList().get(0);
-                InetSocketAddress address = (InetSocketAddress)resolved.getAddress();
-                assertThat(address).isEqualTo(staticAddress);
+                throw new NotImplementedException();
             }
 
             @Override
-            public void onAddresses(List<EquivalentAddressGroup> list, Attributes attributes) {
-                throw new NotImplementedException();
+            public void onAddresses(List<EquivalentAddressGroup> servers, Attributes attributes) {
+                isResolved.set(true);
+                assertThat(attributes).isEqualTo(Attributes.EMPTY);
+
+                SocketAddress resolved = servers.get(0).getAddresses().get(0);
+                InetSocketAddress address = (InetSocketAddress)resolved;
+                assertThat(address).isEqualTo(staticAddress);
             }
 
             @Override

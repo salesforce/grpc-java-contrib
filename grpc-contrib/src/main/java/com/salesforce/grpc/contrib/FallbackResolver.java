@@ -27,7 +27,7 @@ import java.util.List;
  * <p>
  * FallbackResolver assumes the default scheme of the first resolver in the sequence.
  */
-public class FallbackResolver extends NameResolver.Factory {
+public final class FallbackResolver extends NameResolver.Factory {
     /**
      * A shortcut for accessing the default {@link DnsNameResolverProvider}.
      */

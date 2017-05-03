@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 /**
  * {@code ProtoTypeMap} maintains a dictionary for looking up Java type names when given proto types.
  */
-public class ProtoTypeMap {
+public final class ProtoTypeMap {
 
     private final ImmutableMap<String, String> types;
 
@@ -49,23 +49,23 @@ public class ProtoTypeMap {
 
             final String protoPackage = fileDescriptor.hasPackage() ? "." + fileDescriptor.getPackage() : "";
             final String javaPackage = Strings.emptyToNull(
-                    fileOptions.hasJavaPackage()
-                    ? fileOptions.getJavaPackage()
-                    : fileDescriptor.getPackage());
+                    fileOptions.hasJavaPackage() ?
+                            fileOptions.getJavaPackage() :
+                            fileDescriptor.getPackage());
             final String enclosingClassName =
-                    fileOptions.getJavaMultipleFiles()
-                    ? null
-                    : getJavaOuterClassname(fileDescriptor, fileOptions);
+                    fileOptions.getJavaMultipleFiles() ?
+                            null :
+                            getJavaOuterClassname(fileDescriptor, fileOptions);
 
             fileDescriptor.getEnumTypeList().forEach(
-                    e -> types.put(
-                            protoPackage + "." + e.getName(),
-                            toJavaTypeName(e.getName(), enclosingClassName, javaPackage)));
+                e -> types.put(
+                        protoPackage + "." + e.getName(),
+                        toJavaTypeName(e.getName(), enclosingClassName, javaPackage)));
 
             fileDescriptor.getMessageTypeList().forEach(
-                    m -> types.put(
-                            protoPackage + "." + m.getName(),
-                            toJavaTypeName(m.getName(), enclosingClassName, javaPackage)));
+                m -> types.put(
+                        protoPackage + "." + m.getName(),
+                        toJavaTypeName(m.getName(), enclosingClassName, javaPackage)));
         }
 
         return new ProtoTypeMap(types.build());

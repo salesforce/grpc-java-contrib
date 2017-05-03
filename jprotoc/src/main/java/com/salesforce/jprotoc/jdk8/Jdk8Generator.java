@@ -42,8 +42,12 @@ public class Jdk8Generator extends Generator {
     private Stream<Context> extractContext(ProtoTypeMap protoTypeMap, DescriptorProtos.FileDescriptorProto proto) {
         return proto.getServiceList().stream()
                 .map(s -> extractServiceContext(protoTypeMap, s))
-                .map(ctx -> {ctx.packageName = extractPackageName(proto); return ctx;})
-                .map(ctx -> {ctx.protoName = proto.getName(); return ctx;});
+                .map(ctx -> {
+                    ctx.packageName = extractPackageName(proto); return ctx;
+                })
+                .map(ctx -> {
+                    ctx.protoName = proto.getName(); return ctx;
+                });
     }
 
     private String extractPackageName(DescriptorProtos.FileDescriptorProto proto) {
@@ -104,18 +108,25 @@ public class Jdk8Generator extends Generator {
                 .build();
     }
 
+    /**
+     * Backing class for mustache template.
+     */
     private class Context {
+        // CHECKSTYLE DISABLE VisibilityModifier FOR 7 LINES
         public String fileName;
         public String protoName;
         public String packageName;
         public String className;
         public String serviceName;
         public boolean deprecated;
-
         public final List<ContextMethod> methods = new ArrayList<>();
     }
 
+    /**
+     * Backing class for mustache template.
+     */
     private class ContextMethod {
+        // CHECKSTYLE DISABLE VisibilityModifier FOR 4 LINES
         public String methodName;
         public String inputType;
         public String outputType;

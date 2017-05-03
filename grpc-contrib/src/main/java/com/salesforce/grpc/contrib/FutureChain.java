@@ -15,7 +15,11 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
-public class FutureChain<T> {
+/**
+ * FutureChain provides a fluent interface for chaining {@link ListenableFuture}s together.
+ * @param <T>
+ */
+public final class FutureChain<T> {
     /**
      * Starts the construction of a {@link ListenableFuture} chain.
      * @param startFuture The first {@link ListenableFuture} in the chain.
@@ -58,14 +62,14 @@ public class FutureChain<T> {
     /**
      * @see Futures#catching(ListenableFuture, Class, Function, Executor)
      */
-    public <E extends Throwable> FutureChain<T> catching(Class<E> exceptionType, Function<? super E,? extends T> fallback) {
+    public <E extends Throwable> FutureChain<T> catching(Class<E> exceptionType, Function<? super E, ? extends T> fallback) {
         return new FutureChain<>(Futures.catching(future, exceptionType, fallback, executor), executor);
     }
 
     /**
      * @see Futures#catchingAsync(ListenableFuture, Class, AsyncFunction, Executor)
      */
-    public <E extends Throwable> FutureChain<T> catchingAsync(Class<E> exceptionType, AsyncFunction<? super E,? extends T> fallback) {
+    public <E extends Throwable> FutureChain<T> catchingAsync(Class<E> exceptionType, AsyncFunction<? super E, ? extends T> fallback) {
         return new FutureChain<>(Futures.catchingAsync(future, exceptionType, fallback, executor), executor);
     }
 

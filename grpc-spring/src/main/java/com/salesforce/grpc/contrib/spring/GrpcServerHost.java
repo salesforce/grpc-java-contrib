@@ -35,6 +35,8 @@ public class GrpcServerHost implements AutoCloseable, ApplicationContextAware {
 
     static final int MAX_PORT = 65535;
     static final int MIN_PORT = 0;
+    static final int DEFAULT_SHUTDOWN_DELAY_SECONDS = 3;
+
 
     @VisibleForTesting
     ApplicationContext applicationContext;
@@ -60,7 +62,7 @@ public class GrpcServerHost implements AutoCloseable, ApplicationContextAware {
      * @param port The port to listen on
      */
     public GrpcServerHost(int port) {
-        this(port, TimeUnit.SECONDS.toMillis(3));
+        this(port, TimeUnit.SECONDS.toMillis(DEFAULT_SHUTDOWN_DELAY_SECONDS));
     }
 
     /**
@@ -68,8 +70,7 @@ public class GrpcServerHost implements AutoCloseable, ApplicationContextAware {
      * @param port The port to listen on
      * @param shutdownWaitTimeInMillis Timeout for shutdown
      */
-    public GrpcServerHost(int port, long shutdownWaitTimeInMillis)
-    {
+    public GrpcServerHost(int port, long shutdownWaitTimeInMillis) {
         this(port, shutdownWaitTimeInMillis, null);
     }
 

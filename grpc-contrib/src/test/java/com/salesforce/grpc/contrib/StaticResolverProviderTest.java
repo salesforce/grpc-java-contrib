@@ -52,8 +52,7 @@ public class StaticResolverProviderTest {
 
                 ResolvedServerInfo resolved = servers.get(0).getResolvedServerInfoList().get(0);
                 InetSocketAddress address = (InetSocketAddress)resolved.getAddress();
-                assertThat(address.getHostName()).isEqualTo(staticAddress.getHostName());
-                assertThat(address.getPort()).isEqualTo(staticAddress.getPort());
+                assertThat(address).isEqualTo(staticAddress);
             }
 
             @Override

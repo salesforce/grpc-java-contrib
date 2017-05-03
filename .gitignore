@@ -1,6 +1,4 @@
 .idea/
-!.idea/copyright/BSD_3_Clause.xml
-!.idea/copyright/profiles_settings.xml
 target/
 generated-resources/
 *.iml

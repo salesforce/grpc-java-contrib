@@ -104,7 +104,7 @@ public class GrpcServerHostTest {
 
         assertThatThrownBy(runner::start)
                 .isInstanceOf(IllegalStateException.class)
-                .doesNotHave(new Condition<>(
+                .doesNotHave(new Condition<Throwable>(
                         t -> t.getMessage().contains(goodService),
                         "Error should not include good service."))
                 .hasMessageContaining(badService1)

@@ -66,13 +66,8 @@ public class StaticResolverProvider extends NameResolverProvider {
                 @Override
                 public void start(NameResolver.Listener listener) {
                     try {
-                        listener.onUpdate(
-                                Collections.singletonList(
-                                        ResolvedServerInfoGroup
-                                                .builder()
-                                                .add(new ResolvedServerInfo(staticAddress))
-                                                .build()
-                                ),
+                        listener.onAddresses(
+                                Collections.singletonList(new EquivalentAddressGroup(staticAddress)),
                                 Attributes.EMPTY
                         );
                     } catch (Throwable e) {

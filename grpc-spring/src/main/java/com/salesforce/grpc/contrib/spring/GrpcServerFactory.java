@@ -19,7 +19,7 @@ import java.util.Collection;
  */
 public interface GrpcServerFactory {
     /**
-     * Constructs a {@link Server} from a collection of {@link BindableService}s attached to the given port
+     * Constructs a {@link Server} from a collection of {@link BindableService}s attached to the given port.
      * @param port The port to use for the {@link Server}
      * @param services The list of {@link BindableService}s to host
      * @return A new grpc {@link Server}

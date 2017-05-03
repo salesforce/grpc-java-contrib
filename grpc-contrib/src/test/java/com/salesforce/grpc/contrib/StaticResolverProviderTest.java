@@ -9,6 +9,7 @@ package com.salesforce.grpc.contrib;
 
 import io.grpc.*;
 import org.junit.Test;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -53,6 +54,11 @@ public class StaticResolverProviderTest {
                 ResolvedServerInfo resolved = servers.get(0).getResolvedServerInfoList().get(0);
                 InetSocketAddress address = (InetSocketAddress)resolved.getAddress();
                 assertThat(address).isEqualTo(staticAddress);
+            }
+
+            @Override
+            public void onAddresses(List<EquivalentAddressGroup> list, Attributes attributes) {
+                throw new NotImplementedException();
             }
 
             @Override

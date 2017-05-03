@@ -17,6 +17,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
 
+/**
+ * MoreFutures provides additional utility methods for working with {@link ListenableFuture}, on top of those provided
+ * by Guava's {@link Futures} class.
+ */
 public final class MoreFutures {
     private MoreFutures() {
         // prevent instantiation
@@ -74,7 +78,7 @@ public final class MoreFutures {
         checkNotNull(success, "success");
         checkNotNull(executor, "executor");
 
-        addCallback(future, success, throwable -> {}, executor);
+        addCallback(future, success, throwable -> { }, executor);
     }
 
     /**
@@ -94,7 +98,7 @@ public final class MoreFutures {
         checkNotNull(failure, "failure");
         checkNotNull(executor, "executor");
 
-        addCallback(future, v -> {}, failure, executor);
+        addCallback(future, v -> { }, failure, executor);
     }
 
     /**
@@ -250,7 +254,8 @@ public final class MoreFutures {
     }
 
     /**
-     * A private helper class to assist fromCompletableFuture()
+     * A private helper class to assist fromCompletableFuture().
+     * @param <V> The Settable future's type.
      */
     private static class Settable<V> extends AbstractFuture<V> {
         @Override

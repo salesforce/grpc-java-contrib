@@ -10,7 +10,7 @@ package com.salesforce.jprotoc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
-import io.grpc.netty.NettyServerBuilder;
+import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 import org.junit.Test;
 
@@ -33,7 +33,7 @@ public class CompletableFutureEndToEndTest {
             TimeoutException {
         final String name = UUID.randomUUID().toString();
 
-        Server server = NettyServerBuilder.forPort(9999)
+        Server server = ServerBuilder.forPort(9999)
                 .addService(new GreeterImpl())
                 .build();
 

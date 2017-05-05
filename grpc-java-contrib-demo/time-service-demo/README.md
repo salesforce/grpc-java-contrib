@@ -1,5 +1,5 @@
 Usage
 =====
 ```bash
-> java -jar time-service-demo-[version].jar  --port=[port]  
+> java -jar TimeService.jar  --port=[port]  
 ```

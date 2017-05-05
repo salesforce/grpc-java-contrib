@@ -60,6 +60,7 @@
     </dependencies>
 
     <build>
+        <finalName>TimeService</finalName>
         <extensions>
             <extension>
                 <groupId>kr.motd.maven</groupId>

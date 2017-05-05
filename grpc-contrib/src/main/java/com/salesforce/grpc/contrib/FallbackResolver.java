@@ -23,7 +23,7 @@ import java.util.List;
  * <p>
  * FallbackResolver is particularly useful when setting an explicit client resolver via
  * {@link ManagedChannelBuilder#nameResolverFactory(NameResolver.Factory)}, rather than relying on gRPC's default
- * resolver discovery system. For example, the {@link StaticResolverProvider}.
+ * resolver discovery system. For example, the {@link StaticResolver#provider(java.net.InetSocketAddress)}.
  * <p>
  * FallbackResolver assumes the default scheme of the first resolver in the sequence.
  */

@@ -147,7 +147,7 @@ public final class StaticResolver {
         private String scheme;
         private StaticResolverProvider provider;
 
-        public StaticResolverFactory(String scheme, InetSocketAddress staticAddress) {
+        StaticResolverFactory(String scheme, InetSocketAddress staticAddress) {
             this.scheme = scheme;
             this.provider = new StaticResolverProvider(scheme, staticAddress);
         }

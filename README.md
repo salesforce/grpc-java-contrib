@@ -8,7 +8,7 @@ This project is broken down into multiple sub-modules, each solving a different 
 
 * [*grpc-contrib*](https://github.com/salesforce/grpc-java-contrib/blob/master/grpc-contrib) - A collection of utility classes to work with grpc-java.
 
-* [*grpc-srping*](https://github.com/salesforce/grpc-java-contrib/tree/master/grpc-spring) - Tools for automatically wiring up and starting a grpc service using Spring.
+* [*grpc-spring*](https://github.com/salesforce/grpc-java-contrib/tree/master/grpc-spring) - Tools for automatically wiring up and starting a grpc service using Spring.
 
 * [*jprotoc*](https://github.com/salesforce/grpc-java-contrib/tree/master/jprotoc) - A framework for building protoc extension plugins in Java.
 

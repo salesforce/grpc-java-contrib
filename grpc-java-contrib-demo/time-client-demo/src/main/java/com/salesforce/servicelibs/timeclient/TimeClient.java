@@ -9,11 +9,13 @@ package com.salesforce.servicelibs.timeclient;
 
 import com.google.protobuf.Empty;
 import com.salesforce.grpc.contrib.MoreTimestamps;
+import com.salesforce.grpc.contrib.StaticResolver;
 import com.salesforce.servicelibs.TimeReply;
 import com.salesforce.servicelibs.TimeServiceGrpc8;
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
 
+import java.net.InetSocketAddress;
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 
@@ -24,10 +26,15 @@ public final class TimeClient {
     private TimeClient() { }
 
     public static void main(String[] args) throws Exception {
+        String host = args[0];
+        int port = Integer.parseInt(args[1]);
+
+        String abstractName = "mesh://timeService";
+
         // Open a channel to the server
-        String authority = args[0];
         Channel channel = ManagedChannelBuilder
-                .forTarget("mesh://timeService")
+                .forTarget(abstractName)
+                .nameResolverFactory(StaticResolver.factory(new InetSocketAddress(host, port)))
                 .usePlaintext(true)
                 .build();
 

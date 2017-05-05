@@ -31,6 +31,7 @@
     </dependencies>
 
     <build>
+        <finalName>TimeClient</finalName>
         <extensions>
             <extension>
                 <groupId>kr.motd.maven</groupId>

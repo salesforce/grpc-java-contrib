@@ -18,10 +18,9 @@ import org.springframework.context.annotation.Bean;
 /**
  * A server implementing the TimeService.proto contract using Spring Boot.
  */
+// CHECKSTYLE DISABLE FinalClass FOR 2 LINES
 @SpringBootApplication
-public final class TimeServer {
-    private TimeServer() { }
-
+public class TimeServer {
     private final Logger logger = LoggerFactory.getLogger(TimeServer.class);
 
     public static void main(String[] args) throws Exception {

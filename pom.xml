@@ -21,6 +21,7 @@
         <module>jprotoc</module>
         <module>grpc-spring</module>
         <module>jprotoc-test</module>
+        <module>grpc-java-contrib-demo</module>
     </modules>
 
     <properties>
@@ -66,6 +67,11 @@
             <dependency>
                 <groupId>com.salesforce.servicelibs</groupId>
                 <artifactId>grpc-contrib</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.salesforce.servicelibs</groupId>
+                <artifactId>grpc-spring</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

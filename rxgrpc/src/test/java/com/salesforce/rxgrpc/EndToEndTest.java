@@ -7,12 +7,6 @@
 
 package com.salesforce.rxgrpc;
 
-import com.google.protobuf.Empty;
-import com.salesforce.grpc.contrib.MoreTimestamps;
-import com.salesforce.jprotoc.GreeterGrpc;
-import com.salesforce.jprotoc.HelloRequest;
-import com.salesforce.jprotoc.HelloResponse;
-import com.salesforce.jprotoc.TimeResponse;
 import io.grpc.Channel;
 import io.grpc.Server;
 import io.grpc.inprocess.InProcessChannelBuilder;
@@ -21,9 +15,8 @@ import io.grpc.stub.StreamObserver;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.time.Instant;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class EndToEndTest {
     @Test
@@ -32,12 +25,6 @@ public class EndToEndTest {
             @Override
             public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
                 responseObserver.onNext(HelloResponse.newBuilder().setMessage("Hello " + request.getName()).build());
-                responseObserver.onCompleted();
-            }
-
-            @Override
-            public void sayTime(Empty request, StreamObserver<TimeResponse> responseObserver) {
-                responseObserver.onNext(TimeResponse.newBuilder().setTime(MoreTimestamps.fromInstantUtc(Instant.now())).build());
                 responseObserver.onCompleted();
             }
         };

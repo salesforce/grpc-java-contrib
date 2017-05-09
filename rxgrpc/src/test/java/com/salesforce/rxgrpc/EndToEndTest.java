@@ -5,7 +5,7 @@
  *  For full license text, see LICENSE.txt file in the repo root  or https://opensource.org/licenses/BSD-3-Clause
  */
 
-package com.salesforce.grpc.contrib.rx;
+package com.salesforce.rxgrpc;
 
 import com.google.protobuf.Empty;
 import com.salesforce.grpc.contrib.MoreTimestamps;

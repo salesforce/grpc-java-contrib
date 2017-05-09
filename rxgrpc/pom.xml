@@ -21,15 +21,23 @@
     <dependencies>
         <dependency>
             <groupId>com.salesforce.servicelibs</groupId>
+            <artifactId>jprotoc</artifactId>
+            <version>0.5.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.salesforce.servicelibs</groupId>
             <artifactId>grpc-contrib</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-stub</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.reactivex.rxjava2</groupId>

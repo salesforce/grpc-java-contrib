@@ -1,6 +1,8 @@
 grpc-java-contrib
 =================
 [![Build Status](https://travis-ci.org/salesforce/grpc-java-contrib.svg?branch=master)](https://travis-ci.org/salesforce/grpc-java-contrib)
+[![codecov](https://codecov.io/gh/salesforce/grpc-java-contrib/branch/master/graph/badge.svg)](https://codecov.io/gh/salesforce/grpc-java-contrib)
+
 
 Useful extensions for using the grpc-java library.
 

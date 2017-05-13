@@ -38,48 +38,31 @@ public class EndToEndTest {
 
             @Override
             public Single<HelloResponse> sayHello(Single<HelloRequest> rxRequest) {
-                return Single.create(emitter -> rxRequest.subscribe(
-                        protoRequest -> emitter.onSuccess(greet("Hello", protoRequest)),
-                        emitter::onError));
+                return rxRequest.map(protoRequest -> greet("Hello", protoRequest));
             }
 
             @Override
             public Observable<HelloResponse> sayHelloRespStream(Single<HelloRequest> rxRequest) {
-                return Observable.create(emitter -> rxRequest.subscribe(
-                        protoRequest -> {
-                            emitter.onNext(greet("Hello", protoRequest));
-                            emitter.onNext(greet("Hi", protoRequest));
-                            emitter.onNext(greet("Greetings", protoRequest));
-                            emitter.onComplete();
-                        },
-                        emitter::onError
-                ));
+                return rxRequest.flatMapObservable(protoRequest -> Observable.just(
+                        greet("Hello", protoRequest),
+                        greet("Hi", protoRequest),
+                        greet("Greetings", protoRequest)));
             }
 
             @Override
             public Single<HelloResponse> sayHelloReqStream(Observable<HelloRequest> rxRequest) {
-                List<String> names = new ArrayList<>();
-                return Single.create(emitter -> rxRequest.subscribe(
-                        protoRequest -> names.add(protoRequest.getName()),
-                        emitter::onError,
-                        () -> {
-                            emitter.onSuccess(greet("Hello", String.join(" and ", names)));
-                        }
-                ));
+                return rxRequest
+                        .map(HelloRequest::getName)
+                        .toList()
+                        .map(names -> greet("Hello", String.join(" and ", names)));
             }
 
             @Override
             public Observable<HelloResponse> sayHelloBothStream(Observable<HelloRequest> rxRequest) {
-                return Observable.create(emitter -> rxRequest
+                return rxRequest
                         .map(HelloRequest::getName)
-                        .buffer(2) // group into pairs
-                        .subscribe(
-                            names -> {
-                                emitter.onNext(greet("Hello", String.join(" and ", names)));
-                            },
-                            emitter::onError,
-                            emitter::onComplete
-                ));
+                        .buffer(2)
+                        .map(names -> greet("Hello", String.join(" and ", names)));
             }
 
             private HelloResponse greet(String greeting, HelloRequest request) {

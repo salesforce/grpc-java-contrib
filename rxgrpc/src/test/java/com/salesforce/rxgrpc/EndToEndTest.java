@@ -34,7 +34,7 @@ public class EndToEndTest {
 
     @BeforeClass
     public static void setupServer() throws Exception {
-        GreeterGrpc.GreeterImplBase svc = new RxGreeterImplBase() {
+        GreeterGrpc.GreeterImplBase svc = new GreeterGrpcRx.GreeterImplBase() {
 
             @Override
             public Single<HelloResponse> sayHello(Single<HelloRequest> rxRequest) {
@@ -86,11 +86,10 @@ public class EndToEndTest {
 
     @Test
     public void oneToOne() throws IOException {
-        GreeterGrpc.GreeterBlockingStub stub = GreeterGrpc.newBlockingStub(channel);
-
-        String hello = stub.sayHello(HelloRequest.newBuilder().setName("rxjava").build()).getMessage();
-
-        assertThat(hello).isEqualTo("Hello rxjava");
+        GreeterGrpcRx.RxGreeterStub stub = GreeterGrpcRx.newRxStub(channel);
+        Single<HelloRequest> req = Single.just(HelloRequest.newBuilder().setName("rxjava").build());
+        Single<HelloResponse> resp = stub.sayHello(req);
+        assertThat(resp.blockingGet().getMessage()).isEqualTo("Hello rxjava");
     }
 
     @Test

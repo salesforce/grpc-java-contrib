@@ -7,38 +7,62 @@
 
 package com.salesforce.rxgrpc;
 
+import com.google.common.util.concurrent.Runnables;
+import io.grpc.Channel;
 import io.grpc.stub.StreamObserver;
 import io.reactivex.*;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
-public abstract class RxGreeterImplBase extends GreeterGrpc.GreeterImplBase {
-    public abstract Single<HelloResponse> sayHello(Single<HelloRequest> request);
-
-    @Override
-    public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
-        oneToOne(request, responseObserver, this::sayHello);
+public final class GreeterGrpcRx {
+    public static RxGreeterStub newRxStub(Channel channel) {
+        return new RxGreeterStub(channel);
     }
 
-    public abstract Observable<HelloResponse> sayHelloRespStream(Single<HelloRequest> request);
+    public static final class RxGreeterStub {
+        private GreeterGrpc.GreeterStub delegateStub;
 
-    @Override
-    public void sayHelloRespStream(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
-        oneToMany(request, responseObserver, this::sayHelloRespStream);
+        private RxGreeterStub(Channel channel) {
+            delegateStub = GreeterGrpc.newStub(channel);
+        }
+
+        public Single<HelloResponse> sayHello(Single<HelloRequest> rxRequest) {
+            return Single.create(emitter -> rxRequest.subscribe(
+                    request -> delegateStub.sayHello(request, new RxStreamObserver<HelloResponse>(emitter)),
+                    emitter::onError
+            ));
+        }
     }
 
-    public abstract Single<HelloResponse> sayHelloReqStream(Observable<HelloRequest> request);
+    public static abstract class GreeterImplBase extends GreeterGrpc.GreeterImplBase {
+        public abstract Single<HelloResponse> sayHello(Single<HelloRequest> request);
 
-    @Override
-    public StreamObserver<HelloRequest> sayHelloReqStream(StreamObserver<HelloResponse> responseObserver) {
-        return manyToOne(responseObserver, this::sayHelloReqStream);
-    }
+        @Override
+        public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
+            oneToOne(request, responseObserver, this::sayHello);
+        }
 
-    public abstract Observable<HelloResponse> sayHelloBothStream(Observable<HelloRequest> request);
+        public abstract Observable<HelloResponse> sayHelloRespStream(Single<HelloRequest> request);
 
-    @Override
-    public StreamObserver<HelloRequest> sayHelloBothStream(StreamObserver<HelloResponse> responseObserver) {
-        return manyToMany(responseObserver, this::sayHelloBothStream);
+        @Override
+        public void sayHelloRespStream(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
+            oneToMany(request, responseObserver, this::sayHelloRespStream);
+        }
+
+        public abstract Single<HelloResponse> sayHelloReqStream(Observable<HelloRequest> request);
+
+        @Override
+        public StreamObserver<HelloRequest> sayHelloReqStream(StreamObserver<HelloResponse> responseObserver) {
+            return manyToOne(responseObserver, this::sayHelloReqStream);
+        }
+
+        public abstract Observable<HelloResponse> sayHelloBothStream(Observable<HelloRequest> request);
+
+        @Override
+        public StreamObserver<HelloRequest> sayHelloBothStream(StreamObserver<HelloResponse> responseObserver) {
+            return manyToMany(responseObserver, this::sayHelloBothStream);
+        }
     }
 
     private static <TRequest, TResponse> void oneToOne(
@@ -95,22 +119,7 @@ public abstract class RxGreeterImplBase extends GreeterGrpc.GreeterImplBase {
             responseObserver.onCompleted();
         }
 
-        return new StreamObserver<TRequest>() {
-            @Override
-            public void onNext(TRequest value) {
-                requestEmitter.onNext(value);
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                requestEmitter.onError(t);
-            }
-
-            @Override
-            public void onCompleted() {
-                requestEmitter.onComplete();
-            }
-        };
+        return new RxStreamObserver<>(requestEmitter);
     }
 
     private static <TRequest, TResponse> StreamObserver<TRequest> manyToMany(
@@ -126,22 +135,42 @@ public abstract class RxGreeterImplBase extends GreeterGrpc.GreeterImplBase {
             responseObserver.onCompleted();
         }
 
-        return new StreamObserver<TRequest>() {
-            @Override
-            public void onNext(TRequest value) {
-                requestEmitter.onNext(value);
-            }
+        return new RxStreamObserver<>(requestEmitter);
+    }
 
-            @Override
-            public void onError(Throwable t) {
-                requestEmitter.onError(t);
-            }
+    private static class RxStreamObserver<V> implements StreamObserver<V> {
+        private Consumer<V> onNext;
+        private Consumer<Throwable> onError;
+        private Runnable onCompleted;
 
-            @Override
-            public void onCompleted() {
-                requestEmitter.onComplete();
-            }
-        };
+        private RxStreamObserver(Emitter<V> requestEmitter) {
+            this(requestEmitter::onNext, requestEmitter::onError, requestEmitter::onComplete);
+        }
+
+        private RxStreamObserver(SingleEmitter<V> requestEmitter) {
+            this(requestEmitter::onSuccess, requestEmitter::onError, Runnables.doNothing());
+        }
+
+        private RxStreamObserver(Consumer<V> onNext, Consumer<Throwable> onError, Runnable onCompleted) {
+            this.onNext = onNext;
+            this.onError = onError;
+            this.onCompleted = onCompleted;
+        }
+
+        @Override
+        public void onNext(V value) {
+            onNext.accept(value);
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            onError.accept(t);
+        }
+
+        @Override
+        public void onCompleted() {
+            onCompleted.run();
+        }
     }
 
     private static class ObservableBridgeEmitter<T> implements ObservableOnSubscribe<T>, Emitter<T> {

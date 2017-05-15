@@ -78,10 +78,14 @@ public final class GreeterGrpcRx {
     private static <TRequest, TResponse> Single<TResponse> oneToOne(
             Single<TRequest> rxRequest,
             BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
-        return Single.create(emitter -> rxRequest.subscribe(
-                request -> delegate.accept(request, new RxStreamObserver<TResponse>(emitter)),
-                emitter::onError
-        ));
+        try {
+            return Single.create(emitter -> rxRequest.subscribe(
+                    request -> delegate.accept(request, new RxStreamObserver<TResponse>(emitter)),
+                    emitter::onError
+            ));
+        } catch (Throwable throwable) {
+            return Single.error(throwable);
+        }
     }
 
     private static <TRequest, TResponse> void oneToOne(
@@ -97,17 +101,20 @@ public final class GreeterGrpcRx {
             responseObserver.onCompleted();
         } catch (Throwable throwable) {
             responseObserver.onError(throwable);
-            responseObserver.onCompleted();
         }
     }
 
     private static <TRequest, TResponse> Observable<TResponse> oneToMany(
             Single<TRequest> rxRequest,
             BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
-        return Observable.create(emitter -> rxRequest.subscribe(
-                request -> delegate.accept(request, new RxStreamObserver<TResponse>(emitter)),
-                emitter::onError
-        ));
+        try {
+            return Observable.create(emitter -> rxRequest.subscribe(
+                    request -> delegate.accept(request, new RxStreamObserver<TResponse>(emitter)),
+                    emitter::onError
+            ));
+        } catch (Throwable throwable) {
+            return Observable.error(throwable);
+        }
     }
 
     private static <TRequest, TResponse> void oneToMany(
@@ -123,17 +130,20 @@ public final class GreeterGrpcRx {
                     responseObserver::onCompleted);
         } catch (Throwable throwable) {
             responseObserver.onError(throwable);
-            responseObserver.onCompleted();
         }
     }
 
     private static <TRequest, TResponse> Single<TResponse> manyToOne(
             Observable<TRequest> rxRequest,
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
-        return Single.create(emitter -> {
-            StreamObserver<TRequest> reqStream = delegate.apply(new RxStreamObserver<>(emitter));
-            rxRequest.subscribe(reqStream::onNext, reqStream::onError, reqStream::onCompleted);
-        });
+        try {
+            return Single.create(emitter -> {
+                StreamObserver<TRequest> reqStream = delegate.apply(new RxStreamObserver<>(emitter));
+                rxRequest.subscribe(reqStream::onNext, reqStream::onError, reqStream::onCompleted);
+            });
+        } catch (Throwable throwable) {
+            return Single.error(throwable);
+        }
     }
 
     private static <TRequest, TResponse> StreamObserver<TRequest> manyToOne(
@@ -150,7 +160,6 @@ public final class GreeterGrpcRx {
                     responseObserver::onError);
         } catch (Throwable throwable) {
             responseObserver.onError(throwable);
-            responseObserver.onCompleted();
         }
 
         return new RxStreamObserver<>(requestEmitter);
@@ -159,10 +168,14 @@ public final class GreeterGrpcRx {
     private static <TRequest, TResponse> Observable<TResponse> manyToMany(
             Observable<TRequest> rxRequest,
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
-        return Observable.create(emitter -> {
-            StreamObserver<TRequest> reqStream = delegate.apply(new RxStreamObserver<>(emitter));
-            rxRequest.subscribe(reqStream::onNext, reqStream::onError, reqStream::onCompleted);
-        });
+        try {
+            return Observable.create(emitter -> {
+                StreamObserver<TRequest> reqStream = delegate.apply(new RxStreamObserver<>(emitter));
+                rxRequest.subscribe(reqStream::onNext, reqStream::onError, reqStream::onCompleted);
+            });
+        } catch (Throwable throwable) {
+            return Observable.error(throwable);
+        }
     }
 
     private static <TRequest, TResponse> StreamObserver<TRequest> manyToMany(
@@ -175,7 +188,6 @@ public final class GreeterGrpcRx {
             rxResponse.subscribe(responseObserver::onNext, responseObserver::onError, responseObserver::onCompleted);
         } catch (Throwable throwable) {
             responseObserver.onError(throwable);
-            responseObserver.onCompleted();
         }
 
         return new RxStreamObserver<>(requestEmitter);

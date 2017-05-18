@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * A protoc generator for generating ReactiveX bindings for gRPC.
+ * A protoc generator for generating ReactiveX 2.0 bindings for gRPC.
  */
 public class RxGrpcGenerator extends Generator {
     private static final String CLASS_PREFIX = "Rx";

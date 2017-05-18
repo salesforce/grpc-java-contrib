@@ -27,7 +27,7 @@ public class EndToEndTest {
 
     @BeforeClass
     public static void setupServer() throws Exception {
-        GreeterGrpc.GreeterImplBase svc = new GreeterGrpcRx.GreeterImplBase() {
+        GreeterGrpc.GreeterImplBase svc = new RxGreeterGrpc.GreeterImplBase() {
 
             @Override
             public Single<HelloResponse> sayHello(Single<HelloRequest> rxRequest) {
@@ -79,7 +79,7 @@ public class EndToEndTest {
 
     @Test
     public void oneToOne() throws IOException {
-        GreeterGrpcRx.RxGreeterStub stub = GreeterGrpcRx.newRxStub(channel);
+        RxGreeterGrpc.RxGreeterStub stub = RxGreeterGrpc.newRxStub(channel);
         Single<HelloRequest> req = Single.just(HelloRequest.newBuilder().setName("rxjava").build());
         Single<HelloResponse> resp = stub.sayHello(req);
 
@@ -90,7 +90,7 @@ public class EndToEndTest {
 
     @Test
     public void oneToMany() throws IOException {
-        GreeterGrpcRx.RxGreeterStub stub = GreeterGrpcRx.newRxStub(channel);
+        RxGreeterGrpc.RxGreeterStub stub = RxGreeterGrpc.newRxStub(channel);
         Single<HelloRequest> req = Single.just(HelloRequest.newBuilder().setName("rxjava").build());
         Observable<HelloResponse> resp = stub.sayHelloRespStream(req);
 
@@ -101,7 +101,7 @@ public class EndToEndTest {
 
     @Test
     public void manyToOne() throws Exception {
-        GreeterGrpcRx.RxGreeterStub stub = GreeterGrpcRx.newRxStub(channel);
+        RxGreeterGrpc.RxGreeterStub stub = RxGreeterGrpc.newRxStub(channel);
         Observable<HelloRequest> req = Observable.just(
                 HelloRequest.newBuilder().setName("a").build(),
                 HelloRequest.newBuilder().setName("b").build(),
@@ -116,7 +116,7 @@ public class EndToEndTest {
 
     @Test
     public void manyToMany() throws Exception {
-        GreeterGrpcRx.RxGreeterStub stub = GreeterGrpcRx.newRxStub(channel);
+        RxGreeterGrpc.RxGreeterStub stub = RxGreeterGrpc.newRxStub(channel);
         Observable<HelloRequest> req = Observable.just(
                 HelloRequest.newBuilder().setName("a").build(),
                 HelloRequest.newBuilder().setName("b").build(),

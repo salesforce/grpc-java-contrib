@@ -1,0 +1,10 @@
+#ignore:
+#  - "path/to/folder"  # ignore folders and all its contents
+#  - "test_*.rb"       # wildcards accepted
+#  - "**/*.py"         # glob accepted
+#  - "[a-z]+/test_.*"  # regexp accepted
+
+ignore:
+  - "grpc-java-contrib-demo"
+  - "jprotoc/src/main/java/com/salesforce/jprotoc/jdk8/Jdk8Generator.java"
+  - "rxgrpc/src/main/java/com/salesforce/rxgrpc/RxGrpcGenerator.java"

@@ -4,6 +4,8 @@ package {{packageName}};
 
 import com.google.common.util.concurrent.Runnables;
 import io.grpc.Channel;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import io.reactivex.*;
 
@@ -52,7 +54,9 @@ public final class {{className}} {
 
     public static abstract class {{serviceName}}ImplBase extends {{serviceName}}Grpc.{{serviceName}}ImplBase {
         {{#oneToOne}}{{#deprecated}}@Deprecated{{/deprecated}}
-        public abstract Single<{{outputType}}> {{methodName}}(Single<{{inputType}}> request);
+        public Single<{{outputType}}> {{methodName}}(Single<{{inputType}}> request) {
+            throw new StatusRuntimeException(Status.UNIMPLEMENTED);
+        }
 
         @Override
         public void {{methodName}}(HelloRequest request, StreamObserver<{{outputType}}> responseObserver) {
@@ -60,7 +64,9 @@ public final class {{className}} {
         }
         {{/oneToOne}}
         {{#oneToMany}}{{#deprecated}}@Deprecated{{/deprecated}}
-        public abstract Observable<{{outputType}}> {{methodName}}(Single<{{inputType}}> request);
+        public Observable<{{outputType}}> {{methodName}}(Single<{{inputType}}> request) {
+            throw new StatusRuntimeException(Status.UNIMPLEMENTED);
+        }
 
         @Override
         public void {{methodName}}(HelloRequest request, StreamObserver<{{outputType}}> responseObserver) {
@@ -68,7 +74,9 @@ public final class {{className}} {
         }
         {{/oneToMany}}
         {{#manyToOne}}{{#deprecated}}@Deprecated{{/deprecated}}
-        public abstract Single<{{outputType}}> {{methodName}}(Observable<{{inputType}}> request);
+        public Single<{{outputType}}> {{methodName}}(Observable<{{inputType}}> request) {
+            throw new StatusRuntimeException(Status.UNIMPLEMENTED);
+        }
 
         @Override
         public StreamObserver<{{inputType}}> {{methodName}}(StreamObserver<{{outputType}}> responseObserver) {
@@ -76,7 +84,9 @@ public final class {{className}} {
         }
         {{/manyToOne}}
         {{#manyToMany}}{{#deprecated}}@Deprecated{{/deprecated}}
-        public abstract Observable<{{outputType}}> {{methodName}}(Observable<{{inputType}}> request);
+        public Observable<{{outputType}}> {{methodName}}(Observable<{{inputType}}> request) {
+            throw new StatusRuntimeException(Status.UNIMPLEMENTED);
+        }
 
         @Override
         public StreamObserver<{{inputType}}> {{methodName}}(StreamObserver<{{outputType}}> responseObserver) {

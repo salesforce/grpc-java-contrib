@@ -94,7 +94,7 @@ public final class {{className}} {
         }
         {{/manyToMany}}
     }
-
+    {{#hasOneToOne}}
     private static <TRequest, TResponse> Single<TResponse> oneToOne(
             Single<TRequest> rxRequest,
             BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
@@ -123,7 +123,8 @@ public final class {{className}} {
             responseObserver.onError(throwable);
         }
     }
-
+    {{/hasOneToOne}}
+    {{#hasOneToMany}}
     private static <TRequest, TResponse> Observable<TResponse> oneToMany(
             Single<TRequest> rxRequest,
             BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
@@ -152,7 +153,8 @@ public final class {{className}} {
             responseObserver.onError(throwable);
         }
     }
-
+    {{/hasOneToMany}}
+    {{#hasManyToOne}}
     private static <TRequest, TResponse> Single<TResponse> manyToOne(
             Observable<TRequest> rxRequest,
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
@@ -184,7 +186,8 @@ public final class {{className}} {
 
         return new RxStreamObserver<>(requestEmitter);
     }
-
+    {{/hasManyToOne}}
+    {{#hasManyToMany}}
     private static <TRequest, TResponse> Observable<TResponse> manyToMany(
             Observable<TRequest> rxRequest,
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
@@ -212,7 +215,7 @@ public final class {{className}} {
 
         return new RxStreamObserver<>(requestEmitter);
     }
-
+    {{/hasManyToMany}}
     private static class RxStreamObserver<V> implements StreamObserver<V> {
         private Consumer<V> onNext;
         private Consumer<Throwable> onError;

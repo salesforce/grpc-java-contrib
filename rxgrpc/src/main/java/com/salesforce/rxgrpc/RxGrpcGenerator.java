@@ -154,6 +154,22 @@ public class RxGrpcGenerator extends Generator {
         public List<MethodContext> oneToMany;
         public List<MethodContext> manyToOne;
         public List<MethodContext> manyToMany;
+
+        public boolean getHasOneToOne() {
+            return oneToOne != null && oneToOne.size() > 0;
+        }
+
+        public boolean getHasOneToMany() {
+            return oneToMany != null && oneToMany.size() > 0;
+        }
+
+        public boolean getHasManyToOne() {
+            return manyToOne != null && manyToOne.size() > 0;
+        }
+
+        public boolean getHasManyToMany() {
+            return manyToMany != null && manyToMany.size() > 0;
+        }
     }
 
     /**

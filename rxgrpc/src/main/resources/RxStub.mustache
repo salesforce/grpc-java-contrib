@@ -1,11 +1,6 @@
-/*
- *  Copyright (c) 2017, salesforce.com, inc.
- *  All rights reserved.
- *  Licensed under the BSD 3-Clause license.
- *  For full license text, see LICENSE.txt file in the repo root  or https://opensource.org/licenses/BSD-3-Clause
- */
-
-package com.salesforce.rxgrpc;
+{{#packageName}}
+package {{packageName}};
+{{/packageName}}
 
 import com.google.common.util.concurrent.Runnables;
 import io.grpc.Channel;
@@ -16,63 +11,78 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public final class GreeterGrpcRx {
-    public static RxGreeterStub newRxStub(Channel channel) {
-        return new RxGreeterStub(channel);
+{{#deprecated}}@Deprecated{{/deprecated}}
+@javax.annotation.Generated(
+value = "by RxGrpc generator",
+comments = "Source: {{protoName}}")
+public final class {{className}} {
+    private {{className}}() {}
+
+    public static Rx{{serviceName}}Stub newRxStub(Channel channel) {
+        return new Rx{{serviceName}}Stub(channel);
     }
 
-    public static final class RxGreeterStub {
-        private GreeterGrpc.GreeterStub delegateStub;
+    public static final class Rx{{serviceName}}Stub {
+        private {{serviceName}}Grpc.{{serviceName}}Stub delegateStub;
 
-        private RxGreeterStub(Channel channel) {
-            delegateStub = GreeterGrpc.newStub(channel);
+        private Rx{{serviceName}}Stub(Channel channel) {
+            delegateStub = {{serviceName}}Grpc.newStub(channel);
         }
-
-        public Single<HelloResponse> sayHello(Single<HelloRequest> rxRequest) {
-            return oneToOne(rxRequest, delegateStub::sayHello);
+        {{#oneToOne}}{{#deprecated}}@Deprecated{{/deprecated}}
+        public Single<{{outputType}}> {{methodName}}(Single<{{inputType}}> rxRequest) {
+            return oneToOne(rxRequest, delegateStub::{{methodName}});
         }
-
-        public Observable<HelloResponse> sayHelloRespStream(Single<HelloRequest> rxRequest) {
-            return oneToMany(rxRequest, delegateStub::sayHelloRespStream);
+        {{/oneToOne}}
+        {{#oneToMany}}{{#deprecated}}@Deprecated{{/deprecated}}
+        public Observable<{{outputType}}> {{methodName}}(Single<{{inputType}}> rxRequest) {
+            return oneToMany(rxRequest, delegateStub::{{methodName}});
         }
-
-        public Single<HelloResponse> sayHelloReqStream(Observable<HelloRequest> rxRequest) {
-            return manyToOne(rxRequest, delegateStub::sayHelloReqStream);
+        {{/oneToMany}}
+        {{#manyToOne}}{{#deprecated}}@Deprecated{{/deprecated}}
+        public Single<{{outputType}}> {{methodName}}(Observable<{{inputType}}> rxRequest) {
+            return manyToOne(rxRequest, delegateStub::{{methodName}});
         }
-
-        public Observable<HelloResponse> sayHelloBothStream(Observable<HelloRequest> rxRequest) {
-            return manyToMany(rxRequest, delegateStub::sayHelloBothStream);
+        {{/manyToOne}}
+        {{#manyToMany}}{{#deprecated}}@Deprecated{{/deprecated}}
+        public Observable<{{outputType}}> {{methodName}}(Observable<{{inputType}}> rxRequest) {
+            return manyToMany(rxRequest, delegateStub::{{methodName}});
         }
+        {{/manyToMany}}
     }
 
-    public static abstract class GreeterImplBase extends GreeterGrpc.GreeterImplBase {
-        public abstract Single<HelloResponse> sayHello(Single<HelloRequest> request);
+    public static abstract class {{serviceName}}ImplBase extends {{serviceName}}Grpc.{{serviceName}}ImplBase {
+        {{#oneToOne}}{{#deprecated}}@Deprecated{{/deprecated}}
+        public abstract Single<{{outputType}}> {{methodName}}(Single<{{inputType}}> request);
 
         @Override
-        public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
-            oneToOne(request, responseObserver, this::sayHello);
+        public void {{methodName}}(HelloRequest request, StreamObserver<{{outputType}}> responseObserver) {
+            oneToOne(request, responseObserver, this::{{methodName}});
         }
-
-        public abstract Observable<HelloResponse> sayHelloRespStream(Single<HelloRequest> request);
+        {{/oneToOne}}
+        {{#oneToMany}}{{#deprecated}}@Deprecated{{/deprecated}}
+        public abstract Observable<{{outputType}}> {{methodName}}(Single<{{inputType}}> request);
 
         @Override
-        public void sayHelloRespStream(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
-            oneToMany(request, responseObserver, this::sayHelloRespStream);
+        public void {{methodName}}(HelloRequest request, StreamObserver<{{outputType}}> responseObserver) {
+            oneToMany(request, responseObserver, this::{{methodName}});
         }
-
-        public abstract Single<HelloResponse> sayHelloReqStream(Observable<HelloRequest> request);
+        {{/oneToMany}}
+        {{#manyToOne}}{{#deprecated}}@Deprecated{{/deprecated}}
+        public abstract Single<{{outputType}}> {{methodName}}(Observable<{{inputType}}> request);
 
         @Override
-        public StreamObserver<HelloRequest> sayHelloReqStream(StreamObserver<HelloResponse> responseObserver) {
-            return manyToOne(responseObserver, this::sayHelloReqStream);
+        public StreamObserver<{{inputType}}> {{methodName}}(StreamObserver<{{outputType}}> responseObserver) {
+            return manyToOne(responseObserver, this::{{methodName}});
         }
-
-        public abstract Observable<HelloResponse> sayHelloBothStream(Observable<HelloRequest> request);
+        {{/manyToOne}}
+        {{#manyToMany}}{{#deprecated}}@Deprecated{{/deprecated}}
+        public abstract Observable<{{outputType}}> {{methodName}}(Observable<{{inputType}}> request);
 
         @Override
-        public StreamObserver<HelloRequest> sayHelloBothStream(StreamObserver<HelloResponse> responseObserver) {
-            return manyToMany(responseObserver, this::sayHelloBothStream);
+        public StreamObserver<{{inputType}}> {{methodName}}(StreamObserver<{{outputType}}> responseObserver) {
+            return manyToMany(responseObserver, this::{{methodName}});
         }
+        {{/manyToMany}}
     }
 
     private static <TRequest, TResponse> Single<TResponse> oneToOne(
@@ -252,3 +262,4 @@ public final class GreeterGrpcRx {
         }
     }
 }
+

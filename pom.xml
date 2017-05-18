@@ -23,6 +23,7 @@
         <module>jprotoc-test</module>
         <module>grpc-java-contrib-demo</module>
         <module>rxgrpc</module>
+        <module>rxgrpc-test</module>
     </modules>
 
     <properties>

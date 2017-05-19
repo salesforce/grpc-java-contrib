@@ -94,7 +94,9 @@ public final class {{className}} {
         }
         {{/manyToMany}}
     }
+
     {{#hasOneToOne}}
+    // Client
     private static <TRequest, TResponse> Single<TResponse> oneToOne(
             Single<TRequest> rxRequest,
             BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
@@ -108,6 +110,7 @@ public final class {{className}} {
         }
     }
 
+    // Server
     private static <TRequest, TResponse> void oneToOne(
             TRequest request, StreamObserver<TResponse> responseObserver,
             Function<Single<TRequest>, Single<TResponse>> delegate) {
@@ -123,8 +126,10 @@ public final class {{className}} {
             responseObserver.onError(throwable);
         }
     }
+
     {{/hasOneToOne}}
     {{#hasOneToMany}}
+    // Client
     private static <TRequest, TResponse> Observable<TResponse> oneToMany(
             Single<TRequest> rxRequest,
             BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
@@ -138,6 +143,7 @@ public final class {{className}} {
         }
     }
 
+    // Server
     private static <TRequest, TResponse> void oneToMany(
             TRequest request, StreamObserver<TResponse> responseObserver,
             Function<Single<TRequest>, Observable<TResponse>> delegate) {
@@ -153,8 +159,10 @@ public final class {{className}} {
             responseObserver.onError(throwable);
         }
     }
+
     {{/hasOneToMany}}
     {{#hasManyToOne}}
+    // Client
     private static <TRequest, TResponse> Single<TResponse> manyToOne(
             Observable<TRequest> rxRequest,
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
@@ -168,6 +176,7 @@ public final class {{className}} {
         }
     }
 
+    // Server
     private static <TRequest, TResponse> StreamObserver<TRequest> manyToOne(
             StreamObserver<TResponse> responseObserver,
             Function<Observable<TRequest>, Single<TResponse>> delegate) {
@@ -186,8 +195,10 @@ public final class {{className}} {
 
         return new RxStreamObserver<>(requestEmitter);
     }
+
     {{/hasManyToOne}}
     {{#hasManyToMany}}
+    // Client
     private static <TRequest, TResponse> Observable<TResponse> manyToMany(
             Observable<TRequest> rxRequest,
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
@@ -201,6 +212,7 @@ public final class {{className}} {
         }
     }
 
+    // Server
     private static <TRequest, TResponse> StreamObserver<TRequest> manyToMany(
             StreamObserver<TResponse> responseObserver,
             Function<Observable<TRequest>, Observable<TResponse>> delegate) {
@@ -215,6 +227,7 @@ public final class {{className}} {
 
         return new RxStreamObserver<>(requestEmitter);
     }
+
     {{/hasManyToMany}}
     private static class RxStreamObserver<V> implements StreamObserver<V> {
         private Consumer<V> onNext;

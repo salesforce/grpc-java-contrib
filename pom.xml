@@ -33,6 +33,16 @@
             <name>Ryan Michela</name>
             <email>rmichela@salesforce.com</email>
         </developer>
+        <developer>
+            <id>joeyb</id>
+            <name>Joey Bratton</name>
+            <email>jbratton@salesforce.com</email>
+        </developer>
+        <developer>
+            <id>b-hoyt</id>
+            <name>Ben Hoyt</name>
+            <email>bhoyt@salesforce.com</email>
+        </developer>
     </developers>
 
     <modules>

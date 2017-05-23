@@ -1,0 +1,18 @@
+# This is a linkerd config file for routing requests for timeService to localhost:5050
+admin:
+  port: 5080
+
+routers:
+- protocol: h2
+  experimental: true
+
+  servers:
+  - port: 5000
+    ip: 0.0.0.0
+
+  dstPrefix: /authority
+  identifier:
+      kind: io.l5d.header.token # Use the http/2 :authority header as the dst source
+  dtab: |
+    /svc/timeService=>/$/inet/127.0.0.1/5050;
+    /authority=>/svc

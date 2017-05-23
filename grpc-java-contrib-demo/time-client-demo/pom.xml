@@ -1,73 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~  Copyright (c) 2017, salesforce.com, inc.
-  ~  All rights reserved.
-  ~  Licensed under the BSD 3-Clause license.
-  ~  For full license text, see LICENSE.txt file in the repo root  or https://opensource.org/licenses/BSD-3-Clause
-  -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>grpc-contrib-parent</artifactId>
+        <artifactId>grpc-java-contrib-demo</artifactId>
         <groupId>com.salesforce.servicelibs</groupId>
         <version>0.5.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jprotoc-test</artifactId>
+    <artifactId>time-client-demo</artifactId>
 
     <dependencies>
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>com.salesforce.servicelibs</groupId>
-            <artifactId>grpc-contrib</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-netty</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-stub</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-stub</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <scope>test</scope>
+            <groupId>com.salesforce.servicelibs</groupId>
+            <artifactId>grpc-contrib</artifactId>
         </dependency>
     </dependencies>
 
     <build>
+        <finalName>TimeClient</finalName>
         <extensions>
             <extension>
                 <groupId>kr.motd.maven</groupId>
@@ -88,8 +52,8 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>test-compile</goal>
-                            <goal>test-compile-custom</goal>
+                            <goal>compile</goal>
+                            <goal>compile-custom</goal>
                         </goals>
                         <configuration>
                             <protocPlugins>
@@ -102,6 +66,33 @@
                                 </protocPlugin>
                             </protocPlugins>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.salesforce.servicelibs.timeclient.TimeClient</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

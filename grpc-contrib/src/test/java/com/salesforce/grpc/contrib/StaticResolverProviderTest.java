@@ -25,7 +25,7 @@ public class StaticResolverProviderTest {
 
     @Test
     public void ProviderShouldProvide() {
-        StaticResolverProvider provider = new StaticResolverProvider(staticAddress);
+        NameResolverProvider provider = StaticResolver.provider(staticAddress);
         NameResolver resolver = provider.newNameResolver(URI.create("mesh://some.service"), Attributes.EMPTY);
 
         assertThat(resolver).isNotNull();
@@ -33,7 +33,7 @@ public class StaticResolverProviderTest {
 
     @Test
     public void ResolverShouldHaveCorrectAuthority() {
-        StaticResolverProvider provider = new StaticResolverProvider(staticAddress);
+        NameResolverProvider provider = StaticResolver.provider(staticAddress);
         NameResolver resolver = provider.newNameResolver(URI.create("mesh://some.service"), Attributes.EMPTY);
 
         assertThat(resolver.getServiceAuthority()).isEqualTo("some.service");
@@ -41,7 +41,7 @@ public class StaticResolverProviderTest {
 
     @Test
     public void ResolverShouldResolve() {
-        StaticResolverProvider provider = new StaticResolverProvider(staticAddress);
+        NameResolverProvider provider = StaticResolver.provider(staticAddress);
         NameResolver resolver = provider.newNameResolver(URI.create("mesh://some.service"), Attributes.EMPTY);
 
         AtomicBoolean isResolved = new AtomicBoolean();

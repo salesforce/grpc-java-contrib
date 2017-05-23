@@ -14,7 +14,7 @@
     <groupId>com.salesforce.servicelibs</groupId>
     <artifactId>grpc-contrib-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>0.5.2-SNAPSHOT</version>
 
     <name>grpc-java-contrib</name>
     <description>Useful extensions for the grpc-java library.</description>
@@ -40,6 +40,7 @@
         <module>jprotoc</module>
         <module>grpc-spring</module>
         <module>jprotoc-test</module>
+        <module>grpc-java-contrib-demo</module>
     </modules>
 
     <properties>
@@ -85,6 +86,11 @@
             <dependency>
                 <groupId>com.salesforce.servicelibs</groupId>
                 <artifactId>grpc-contrib</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.salesforce.servicelibs</groupId>
+                <artifactId>grpc-spring</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -243,6 +249,19 @@
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <formats>
+                        <format>html</format>
+                        <format>xml</format>
+                    </formats>
+                    <check />
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -281,3 +300,4 @@
         </profile>
     </profiles>
 </project>
+

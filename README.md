@@ -1,16 +1,26 @@
 grpc-java-contrib
 =================
 [![Build Status](https://travis-ci.org/salesforce/grpc-java-contrib.svg?branch=master)](https://travis-ci.org/salesforce/grpc-java-contrib)
+[![codecov](https://codecov.io/gh/salesforce/grpc-java-contrib/branch/master/graph/badge.svg)](https://codecov.io/gh/salesforce/grpc-java-contrib)
+
 
 Useful extensions for using the grpc-java library.
 
 This project is broken down into multiple sub-modules, each solving a different sub-problem.
 
-* [*grpc-contrib*](https://github.com/salesforce/grpc-java-contrib/blob/master/grpc-contrib) - A collection of utility classes to work with grpc-java.
+* [*grpc-contrib*](https://github.com/salesforce/grpc-java-contrib/tree/master/grpc-contrib) - A collection of utility classes to work with grpc-java.
 
-* [*grpc-srping*](https://github.com/salesforce/grpc-java-contrib/tree/master/grpc-spring) - Tools for automatically wiring up and starting a grpc service using Spring.
+* [*grpc-spring*](https://github.com/salesforce/grpc-java-contrib/tree/master/grpc-spring) - Tools for automatically wiring up and starting a grpc service using Spring.
 
 * [*jprotoc*](https://github.com/salesforce/grpc-java-contrib/tree/master/jprotoc) - A framework for building protoc extension plugins in Java.
+
+Demos
+=====
+A pair of demo applications are in the `grpc-java-contrib-demo` directory.
+
+* *time-service-demo* - Hosts a simple gRPC service that reports the current time. Demonstrates grpc-spring service hosting.
+
+* *time-client-demo* - Connects to the time service. Demonstrates `StaticResolver` and jProtoc.
 
 Usage
 =====

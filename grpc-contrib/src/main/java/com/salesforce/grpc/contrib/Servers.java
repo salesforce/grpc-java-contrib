@@ -42,5 +42,25 @@ public final class Servers {
         return server;
     }
 
+    /**
+     * Attempt to {@link Server#shutdown()} the {@link Server} gracefully when the JVM terminates. If the max wait time
+     * is exceeded, give up and perform a hard {@link Server#shutdownNow()}.
+     *
+     * @param server the server to be shutdown
+     * @param maxWaitTimeInMillis the max amount of time to wait for graceful shutdown to occur
+     * @return the given server
+     */
+    public static Server shutdownWithJvm(Server server, long maxWaitTimeInMillis) {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                shutdownGracefully(server, maxWaitTimeInMillis);
+            } catch (InterruptedException ex) {
+                // do nothing
+            }
+        }));
+
+        return server;
+    }
+
     private Servers() { }
 }

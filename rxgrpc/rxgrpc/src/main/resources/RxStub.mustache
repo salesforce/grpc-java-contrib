@@ -2,6 +2,7 @@
 package {{packageName}};
 {{/packageName}}
 
+import com.salesforce.rxgrpc.stub.*;
 import com.google.common.util.concurrent.Runnables;
 import io.grpc.Channel;
 import io.grpc.Status;
@@ -227,65 +228,5 @@ public final class {{className}} {
 
         return new RxStreamObserver<>(requestEmitter);
     }
-
     {{/hasManyToMany}}
-    private static class RxStreamObserver<V> implements StreamObserver<V> {
-        private Consumer<V> onNext;
-        private Consumer<Throwable> onError;
-        private Runnable onCompleted;
-
-        private RxStreamObserver(Emitter<V> requestEmitter) {
-            this(requestEmitter::onNext, requestEmitter::onError, requestEmitter::onComplete);
-        }
-
-        private RxStreamObserver(SingleEmitter<V> requestEmitter) {
-            this(requestEmitter::onSuccess, requestEmitter::onError, Runnables.doNothing());
-        }
-
-        private RxStreamObserver(Consumer<V> onNext, Consumer<Throwable> onError, Runnable onCompleted) {
-            this.onNext = onNext;
-            this.onError = onError;
-            this.onCompleted = onCompleted;
-        }
-
-        @Override
-        public void onNext(V value) {
-            onNext.accept(value);
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            onError.accept(t);
-        }
-
-        @Override
-        public void onCompleted() {
-            onCompleted.run();
-        }
-    }
-
-    private static class ObservableBridgeEmitter<T> implements ObservableOnSubscribe<T>, Emitter<T> {
-        private ObservableEmitter<T> observableEmitter;
-
-        @Override
-        public void subscribe(ObservableEmitter<T> ObservableEmitter) throws Exception {
-            this.observableEmitter = ObservableEmitter;
-        }
-
-        @Override
-        public void onNext(T t) {
-            observableEmitter.onNext(t);
-        }
-
-        @Override
-        public void onError(Throwable throwable) {
-            observableEmitter.onError(throwable);
-        }
-
-        @Override
-        public void onComplete() {
-            observableEmitter.onComplete();
-        }
-    }
 }
-

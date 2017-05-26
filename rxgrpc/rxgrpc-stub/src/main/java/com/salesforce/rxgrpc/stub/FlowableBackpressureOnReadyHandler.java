@@ -41,8 +41,6 @@ public class FlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, Run
         if (requestStream.isReady()) {
             // keep the pump going
             subscription.request(1);
-        } else {
-            System.out.println("XXX");
         }
     }
 

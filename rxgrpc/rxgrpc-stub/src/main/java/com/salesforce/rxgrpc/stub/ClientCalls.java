@@ -7,7 +7,9 @@
 
 package com.salesforce.rxgrpc.stub;
 
+import com.google.common.util.concurrent.Runnables;
 import io.grpc.stub.StreamObserver;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -27,7 +29,11 @@ public final class ClientCalls {
             BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
         try {
             return Single.create(emitter -> rxRequest.subscribe(
-                request -> delegate.accept(request, new RxStreamObserver<TResponse>(emitter)),
+                request -> delegate.accept(request, new RxStreamObserver<TResponse>(
+                    emitter::onSuccess,
+                    emitter::onError,
+                    Runnables.doNothing()
+                )),
                 emitter::onError
             ));
         } catch (Throwable throwable) {
@@ -40,7 +46,11 @@ public final class ClientCalls {
             BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
         try {
             return Observable.create(emitter -> rxRequest.subscribe(
-                request -> delegate.accept(request, new RxStreamObserver<TResponse>(emitter)),
+                request -> delegate.accept(request, new RxStreamObserver<TResponse>(
+                    emitter::onNext,
+                    emitter::onError,
+                    emitter::onComplete
+                )),
                 emitter::onError
             ));
         } catch (Throwable throwable) {
@@ -49,26 +59,30 @@ public final class ClientCalls {
     }
 
     public static <TRequest, TResponse> Single<TResponse> manyToOne(
-            Observable<TRequest> rxRequest,
+            Flowable<TRequest> rxRequest,
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
         try {
-            return Single.create(emitter -> {
-                StreamObserver<TRequest> reqStream = delegate.apply(new RxStreamObserver<>(emitter));
-                rxRequest.subscribe(reqStream::onNext, reqStream::onError, reqStream::onCompleted);
-            });
+            return Single.create(emitter -> delegate.apply(new RxFlowableStreamObserver<>(
+                rxRequest,
+                emitter::onSuccess,
+                emitter::onError,
+                Runnables.doNothing()))
+            );
         } catch (Throwable throwable) {
             return Single.error(throwable);
         }
     }
 
     public static <TRequest, TResponse> Observable<TResponse> manyToMany(
-            Observable<TRequest> rxRequest,
+            Flowable<TRequest> rxRequest,
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
         try {
-            return Observable.create(emitter -> {
-                StreamObserver<TRequest> reqStream = delegate.apply(new RxStreamObserver<>(emitter));
-                rxRequest.subscribe(reqStream::onNext, reqStream::onError, reqStream::onCompleted);
-            });
+            return Observable.create(emitter -> delegate.apply(new RxFlowableStreamObserver<>(
+                rxRequest,
+                emitter::onNext,
+                emitter::onError,
+                emitter::onComplete))
+            );
         } catch (Throwable throwable) {
             return Observable.error(throwable);
         }

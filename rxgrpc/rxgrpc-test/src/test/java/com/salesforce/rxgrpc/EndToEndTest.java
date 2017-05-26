@@ -11,6 +11,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.Server;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
@@ -102,7 +103,7 @@ public class EndToEndTest {
     @Test
     public void manyToOne() throws Exception {
         RxGreeterGrpc.RxGreeterStub stub = RxGreeterGrpc.newRxStub(channel);
-        Observable<HelloRequest> req = Observable.just(
+        Flowable<HelloRequest> req = Flowable.just(
                 HelloRequest.newBuilder().setName("a").build(),
                 HelloRequest.newBuilder().setName("b").build(),
                 HelloRequest.newBuilder().setName("c").build());
@@ -117,7 +118,7 @@ public class EndToEndTest {
     @Test
     public void manyToMany() throws Exception {
         RxGreeterGrpc.RxGreeterStub stub = RxGreeterGrpc.newRxStub(channel);
-        Observable<HelloRequest> req = Observable.just(
+        Flowable<HelloRequest> req = Flowable.just(
                 HelloRequest.newBuilder().setName("a").build(),
                 HelloRequest.newBuilder().setName("b").build(),
                 HelloRequest.newBuilder().setName("c").build(),

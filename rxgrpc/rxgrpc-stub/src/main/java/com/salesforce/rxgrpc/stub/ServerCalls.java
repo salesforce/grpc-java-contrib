@@ -8,6 +8,7 @@
 package com.salesforce.rxgrpc.stub;
 
 import io.grpc.stub.StreamObserver;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -70,7 +71,7 @@ public final class ServerCalls {
             responseObserver.onError(throwable);
         }
 
-        return new RxStreamObserver<>(requestEmitter);
+        return new RxStreamObserver<>(requestEmitter::onNext, requestEmitter::onError, requestEmitter::onComplete);
     }
 
     public static <TRequest, TResponse> StreamObserver<TRequest> manyToMany(
@@ -85,6 +86,6 @@ public final class ServerCalls {
             responseObserver.onError(throwable);
         }
 
-        return new RxStreamObserver<>(requestEmitter);
+        return new RxStreamObserver<>(requestEmitter::onNext, requestEmitter::onError, requestEmitter::onComplete);
     }
 }

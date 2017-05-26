@@ -45,12 +45,12 @@ public final class {{className}} {
         }
         {{/oneToMany}}
         {{#manyToOne}}{{#deprecated}}@Deprecated{{/deprecated}}
-        public Single<{{outputType}}> {{methodName}}(Observable<{{inputType}}> rxRequest) {
+        public Single<{{outputType}}> {{methodName}}(Flowable<{{inputType}}> rxRequest) {
             return manyToOne(rxRequest, delegateStub::{{methodName}});
         }
         {{/manyToOne}}
         {{#manyToMany}}{{#deprecated}}@Deprecated{{/deprecated}}
-        public Observable<{{outputType}}> {{methodName}}(Observable<{{inputType}}> rxRequest) {
+        public Observable<{{outputType}}> {{methodName}}(Flowable<{{inputType}}> rxRequest) {
             return manyToMany(rxRequest, delegateStub::{{methodName}});
         }
         {{/manyToMany}}

@@ -7,10 +7,7 @@
 
 package com.salesforce.rxgrpc.stub;
 
-import com.google.common.util.concurrent.Runnables;
 import io.grpc.stub.StreamObserver;
-import io.reactivex.Emitter;
-import io.reactivex.SingleEmitter;
 
 import java.util.function.Consumer;
 
@@ -23,15 +20,7 @@ public class RxStreamObserver<V> implements StreamObserver<V> {
     private Consumer<Throwable> onError;
     private Runnable onCompleted;
 
-    public RxStreamObserver(Emitter<V> requestEmitter) {
-        this(requestEmitter::onNext, requestEmitter::onError, requestEmitter::onComplete);
-    }
-
-    public RxStreamObserver(SingleEmitter<V> requestEmitter) {
-        this(requestEmitter::onSuccess, requestEmitter::onError, Runnables.doNothing());
-    }
-
-    private RxStreamObserver(Consumer<V> onNext, Consumer<Throwable> onError, Runnable onCompleted) {
+    public RxStreamObserver(Consumer<V> onNext, Consumer<Throwable> onError, Runnable onCompleted) {
         this.onNext = onNext;
         this.onError = onError;
         this.onCompleted = onCompleted;

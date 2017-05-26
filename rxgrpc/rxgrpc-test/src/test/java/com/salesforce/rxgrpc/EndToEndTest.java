@@ -114,21 +114,21 @@ public class EndToEndTest {
         testObserver.assertValue("Hello a and b and c");
     }
 
-//    @Test
-//    public void manyToMany() throws Exception {
-//        RxGreeterGrpc.RxGreeterStub stub = RxGreeterGrpc.newRxStub(channel);
-//        Observable<HelloRequest> req = Observable.just(
-//                HelloRequest.newBuilder().setName("a").build(),
-//                HelloRequest.newBuilder().setName("b").build(),
-//                HelloRequest.newBuilder().setName("c").build(),
-//                HelloRequest.newBuilder().setName("d").build(),
-//                HelloRequest.newBuilder().setName("e").build());
-//
-//        Observable<HelloResponse> resp = stub.sayHelloBothStream(req);
-//
-//        TestObserver<String> testObserver = resp.map(HelloResponse::getMessage).test();
-//        testObserver.awaitTerminalEvent();
-//        testObserver.assertValues("Hello a and b", "Hello c and d", "Hello e");
-//        testObserver.assertComplete();
-//    }
+    @Test
+    public void manyToMany() throws Exception {
+        RxGreeterGrpc.RxGreeterStub stub = RxGreeterGrpc.newRxStub(channel);
+        Observable<HelloRequest> req = Observable.just(
+                HelloRequest.newBuilder().setName("a").build(),
+                HelloRequest.newBuilder().setName("b").build(),
+                HelloRequest.newBuilder().setName("c").build(),
+                HelloRequest.newBuilder().setName("d").build(),
+                HelloRequest.newBuilder().setName("e").build());
+
+        Observable<HelloResponse> resp = stub.sayHelloBothStream(req);
+
+        TestObserver<String> testObserver = resp.map(HelloResponse::getMessage).test();
+        testObserver.awaitTerminalEvent();
+        testObserver.assertValues("Hello a and b", "Hello c and d", "Hello e");
+        testObserver.assertComplete();
+    }
 }

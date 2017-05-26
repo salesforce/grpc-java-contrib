@@ -14,6 +14,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static com.salesforce.rxgrpc.stub.ClientCalls.*;
+import static com.salesforce.rxgrpc.stub.ServerCalls.*;
+
 {{#deprecated}}@Deprecated{{/deprecated}}
 @javax.annotation.Generated(
 value = "by RxGrpc generator",
@@ -95,138 +98,4 @@ public final class {{className}} {
         }
         {{/manyToMany}}
     }
-
-    {{#hasOneToOne}}
-    // Client
-    private static <TRequest, TResponse> Single<TResponse> oneToOne(
-            Single<TRequest> rxRequest,
-            BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
-        try {
-            return Single.create(emitter -> rxRequest.subscribe(
-                    request -> delegate.accept(request, new RxStreamObserver<TResponse>(emitter)),
-                    emitter::onError
-            ));
-        } catch (Throwable throwable) {
-            return Single.error(throwable);
-        }
-    }
-
-    // Server
-    private static <TRequest, TResponse> void oneToOne(
-            TRequest request, StreamObserver<TResponse> responseObserver,
-            Function<Single<TRequest>, Single<TResponse>> delegate) {
-        try {
-            Single<TRequest> rxRequest = Single.just(request);
-
-            Single<TResponse> rxResponse = delegate.apply(rxRequest);
-            rxResponse.subscribe(
-                    responseObserver::onNext,
-                    responseObserver::onError);
-            responseObserver.onCompleted();
-        } catch (Throwable throwable) {
-            responseObserver.onError(throwable);
-        }
-    }
-
-    {{/hasOneToOne}}
-    {{#hasOneToMany}}
-    // Client
-    private static <TRequest, TResponse> Observable<TResponse> oneToMany(
-            Single<TRequest> rxRequest,
-            BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
-        try {
-            return Observable.create(emitter -> rxRequest.subscribe(
-                    request -> delegate.accept(request, new RxStreamObserver<TResponse>(emitter)),
-                    emitter::onError
-            ));
-        } catch (Throwable throwable) {
-            return Observable.error(throwable);
-        }
-    }
-
-    // Server
-    private static <TRequest, TResponse> void oneToMany(
-            TRequest request, StreamObserver<TResponse> responseObserver,
-            Function<Single<TRequest>, Observable<TResponse>> delegate) {
-        try {
-            Single<TRequest> rxRequest = Single.just(request);
-
-            Observable<TResponse> rxResponse = delegate.apply(rxRequest);
-            rxResponse.subscribe(
-                    responseObserver::onNext,
-                    responseObserver::onError,
-                    responseObserver::onCompleted);
-        } catch (Throwable throwable) {
-            responseObserver.onError(throwable);
-        }
-    }
-
-    {{/hasOneToMany}}
-    {{#hasManyToOne}}
-    // Client
-    private static <TRequest, TResponse> Single<TResponse> manyToOne(
-            Observable<TRequest> rxRequest,
-            Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
-        try {
-            return Single.create(emitter -> {
-                StreamObserver<TRequest> reqStream = delegate.apply(new RxStreamObserver<>(emitter));
-                rxRequest.subscribe(reqStream::onNext, reqStream::onError, reqStream::onCompleted);
-            });
-        } catch (Throwable throwable) {
-            return Single.error(throwable);
-        }
-    }
-
-    // Server
-    private static <TRequest, TResponse> StreamObserver<TRequest> manyToOne(
-            StreamObserver<TResponse> responseObserver,
-            Function<Observable<TRequest>, Single<TResponse>> delegate) {
-        ObservableBridgeEmitter<TRequest> requestEmitter = new ObservableBridgeEmitter<>();
-
-        try {
-            Single<TResponse> rxResponse = delegate.apply(Observable.create(requestEmitter));
-            rxResponse.subscribe(value -> {
-                        responseObserver.onNext(value);
-                        responseObserver.onCompleted();
-                    },
-                    responseObserver::onError);
-        } catch (Throwable throwable) {
-            responseObserver.onError(throwable);
-        }
-
-        return new RxStreamObserver<>(requestEmitter);
-    }
-
-    {{/hasManyToOne}}
-    {{#hasManyToMany}}
-    // Client
-    private static <TRequest, TResponse> Observable<TResponse> manyToMany(
-            Observable<TRequest> rxRequest,
-            Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
-        try {
-            return Observable.create(emitter -> {
-                StreamObserver<TRequest> reqStream = delegate.apply(new RxStreamObserver<>(emitter));
-                rxRequest.subscribe(reqStream::onNext, reqStream::onError, reqStream::onCompleted);
-            });
-        } catch (Throwable throwable) {
-            return Observable.error(throwable);
-        }
-    }
-
-    // Server
-    private static <TRequest, TResponse> StreamObserver<TRequest> manyToMany(
-            StreamObserver<TResponse> responseObserver,
-            Function<Observable<TRequest>, Observable<TResponse>> delegate) {
-        ObservableBridgeEmitter<TRequest> requestEmitter = new ObservableBridgeEmitter<>();
-
-        try {
-            Observable<TResponse> rxResponse = delegate.apply(Observable.create(requestEmitter));
-            rxResponse.subscribe(responseObserver::onNext, responseObserver::onError, responseObserver::onCompleted);
-        } catch (Throwable throwable) {
-            responseObserver.onError(throwable);
-        }
-
-        return new RxStreamObserver<>(requestEmitter);
-    }
-    {{/hasManyToMany}}
 }

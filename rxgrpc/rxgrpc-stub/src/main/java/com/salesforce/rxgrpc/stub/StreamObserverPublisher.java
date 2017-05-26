@@ -32,7 +32,6 @@ public class StreamObserverPublisher<T> implements Publisher<T>, StreamObserver<
         subscriber.onSubscribe(new Subscription() {
             @Override
             public void request(long l) {
-                System.out.println("Request " + l);
                 callStreamObserver.request((int) l);
             }
 

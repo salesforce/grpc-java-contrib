@@ -16,25 +16,25 @@ import io.reactivex.ObservableOnSubscribe;
  * @param <T>
  */
 public class ObservableBridgeEmitter<T> implements ObservableOnSubscribe<T>, Emitter<T> {
-    private ObservableEmitter<T> observableEmitter;
+    private ObservableEmitter<T> emitter;
 
     @Override
-    public void subscribe(ObservableEmitter<T> observableEmitter) throws Exception {
-        this.observableEmitter = observableEmitter;
+    public void subscribe(ObservableEmitter<T> emitter) throws Exception {
+        this.emitter = emitter;
     }
 
     @Override
     public void onNext(T t) {
-        observableEmitter.onNext(t);
+        emitter.onNext(t);
     }
 
     @Override
     public void onError(Throwable throwable) {
-        observableEmitter.onError(throwable);
+        emitter.onError(throwable);
     }
 
     @Override
     public void onComplete() {
-        observableEmitter.onComplete();
+        emitter.onComplete();
     }
 }

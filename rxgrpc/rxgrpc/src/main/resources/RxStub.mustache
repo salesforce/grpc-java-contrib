@@ -78,7 +78,7 @@ public final class {{className}} {
         }
         {{/oneToMany}}
         {{#manyToOne}}{{#deprecated}}@Deprecated{{/deprecated}}
-        public Single<{{outputType}}> {{methodName}}(Observable<{{inputType}}> request) {
+        public Single<{{outputType}}> {{methodName}}(Flowable<{{inputType}}> request) {
             throw new StatusRuntimeException(Status.UNIMPLEMENTED);
         }
 
@@ -88,7 +88,7 @@ public final class {{className}} {
         }
         {{/manyToOne}}
         {{#manyToMany}}{{#deprecated}}@Deprecated{{/deprecated}}
-        public Observable<{{outputType}}> {{methodName}}(Observable<{{inputType}}> request) {
+        public Observable<{{outputType}}> {{methodName}}(Flowable<{{inputType}}> request) {
             throw new StatusRuntimeException(Status.UNIMPLEMENTED);
         }
 

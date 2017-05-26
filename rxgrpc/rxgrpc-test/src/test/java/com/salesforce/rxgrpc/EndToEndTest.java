@@ -44,7 +44,7 @@ public class EndToEndTest {
             }
 
             @Override
-            public Single<HelloResponse> sayHelloReqStream(Observable<HelloRequest> rxRequest) {
+            public Single<HelloResponse> sayHelloReqStream(Flowable<HelloRequest> rxRequest) {
                 return rxRequest
                         .map(HelloRequest::getName)
                         .toList()
@@ -52,11 +52,12 @@ public class EndToEndTest {
             }
 
             @Override
-            public Observable<HelloResponse> sayHelloBothStream(Observable<HelloRequest> rxRequest) {
+            public Observable<HelloResponse> sayHelloBothStream(Flowable<HelloRequest> rxRequest) {
                 return rxRequest
                         .map(HelloRequest::getName)
                         .buffer(2)
-                        .map(names -> greet("Hello", String.join(" and ", names)));
+                        .map(names -> greet("Hello", String.join(" and ", names)))
+                        .toObservable();
             }
 
             private HelloResponse greet(String greeting, HelloRequest request) {

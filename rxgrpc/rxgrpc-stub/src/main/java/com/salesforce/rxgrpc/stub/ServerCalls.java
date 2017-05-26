@@ -7,10 +7,12 @@
 
 package com.salesforce.rxgrpc.stub;
 
+import io.grpc.stub.CallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 import java.util.function.Function;
 
@@ -56,12 +58,15 @@ public final class ServerCalls {
 
     public static <TRequest, TResponse> StreamObserver<TRequest> manyToOne(
             StreamObserver<TResponse> responseObserver,
-            Function<Observable<TRequest>, Single<TResponse>> delegate) {
-        ObservableBridgeEmitter<TRequest> requestEmitter = new ObservableBridgeEmitter<>();
+            Function<Flowable<TRequest>, Single<TResponse>> delegate) {
+        StreamObserverPublisher<TRequest> streamObserverPublisher =
+                new StreamObserverPublisher<>((CallStreamObserver) responseObserver);
 
         try {
-            Single<TResponse> rxResponse = delegate.apply(Observable.create(requestEmitter));
-            rxResponse.subscribe(value -> {
+            Single<TResponse> rxResponse = delegate.apply(
+                    Flowable.unsafeCreate(streamObserverPublisher).observeOn(Schedulers.single()));
+            rxResponse.subscribe(
+                value -> {
                     responseObserver.onNext(value);
                     responseObserver.onCompleted();
                 },
@@ -71,21 +76,30 @@ public final class ServerCalls {
             responseObserver.onError(throwable);
         }
 
-        return new RxStreamObserver<>(requestEmitter::onNext, requestEmitter::onError, requestEmitter::onComplete);
+        return new RxStreamObserver<>(
+                streamObserverPublisher::onNext,
+                streamObserverPublisher::onError,
+                streamObserverPublisher::onCompleted);
     }
 
     public static <TRequest, TResponse> StreamObserver<TRequest> manyToMany(
             StreamObserver<TResponse> responseObserver,
-            Function<Observable<TRequest>, Observable<TResponse>> delegate) {
-        ObservableBridgeEmitter<TRequest> requestEmitter = new ObservableBridgeEmitter<>();
+            Function<Flowable<TRequest>, Observable<TResponse>> delegate) {
+        StreamObserverPublisher<TRequest> streamObserverPublisher =
+                new StreamObserverPublisher<>((CallStreamObserver) responseObserver);
 
         try {
-            Observable<TResponse> rxResponse = delegate.apply(Observable.create(requestEmitter));
-            rxResponse.subscribe(responseObserver::onNext, responseObserver::onError, responseObserver::onCompleted);
+            Observable<TResponse> rxResponse = delegate.apply(
+                    Flowable.unsafeCreate(streamObserverPublisher).observeOn(Schedulers.single()));
+            rxResponse.subscribe(
+                responseObserver::onNext,
+                responseObserver::onError,
+                responseObserver::onCompleted
+            );
         } catch (Throwable throwable) {
             responseObserver.onError(throwable);
         }
 
-        return new RxStreamObserver<>(requestEmitter::onNext, requestEmitter::onError, requestEmitter::onComplete);
+        return new RxStreamObserver<>(streamObserverPublisher::onNext, streamObserverPublisher::onError, streamObserverPublisher::onCompleted);
     }
 }

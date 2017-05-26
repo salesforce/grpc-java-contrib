@@ -11,6 +11,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.Server;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -36,8 +37,8 @@ public class EndToEndTest {
             }
 
             @Override
-            public Observable<HelloResponse> sayHelloRespStream(Single<HelloRequest> rxRequest) {
-                return rxRequest.flatMapObservable(protoRequest -> Observable.just(
+            public Flowable<HelloResponse> sayHelloRespStream(Single<HelloRequest> rxRequest) {
+                return rxRequest.flatMapPublisher(protoRequest -> Flowable.just(
                         greet("Hello", protoRequest),
                         greet("Hi", protoRequest),
                         greet("Greetings", protoRequest)));
@@ -52,12 +53,11 @@ public class EndToEndTest {
             }
 
             @Override
-            public Observable<HelloResponse> sayHelloBothStream(Flowable<HelloRequest> rxRequest) {
+            public Flowable<HelloResponse> sayHelloBothStream(Flowable<HelloRequest> rxRequest) {
                 return rxRequest
                         .map(HelloRequest::getName)
                         .buffer(2)
-                        .map(names -> greet("Hello", String.join(" and ", names)))
-                        .toObservable();
+                        .map(names -> greet("Hello", String.join(" and ", names)));
             }
 
             private HelloResponse greet(String greeting, HelloRequest request) {

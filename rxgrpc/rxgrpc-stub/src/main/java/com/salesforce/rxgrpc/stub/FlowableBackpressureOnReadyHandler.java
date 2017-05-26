@@ -7,7 +7,7 @@
 
 package com.salesforce.rxgrpc.stub;
 
-import io.grpc.stub.ClientCallStreamObserver;
+import io.grpc.stub.CallStreamObserver;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
@@ -16,10 +16,10 @@ import org.reactivestreams.Subscription;
  * @param <T>
  */
 public class FlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, Runnable {
-    private ClientCallStreamObserver<T> requestStream;
+    private CallStreamObserver<T> requestStream;
     private Subscription subscription;
 
-    public FlowableBackpressureOnReadyHandler(ClientCallStreamObserver<T> requestStream) {
+    public FlowableBackpressureOnReadyHandler(CallStreamObserver<T> requestStream) {
         this.requestStream = requestStream;
         requestStream.setOnReadyHandler(this);
     }

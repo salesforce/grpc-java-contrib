@@ -1,7 +1,7 @@
 Using GrpcServerHost
 ====================
 `GrpcServerHost` configures a gRPC Server with services obtained from the `ApplicationContext` and manages that server's 
-lifecycle. Services are discovered by finding `BindableService` implementations thatare annotated with `@GrpcService`.
+lifecycle. Services are discovered by finding `BindableService` implementations that are annotated with `@GrpcService`.
 
 1. Tag your gRPC service implementation with the `@GrpcService` annotation.
    ```java

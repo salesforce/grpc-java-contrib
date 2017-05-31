@@ -20,6 +20,6 @@ public class RxProducerConsumerStreamObserver<TRequest, TResponse> extends RxCon
     @Override
     public void beforeStart(ClientCallStreamObserver<TRequest> requestStream) {
         super.beforeStart(requestStream);
-        rxProducer.subscribe(new FlowableBackpressureOnReadyHandler<>(requestStream));
+        rxProducer.subscribe(new RxFlowableBackpressureOnReadyHandler<>(requestStream));
     }
 }

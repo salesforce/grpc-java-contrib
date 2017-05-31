@@ -30,6 +30,6 @@ public class RxProducerStreamObserver<TRequest, TResponse> extends RxStreamObser
     public void beforeStart(ClientCallStreamObserver<TRequest> producerStream) {
         // Subscribe to the rxProducer with an adapter to a gRPC StreamObserver that respects backpressure
         // signals from the underlying gRPC client transport.
-        rxProducer.subscribe(new FlowableBackpressureOnReadyHandler<>(producerStream));
+        rxProducer.subscribe(new RxFlowableBackpressureOnReadyHandler<>(producerStream));
     }
 }

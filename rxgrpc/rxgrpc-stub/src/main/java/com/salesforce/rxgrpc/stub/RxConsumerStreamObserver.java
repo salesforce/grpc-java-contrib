@@ -13,13 +13,12 @@ import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 
 public class RxConsumerStreamObserver<TRequest, TResponse> implements ClientResponseObserver<TRequest, TResponse> {
-    private StreamObserverPublisher<TResponse> publisher;
+    private RxStreamObserverPublisher<TResponse> publisher;
     private Flowable<TResponse> rxConsumer;
-
 
     @Override
     public void beforeStart(ClientCallStreamObserver<TRequest> requestStream) {
-        publisher = new StreamObserverPublisher<>(requestStream);
+        publisher = new RxStreamObserverPublisher<>(requestStream);
         rxConsumer = Flowable.unsafeCreate(publisher).observeOn(Schedulers.single());
     }
 

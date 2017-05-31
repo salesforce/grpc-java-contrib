@@ -46,7 +46,7 @@ public final class ServerCalls {
             Single<TRequest> rxRequest = Single.just(request);
 
             Flowable<TResponse> rxResponse = delegate.apply(rxRequest);
-            rxResponse.subscribe(new FlowableBackpressureOnReadyHandler<>(
+            rxResponse.subscribe(new RxFlowableBackpressureOnReadyHandler<>(
                     (CallStreamObserver<TResponse>)responseObserver));
         } catch (Throwable throwable) {
             responseObserver.onError(throwable);
@@ -56,8 +56,8 @@ public final class ServerCalls {
     public static <TRequest, TResponse> StreamObserver<TRequest> manyToOne(
             StreamObserver<TResponse> responseObserver,
             Function<Flowable<TRequest>, Single<TResponse>> delegate) {
-        StreamObserverPublisher<TRequest> streamObserverPublisher =
-                new StreamObserverPublisher<>((CallStreamObserver) responseObserver);
+        RxStreamObserverPublisher<TRequest> streamObserverPublisher =
+                new RxStreamObserverPublisher<>((CallStreamObserver) responseObserver);
 
         try {
             Single<TResponse> rxResponse = delegate.apply(
@@ -82,13 +82,13 @@ public final class ServerCalls {
     public static <TRequest, TResponse> StreamObserver<TRequest> manyToMany(
             StreamObserver<TResponse> responseObserver,
             Function<Flowable<TRequest>, Flowable<TResponse>> delegate) {
-        StreamObserverPublisher<TRequest> streamObserverPublisher =
-                new StreamObserverPublisher<>((CallStreamObserver) responseObserver);
+        RxStreamObserverPublisher<TRequest> streamObserverPublisher =
+                new RxStreamObserverPublisher<>((CallStreamObserver) responseObserver);
 
         try {
             Flowable<TResponse> rxResponse = delegate.apply(
                     Flowable.unsafeCreate(streamObserverPublisher).observeOn(Schedulers.single()));
-            rxResponse.subscribe(new FlowableBackpressureOnReadyHandler<>(
+            rxResponse.subscribe(new RxFlowableBackpressureOnReadyHandler<>(
                     (CallStreamObserver<TResponse>)responseObserver));
         } catch (Throwable throwable) {
             responseObserver.onError(throwable);

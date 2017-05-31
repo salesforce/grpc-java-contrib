@@ -12,14 +12,14 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 /**
- * FlowableBackpressureOnReadyHandler.
+ * RxFlowableBackpressureOnReadyHandler.
  * @param <T>
  */
-public class FlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, Runnable {
+public class RxFlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, Runnable {
     private CallStreamObserver<T> requestStream;
     private Subscription subscription;
 
-    public FlowableBackpressureOnReadyHandler(CallStreamObserver<T> requestStream) {
+    public RxFlowableBackpressureOnReadyHandler(CallStreamObserver<T> requestStream) {
         this.requestStream = requestStream;
         requestStream.setOnReadyHandler(this);
     }

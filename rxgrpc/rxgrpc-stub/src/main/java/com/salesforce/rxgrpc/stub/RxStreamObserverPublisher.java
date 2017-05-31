@@ -14,14 +14,14 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 /**
- * StreamObserverPublisher.
+ * RxStreamObserverPublisher.
  * @param <T>
  */
-public class StreamObserverPublisher<T> implements Publisher<T>, StreamObserver<T> {
+public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserver<T> {
     private CallStreamObserver callStreamObserver;
     private Subscriber<? super T> subscriber;
 
-    public StreamObserverPublisher(CallStreamObserver callStreamObserver) {
+    public RxStreamObserverPublisher(CallStreamObserver callStreamObserver) {
         this.callStreamObserver = callStreamObserver;
         callStreamObserver.disableAutoInboundFlowControl();
     }

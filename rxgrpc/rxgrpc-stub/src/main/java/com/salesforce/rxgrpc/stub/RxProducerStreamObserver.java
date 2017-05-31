@@ -15,19 +15,19 @@ import java.util.function.Consumer;
 
 /**
  * RxStreamObserver.
- * @param <TProducer>
- * @param <TConsumer>
+ * @param <TRequest>
+ * @param <TResponse>
  */
-public class RxFlowableStreamObserver<TProducer, TConsumer> extends RxStreamObserver<TConsumer>  implements ClientResponseObserver<TProducer, TConsumer> {
-    private Flowable<TProducer> rxProducer;
+public class RxProducerStreamObserver<TRequest, TResponse> extends RxStreamObserver<TResponse>  implements ClientResponseObserver<TRequest, TResponse> {
+    private Flowable<TRequest> rxProducer;
 
-    public RxFlowableStreamObserver(Flowable<TProducer> rxProducer, Consumer<TConsumer> onNext, Consumer<Throwable> onError, Runnable onCompleted) {
+    public RxProducerStreamObserver(Flowable<TRequest> rxProducer, Consumer<TResponse> onNext, Consumer<Throwable> onError, Runnable onCompleted) {
         super(onNext, onError, onCompleted);
         this.rxProducer = rxProducer;
     }
 
     @Override
-    public void beforeStart(ClientCallStreamObserver<TProducer> producerStream) {
+    public void beforeStart(ClientCallStreamObserver<TRequest> producerStream) {
         // Subscribe to the rxProducer with an adapter to a gRPC StreamObserver that respects backpressure
         // signals from the underlying gRPC client transport.
         rxProducer.subscribe(new FlowableBackpressureOnReadyHandler<>(producerStream));

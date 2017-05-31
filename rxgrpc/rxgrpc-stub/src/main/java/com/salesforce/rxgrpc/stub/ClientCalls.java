@@ -8,6 +8,8 @@
 package com.salesforce.rxgrpc.stub;
 
 import com.google.common.util.concurrent.Runnables;
+import io.grpc.stub.CallStreamObserver;
+import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -41,20 +43,15 @@ public final class ClientCalls {
         }
     }
 
-    public static <TRequest, TResponse> Observable<TResponse> oneToMany(
+    public static <TRequest, TResponse> Flowable<TResponse> oneToMany(
             Single<TRequest> rxRequest,
             BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
         try {
-            return Observable.create(emitter -> rxRequest.subscribe(
-                request -> delegate.accept(request, new RxStreamObserver<TResponse>(
-                    emitter::onNext,
-                    emitter::onError,
-                    emitter::onComplete
-                )),
-                emitter::onError
-            ));
+            RxConsumerStreamObserver<TRequest, TResponse> consumerStreamObserver = new RxConsumerStreamObserver<>();
+            rxRequest.subscribe(request -> delegate.accept(request, consumerStreamObserver));
+            return consumerStreamObserver.getRxConsumer();
         } catch (Throwable throwable) {
-            return Observable.error(throwable);
+            return Flowable.error(throwable);
         }
     }
 
@@ -62,7 +59,7 @@ public final class ClientCalls {
             Flowable<TRequest> rxRequest,
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
         try {
-            return Single.create(emitter -> delegate.apply(new RxFlowableStreamObserver<>(
+            return Single.create(emitter -> delegate.apply(new RxProducerStreamObserver<>(
                 rxRequest,
                 emitter::onSuccess,
                 emitter::onError,
@@ -73,18 +70,15 @@ public final class ClientCalls {
         }
     }
 
-    public static <TRequest, TResponse> Observable<TResponse> manyToMany(
+    public static <TRequest, TResponse> Flowable<TResponse> manyToMany(
             Flowable<TRequest> rxRequest,
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
         try {
-            return Observable.create(emitter -> delegate.apply(new RxFlowableStreamObserver<>(
-                rxRequest,
-                emitter::onNext,
-                emitter::onError,
-                emitter::onComplete))
-            );
+            RxProducerConsumerStreamObserver<TRequest, TResponse> consumerStreamObserver = new RxProducerConsumerStreamObserver<>(rxRequest);
+            delegate.apply(consumerStreamObserver);
+            return consumerStreamObserver.getRxConsumer();
         } catch (Throwable throwable) {
-            return Observable.error(throwable);
+            return Flowable.error(throwable);
         }
     }
 }

@@ -40,7 +40,7 @@ public final class {{className}} {
         }
         {{/oneToOne}}
         {{#oneToMany}}{{#deprecated}}@Deprecated{{/deprecated}}
-        public Observable<{{outputType}}> {{methodName}}(Single<{{inputType}}> rxRequest) {
+        public Flowable<{{outputType}}> {{methodName}}(Single<{{inputType}}> rxRequest) {
             return oneToMany(rxRequest, delegateStub::{{methodName}});
         }
         {{/oneToMany}}
@@ -50,7 +50,7 @@ public final class {{className}} {
         }
         {{/manyToOne}}
         {{#manyToMany}}{{#deprecated}}@Deprecated{{/deprecated}}
-        public Observable<{{outputType}}> {{methodName}}(Flowable<{{inputType}}> rxRequest) {
+        public Flowable<{{outputType}}> {{methodName}}(Flowable<{{inputType}}> rxRequest) {
             return manyToMany(rxRequest, delegateStub::{{methodName}});
         }
         {{/manyToMany}}

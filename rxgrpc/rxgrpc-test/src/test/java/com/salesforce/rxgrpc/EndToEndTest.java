@@ -16,6 +16,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -94,11 +95,11 @@ public class EndToEndTest {
     public void oneToMany() throws IOException {
         RxGreeterGrpc.RxGreeterStub stub = RxGreeterGrpc.newRxStub(channel);
         Single<HelloRequest> req = Single.just(HelloRequest.newBuilder().setName("rxjava").build());
-        Observable<HelloResponse> resp = stub.sayHelloRespStream(req);
+        Flowable<HelloResponse> resp = stub.sayHelloRespStream(req);
 
-        TestObserver<String> testObserver = resp.map(HelloResponse::getMessage).test();
-        testObserver.awaitTerminalEvent();
-        testObserver.assertValues("Hello rxjava", "Hi rxjava", "Greetings rxjava");
+        TestSubscriber<String> testSubscriber = resp.map(HelloResponse::getMessage).test();
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertValues("Hello rxjava", "Hi rxjava", "Greetings rxjava");
     }
 
     @Test
@@ -126,11 +127,11 @@ public class EndToEndTest {
                 HelloRequest.newBuilder().setName("d").build(),
                 HelloRequest.newBuilder().setName("e").build());
 
-        Observable<HelloResponse> resp = stub.sayHelloBothStream(req);
+        Flowable<HelloResponse> resp = stub.sayHelloBothStream(req);
 
-        TestObserver<String> testObserver = resp.map(HelloResponse::getMessage).test();
-        testObserver.awaitTerminalEvent();
-        testObserver.assertValues("Hello a and b", "Hello c and d", "Hello e");
-        testObserver.assertComplete();
+        TestSubscriber<String> testSubscriber = resp.map(HelloResponse::getMessage).test();
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertValues("Hello a and b", "Hello c and d", "Hello e");
+        testSubscriber.assertComplete();
     }
 }

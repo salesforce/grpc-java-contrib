@@ -12,22 +12,23 @@ import io.grpc.stub.StreamObserver;
 import java.util.function.Consumer;
 
 /**
- * RxStreamObserver.
- * @param <V>
+ * RxStreamObserver allows the construction of a {@link StreamObserver} instance from a triplet of lambda functions.
+ *
+ * @param <T>
  */
-public class RxStreamObserver<V> implements StreamObserver<V> {
-    private Consumer<V> onNext;
+public class RxStreamObserver<T> implements StreamObserver<T> {
+    private Consumer<T> onNext;
     private Consumer<Throwable> onError;
     private Runnable onCompleted;
 
-    public RxStreamObserver(Consumer<V> onNext, Consumer<Throwable> onError, Runnable onCompleted) {
+    public RxStreamObserver(Consumer<T> onNext, Consumer<Throwable> onError, Runnable onCompleted) {
         this.onNext = onNext;
         this.onError = onError;
         this.onCompleted = onCompleted;
     }
 
     @Override
-    public void onNext(V value) {
+    public void onNext(T value) {
         onNext.accept(value);
     }
 

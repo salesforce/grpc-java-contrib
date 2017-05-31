@@ -14,7 +14,20 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 /**
- * RxStreamObserverPublisher.
+ * RxStreamObserverPublisher bridges the manual flow control idioms of gRPC and RxJava. This class takes
+ * messages off of a {@link StreamObserver} and feeds them into a {@link Publisher} while respecting backpressure. This
+ * class is the inverse of {@link RxFlowableBackpressureOnReadyHandler}.
+ * <p>
+ * When a {@link Publisher} is subscribed to by a {@link Subscriber}, the {@code Publisher} hands the {@code Subscriber}
+ * a {@link Subscription}. When the {@code Subscriber} wants more messages from the {@code Publisher}, the
+ * {@code Subscriber} calls {@link Subscription#request(long)}.
+ * <p>
+ * gRPC also uses the {@link CallStreamObserver#request(int)} idiom to request more messages from the stream.
+ * <p>
+ * To bridge the two idioms: this class implements a {@code Publisher} which delegates calls to {@code request()} to
+ * a {@link CallStreamObserver} set in the constructor. When a message is generated as a response, the message is
+ * delegated in the reverse so the {@code Publisher} can announce it to RxJava.
+ *
  * @param <T>
  */
 public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserver<T> {
@@ -49,7 +62,6 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
 
     @Override
     public void onError(Throwable t) {
-        t.printStackTrace();
         subscriber.onError(t);
     }
 

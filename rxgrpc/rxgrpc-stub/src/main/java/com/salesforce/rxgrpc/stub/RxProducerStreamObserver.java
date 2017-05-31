@@ -14,7 +14,8 @@ import io.reactivex.Flowable;
 import java.util.function.Consumer;
 
 /**
- * RxStreamObserver.
+ * RxStreamObserver configures client-side manual flow control for the producing end of a message stream.
+ *
  * @param <TRequest>
  * @param <TResponse>
  */
@@ -30,6 +31,6 @@ public class RxProducerStreamObserver<TRequest, TResponse> extends RxStreamObser
     public void beforeStart(ClientCallStreamObserver<TRequest> producerStream) {
         // Subscribe to the rxProducer with an adapter to a gRPC StreamObserver that respects backpressure
         // signals from the underlying gRPC client transport.
-        rxProducer.subscribe(new RxFlowableBackpressureOnReadyHandler<>(producerStream));
+        rxProducer.subscribe(new RxFlowableBackpressureOnReadyHandler<TRequest>(producerStream));
     }
 }

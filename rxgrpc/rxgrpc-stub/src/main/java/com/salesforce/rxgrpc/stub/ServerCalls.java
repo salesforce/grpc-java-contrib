@@ -16,13 +16,18 @@ import io.reactivex.schedulers.Schedulers;
 import java.util.function.Function;
 
 /**
- * ServerCalls.
+ * Utility functions for processing different server call idioms. We have one-to-one correspondence
+ * between utilities in this class and the potential signatures in a generated server stub class so
+ * that the runtime can vary behavior without requiring regeneration of the stub.
  */
 public final class ServerCalls {
     private ServerCalls() {
 
     }
 
+    /**
+     * Implements a unary -> unary call using {@link Single} -> {@link Single}.
+     */
     public static <TRequest, TResponse> void oneToOne(
             TRequest request, StreamObserver<TResponse> responseObserver,
             Function<Single<TRequest>, Single<TResponse>> delegate) {
@@ -39,6 +44,10 @@ public final class ServerCalls {
         }
     }
 
+    /**
+     * Implements a unary -> stream call as {@link Single} -> {@link Flowable}, where the server responds with a
+     * stream of messages.
+     */
     public static <TRequest, TResponse> void oneToMany(
             TRequest request, StreamObserver<TResponse> responseObserver,
             Function<Single<TRequest>, Flowable<TResponse>> delegate) {
@@ -47,12 +56,16 @@ public final class ServerCalls {
 
             Flowable<TResponse> rxResponse = delegate.apply(rxRequest);
             rxResponse.subscribe(new RxFlowableBackpressureOnReadyHandler<>(
-                    (CallStreamObserver<TResponse>)responseObserver));
+                    (CallStreamObserver<TResponse>) responseObserver));
         } catch (Throwable throwable) {
             responseObserver.onError(throwable);
         }
     }
 
+    /**
+     * Implements a stream -> unary call as {@link Flowable} -> {@link Single}, where the client transits a stream of
+     * messages.
+     */
     public static <TRequest, TResponse> StreamObserver<TRequest> manyToOne(
             StreamObserver<TResponse> responseObserver,
             Function<Flowable<TRequest>, Single<TResponse>> delegate) {
@@ -79,6 +92,10 @@ public final class ServerCalls {
                 streamObserverPublisher::onCompleted);
     }
 
+    /**
+     * Implements a bidirectional stream -> stream call as {@link Flowable} -> {@link Flowable}, where both the client
+     * and the server independently stream to each other.
+     */
     public static <TRequest, TResponse> StreamObserver<TRequest> manyToMany(
             StreamObserver<TResponse> responseObserver,
             Function<Flowable<TRequest>, Flowable<TResponse>> delegate) {
@@ -89,7 +106,7 @@ public final class ServerCalls {
             Flowable<TResponse> rxResponse = delegate.apply(
                     Flowable.unsafeCreate(streamObserverPublisher).observeOn(Schedulers.single()));
             rxResponse.subscribe(new RxFlowableBackpressureOnReadyHandler<>(
-                    (CallStreamObserver<TResponse>)responseObserver));
+                    (CallStreamObserver<TResponse>) responseObserver));
         } catch (Throwable throwable) {
             responseObserver.onError(throwable);
         }

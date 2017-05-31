@@ -8,24 +8,26 @@
 package com.salesforce.rxgrpc.stub;
 
 import com.google.common.util.concurrent.Runnables;
-import io.grpc.stub.CallStreamObserver;
-import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
- * ClientCalls.
+ * Utility functions for processing different client call idioms. We have one-to-one correspondence
+ * between utilities in this class and the potential signatures in a generated stub client class so
+ * that the runtime can vary behavior without requiring regeneration of the stub.
  */
 public final class ClientCalls {
     private ClientCalls() {
 
     }
 
+    /**
+     * Implements a unary -> unary call using {@link Single} -> {@link Single}.
+     */
     public static <TRequest, TResponse> Single<TResponse> oneToOne(
             Single<TRequest> rxRequest,
             BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
@@ -43,6 +45,10 @@ public final class ClientCalls {
         }
     }
 
+    /**
+     * Implements a unary -> stream call as {@link Single} -> {@link Flowable}, where the server responds with a
+     * stream of messages.
+     */
     public static <TRequest, TResponse> Flowable<TResponse> oneToMany(
             Single<TRequest> rxRequest,
             BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
@@ -55,6 +61,10 @@ public final class ClientCalls {
         }
     }
 
+    /**
+     * Implements a stream -> unary call as {@link Flowable} -> {@link Single}, where the client transits a stream of
+     * messages.
+     */
     public static <TRequest, TResponse> Single<TResponse> manyToOne(
             Flowable<TRequest> rxRequest,
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
@@ -70,6 +80,10 @@ public final class ClientCalls {
         }
     }
 
+    /**
+     * Implements a bidirectional stream -> stream call as {@link Flowable} -> {@link Flowable}, where both the client
+     * and the server independently stream to each other.
+     */
     public static <TRequest, TResponse> Flowable<TResponse> manyToMany(
             Flowable<TRequest> rxRequest,
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {

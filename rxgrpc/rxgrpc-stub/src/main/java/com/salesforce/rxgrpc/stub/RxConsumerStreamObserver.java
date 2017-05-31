@@ -12,9 +12,19 @@ import io.grpc.stub.ClientResponseObserver;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 
+/**
+ * RxConsumerStreamObserver configures client-side manual flow control for the consuming end of a message stream.
+ *
+ * @param <TRequest>
+ * @param <TResponse>
+ */
 public class RxConsumerStreamObserver<TRequest, TResponse> implements ClientResponseObserver<TRequest, TResponse> {
     private RxStreamObserverPublisher<TResponse> publisher;
     private Flowable<TResponse> rxConsumer;
+
+    public Flowable<TResponse> getRxConsumer() {
+        return rxConsumer;
+    }
 
     @Override
     public void beforeStart(ClientCallStreamObserver<TRequest> requestStream) {
@@ -35,9 +45,5 @@ public class RxConsumerStreamObserver<TRequest, TResponse> implements ClientResp
     @Override
     public void onCompleted() {
         publisher.onCompleted();
-    }
-
-    public Flowable<TResponse> getRxConsumer() {
-        return rxConsumer;
     }
 }

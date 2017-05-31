@@ -7,8 +7,7 @@
 
 package com.salesforce.rxgrpc;
 
-import io.grpc.ManagedChannel;
-import io.grpc.Server;
+import io.grpc.*;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 import io.reactivex.BackpressureStrategy;
@@ -70,8 +69,11 @@ public class EndToEndTest {
             }
         };
 
-        server = InProcessServerBuilder.forName("e2e").addService(svc).build().start();
-        channel = InProcessChannelBuilder.forName("e2e").usePlaintext(true).build();
+//        server = InProcessServerBuilder.forName("e2e").addService(svc).build().start();
+//        channel = InProcessChannelBuilder.forName("e2e").usePlaintext(true).build();
+
+        server = ServerBuilder.forPort(0).addService(svc).build().start();
+        channel = ManagedChannelBuilder.forAddress("localhost", server.getPort()).usePlaintext(true).build();
     }
 
     @AfterClass

@@ -10,6 +10,13 @@ package com.salesforce.rxgrpc.stub;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.reactivex.Flowable;
 
+/**
+ * RxProducerConsumerStreamObserver configures client-side manual flow control for when the client is both producing
+ * and consuming streams of messages.
+ *
+ * @param <TRequest>
+ * @param <TResponse>
+ */
 public class RxProducerConsumerStreamObserver<TRequest, TResponse> extends RxConsumerStreamObserver<TRequest, TResponse> {
     private Flowable<TRequest> rxProducer;
 

@@ -7,85 +7,85 @@
 
 package com.salesforce.grpc.contrib.interceptor;
 
-import com.salesforce.jprotoc.GreeterGrpc;
-import com.salesforce.jprotoc.HelloRequest;
-import com.salesforce.jprotoc.HelloResponse;
-import io.grpc.ClientInterceptors;
-import io.grpc.Context;
-import io.grpc.Deadline;
-import io.grpc.stub.StreamObserver;
-import org.junit.Rule;
-import io.grpc.testing.GrpcServerRule;
+import io.grpc.*;
 import org.junit.Test;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("ALL")
 public class DefaultDeadlineInterceptorTest {
-    @Rule
-    public final GrpcServerRule grpcServerRule = new GrpcServerRule().directExecutor();
-
     @Test
     public void interceptorShouldAddDeadlineWhenAbsent() {
-        TestGreeterService svc = new TestGreeterService();
-        grpcServerRule.getServiceRegistry().addService(svc);
+        AtomicBoolean called = new AtomicBoolean(false);
 
-        GreeterGrpc.GreeterBlockingStub stub = GreeterGrpc.newBlockingStub(
-                ClientInterceptors.intercept(grpcServerRule.getChannel(),
-                        new DefaultDeadlineInterceptor(1, TimeUnit.SECONDS)));
+        DefaultDeadlineInterceptor interceptor = new DefaultDeadlineInterceptor(1, TimeUnit.HOURS);
 
-        stub.sayHello(HelloRequest.getDefaultInstance());
+        interceptor.interceptCall(null, CallOptions.DEFAULT, new Channel() {
+            @Override
+            public <RequestT, ResponseT> ClientCall<RequestT, ResponseT> newCall(MethodDescriptor<RequestT, ResponseT> methodDescriptor, CallOptions callOptions) {
+                called.set(true);
+                assertThat(callOptions.getDeadline().timeRemaining(TimeUnit.MINUTES)).isEqualTo(59);
+                return null;
+            }
 
-        assertThat(svc.foundDeadline).isNotNull();
-        assertThat(svc.foundDeadline.timeRemaining(TimeUnit.MILLISECONDS)).isGreaterThan(0);
-        assertThat(svc.foundDeadline.timeRemaining(TimeUnit.MILLISECONDS)).isLessThan(1000);
+            @Override
+            public String authority() {
+                return null;
+            }
+        });
+
+        assertThat(called.get()).isTrue();
     }
 
     @Test
     public void interceptorShouldNotModifyExplicitDeadline() {
-        TestGreeterService svc = new TestGreeterService();
-        grpcServerRule.getServiceRegistry().addService(svc);
+        AtomicBoolean called = new AtomicBoolean(false);
 
-        GreeterGrpc.GreeterBlockingStub stub = GreeterGrpc.newBlockingStub(
-                ClientInterceptors.intercept(grpcServerRule.getChannel(),
-                        new DefaultDeadlineInterceptor(1, TimeUnit.SECONDS)));
+        DefaultDeadlineInterceptor interceptor = new DefaultDeadlineInterceptor(1, TimeUnit.HOURS);
 
-        stub.withDeadlineAfter(10, TimeUnit.SECONDS)
-                .sayHello(HelloRequest.getDefaultInstance());
+        interceptor.interceptCall(null, CallOptions.DEFAULT.withDeadlineAfter(10, TimeUnit.HOURS), new Channel() {
+            @Override
+            public <RequestT, ResponseT> ClientCall<RequestT, ResponseT> newCall(MethodDescriptor<RequestT, ResponseT> methodDescriptor, CallOptions callOptions) {
+                called.set(true);
+                assertThat(callOptions.getDeadline().timeRemaining(TimeUnit.HOURS)).isEqualTo(9);
+                return null;
+            }
 
-        assertThat(svc.foundDeadline).isNotNull();
-        assertThat(svc.foundDeadline.timeRemaining(TimeUnit.MILLISECONDS)).isGreaterThan(9000);
+            @Override
+            public String authority() {
+                return null;
+            }
+        });
+
+        assertThat(called.get()).isTrue();
     }
 
     @Test
     public void interceptorShouldNotModifyContextDeadline() throws Exception {
-        TestGreeterService svc = new TestGreeterService();
-        grpcServerRule.getServiceRegistry().addService(svc);
+        AtomicBoolean called = new AtomicBoolean(false);
 
-        Context.current()
-                .withDeadlineAfter(10, TimeUnit.SECONDS, Executors.newSingleThreadScheduledExecutor())
-                .run(() -> {
-                    GreeterGrpc.GreeterBlockingStub stub = GreeterGrpc.newBlockingStub(
-                            ClientInterceptors.intercept(grpcServerRule.getChannel(),
-                                    new DefaultDeadlineInterceptor(1, TimeUnit.SECONDS)));
-                    stub.sayHello(HelloRequest.getDefaultInstance());
-                });
+        DefaultDeadlineInterceptor interceptor = new DefaultDeadlineInterceptor(1, TimeUnit.HOURS);
 
-        assertThat(svc.foundDeadline).isNotNull();
-        assertThat(svc.foundDeadline.timeRemaining(TimeUnit.MILLISECONDS)).isGreaterThan(9000);
-    }
+        Context.current().withDeadlineAfter(10, TimeUnit.HOURS, Executors.newSingleThreadScheduledExecutor()).run(() -> {
+            interceptor.interceptCall(null, CallOptions.DEFAULT, new Channel() {
+                @Override
+                public <RequestT, ResponseT> ClientCall<RequestT, ResponseT> newCall(MethodDescriptor<RequestT, ResponseT> methodDescriptor, CallOptions callOptions) {
+                    called.set(true);
+                    assertThat(callOptions.getDeadline()).isNull();
+                    return null;
+                }
 
-    private static class TestGreeterService extends GreeterGrpc.GreeterImplBase {
-        private Deadline foundDeadline;
+                @Override
+                public String authority() {
+                    return null;
+                }
+            });
+        });
 
-        @Override
-        public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
-            foundDeadline = Context.current().getDeadline();
-            responseObserver.onNext(HelloResponse.getDefaultInstance());
-            responseObserver.onCompleted();
-        }
+        assertThat(called.get()).isTrue();
     }
 }

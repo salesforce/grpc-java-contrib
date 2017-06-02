@@ -63,7 +63,7 @@ public final class {{className}} {
         }
 
         @Override
-        public void {{methodName}}(HelloRequest request, StreamObserver<{{outputType}}> responseObserver) {
+        public void {{methodName}}({{inputType}} request, StreamObserver<{{outputType}}> responseObserver) {
             oneToOne(request, responseObserver, this::{{methodName}});
         }
         {{/oneToOne}}
@@ -73,7 +73,7 @@ public final class {{className}} {
         }
 
         @Override
-        public void {{methodName}}(HelloRequest request, StreamObserver<{{outputType}}> responseObserver) {
+        public void {{methodName}}({{inputType}} request, StreamObserver<{{outputType}}> responseObserver) {
             oneToMany(request, responseObserver, this::{{methodName}});
         }
         {{/oneToMany}}

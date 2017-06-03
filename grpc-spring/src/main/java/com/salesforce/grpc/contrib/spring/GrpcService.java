@@ -17,7 +17,8 @@ import java.lang.annotation.Target;
 
 /**
  * {@code GrpcService} is an annotation that is used to mark a gRPC service implementation for automatic inclusion in
- * your server.
+ * your server. This annotation is only available for applications that use a Spring ApplicationContext. Consider the
+ * SimpleGrpcServerFactory if your application is not Spring enabled.
  */
 @Service
 @Documented

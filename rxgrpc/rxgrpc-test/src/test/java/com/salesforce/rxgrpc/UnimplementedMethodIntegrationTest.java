@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class UnimplementedMethodTest {
+public class UnimplementedMethodIntegrationTest {
     private static Server server;
     private static ManagedChannel channel;
 

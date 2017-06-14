@@ -74,7 +74,7 @@ public final class ServerCalls {
 
         try {
             Single<TResponse> rxResponse = delegate.apply(
-                    Flowable.unsafeCreate(streamObserverPublisher).observeOn(Schedulers.single()));
+                    Flowable.unsafeCreate(streamObserverPublisher).observeOn(Schedulers.computation()));
             rxResponse.subscribe(
                 value -> {
                     responseObserver.onNext(value);
@@ -104,7 +104,7 @@ public final class ServerCalls {
 
         try {
             Flowable<TResponse> rxResponse = delegate.apply(
-                    Flowable.unsafeCreate(streamObserverPublisher).observeOn(Schedulers.single()));
+                    Flowable.unsafeCreate(streamObserverPublisher).observeOn(Schedulers.computation()));
             rxResponse.subscribe(new RxFlowableBackpressureOnReadyHandler<>(
                     (CallStreamObserver<TResponse>) responseObserver));
         } catch (Throwable throwable) {

@@ -11,9 +11,7 @@ import com.google.protobuf.Empty;
 import com.salesforce.servicelibs.NumberProto;
 import com.salesforce.servicelibs.RxNumbersGrpc;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
-import io.grpc.ServerBuilder;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 import io.reactivex.Flowable;
@@ -26,7 +24,8 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BackpressureTest {
+@SuppressWarnings("Duplicates")
+public class BackpressureIntegrationTest {
     private static Server server;
     private static ManagedChannel channel;
 
@@ -42,7 +41,7 @@ public class BackpressureTest {
                             try { Thread.sleep(50); } catch (InterruptedException e) {}
                         })
                         .last(-1)
-                        .map(BackpressureTest::protoNum);
+                        .map(BackpressureIntegrationTest::protoNum);
             }
 
             @Override
@@ -50,21 +49,26 @@ public class BackpressureTest {
                 return Flowable
                         .fromIterable(new Sequence(200))
                         .doOnNext(i -> System.out.println("   <-- " + i))
-                        .map(BackpressureTest::protoNum);
+                        .map(BackpressureIntegrationTest::protoNum);
             }
 
             @Override
             public Flowable<NumberProto.Number> twoWayPressure(Flowable<NumberProto.Number> request) {
-                request.subscribe(
-                        n -> System.out.println("   --> " + n),
+                request
+                    .map(proto -> proto.getNumber(0))
+                    .subscribe(
+                        n -> {
+                            System.out.println("   --> " + n);
+                            try { Thread.sleep(50); } catch (InterruptedException e) {}
+                        },
                         Throwable::printStackTrace,
                         () -> System.out.println("Server done.")
-                );
+                    );
 
                 return Flowable
                         .fromIterable(new Sequence(200))
-                        .doOnNext(i -> System.out.println("   <-- " + i))
-                        .map(BackpressureTest::protoNum);
+                        .doOnNext(i -> System.out.println("                  <-- " + i))
+                        .map(BackpressureIntegrationTest::protoNum);
             }
         };
 
@@ -79,7 +83,7 @@ public class BackpressureTest {
     }
 
     @Test
-    public void ClientToServerBackpressure() throws InterruptedException {
+    public void clientToServerBackpressure() throws InterruptedException {
         Object lock = new Object();
 
         RxNumbersGrpc.RxNumbersStub stub = RxNumbersGrpc.newRxStub(channel);
@@ -87,7 +91,7 @@ public class BackpressureTest {
         Flowable<NumberProto.Number> rxRequest = Flowable
                 .fromIterable(new Sequence(200))
                 .doOnNext(i -> System.out.println(i + " -->"))
-                .map(BackpressureTest::protoNum);
+                .map(BackpressureIntegrationTest::protoNum);
 
 
         Single<NumberProto.Number> rxResponse = stub.requestPressure(rxRequest);
@@ -101,6 +105,74 @@ public class BackpressureTest {
                 },
                 t -> {
                     t.printStackTrace();
+                    synchronized (lock) {
+                        lock.notify();
+                    }
+                });
+
+        synchronized (lock) {
+            lock.wait();
+        }
+    }
+
+    @Test
+    public void serverToClientBackpressure() throws InterruptedException {
+        Object lock = new Object();
+
+        RxNumbersGrpc.RxNumbersStub stub = RxNumbersGrpc.newRxStub(channel);
+
+        Single<Empty> rxRequest = Single.just(Empty.getDefaultInstance());
+
+        Flowable<NumberProto.Number> rxResponse = stub.responsePressure(rxRequest);
+        rxResponse.subscribe(
+                n -> {
+                    System.out.println(n.getNumber(0) + "  <--");
+                    try { Thread.sleep(50); } catch (InterruptedException e) {}
+                },
+                t -> {
+                    t.printStackTrace();
+                    synchronized (lock) {
+                        lock.notify();
+                    }
+                },
+                () -> {
+                    System.out.println("Client done.");
+                    synchronized (lock) {
+                        lock.notify();
+                    }
+                });
+
+        synchronized (lock) {
+            lock.wait();
+        }
+    }
+
+    @Test
+    public void bidiBackpressure() throws InterruptedException {
+        Object lock = new Object();
+
+        RxNumbersGrpc.RxNumbersStub stub = RxNumbersGrpc.newRxStub(channel);
+
+        Flowable<NumberProto.Number> rxRequest = Flowable
+                .fromIterable(new Sequence(180))
+                .doOnNext(i -> System.out.println(i + " -->"))
+                .map(BackpressureIntegrationTest::protoNum);
+
+        Flowable<NumberProto.Number> rxResponse = stub.twoWayPressure(rxRequest);
+
+        rxResponse.subscribe(
+                n -> {
+                    System.out.println("               " + n.getNumber(0) + "  <--");
+                    try { Thread.sleep(50); } catch (InterruptedException e) {}
+                },
+                t -> {
+                    t.printStackTrace();
+                    synchronized (lock) {
+                        lock.notify();
+                    }
+                },
+                () -> {
+                    System.out.println("Client done.");
                     synchronized (lock) {
                         lock.notify();
                     }

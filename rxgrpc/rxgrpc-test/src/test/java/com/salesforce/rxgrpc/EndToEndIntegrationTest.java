@@ -23,7 +23,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 @SuppressWarnings("Duplicates")
-public class EndToEndTest {
+public class EndToEndIntegrationTest {
     private static Server server;
     private static ManagedChannel channel;
 

@@ -29,7 +29,7 @@ public class RxConsumerStreamObserver<TRequest, TResponse> implements ClientResp
     @Override
     public void beforeStart(ClientCallStreamObserver<TRequest> requestStream) {
         publisher = new RxStreamObserverPublisher<>(requestStream);
-        rxConsumer = Flowable.unsafeCreate(publisher).observeOn(Schedulers.single());
+        rxConsumer = Flowable.unsafeCreate(publisher).observeOn(Schedulers.computation());
     }
 
     @Override

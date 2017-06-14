@@ -14,6 +14,8 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.inprocess.InProcessChannelBuilder;
+import io.grpc.inprocess.InProcessServerBuilder;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import org.junit.AfterClass;
@@ -37,7 +39,7 @@ public class BackpressureTest {
                         .map(proto -> proto.getNumber(0))
                         .doOnNext(i -> {
                             System.out.println("    --> " + i);
-                            try { Thread.sleep(150); } catch (InterruptedException e) {}
+                            try { Thread.sleep(50); } catch (InterruptedException e) {}
                         })
                         .last(-1)
                         .map(BackpressureTest::protoNum);
@@ -46,7 +48,7 @@ public class BackpressureTest {
             @Override
             public Flowable<NumberProto.Number> responsePressure(Single<Empty> request) {
                 return Flowable
-                        .fromIterable(new Sequence(500))
+                        .fromIterable(new Sequence(200))
                         .doOnNext(i -> System.out.println("   <-- " + i))
                         .map(BackpressureTest::protoNum);
             }
@@ -60,15 +62,14 @@ public class BackpressureTest {
                 );
 
                 return Flowable
-                        .fromIterable(new Sequence(500))
+                        .fromIterable(new Sequence(200))
                         .doOnNext(i -> System.out.println("   <-- " + i))
                         .map(BackpressureTest::protoNum);
             }
         };
 
-        server = ServerBuilder.forPort(0).addService(svc).build().start();
-        channel = ManagedChannelBuilder.forAddress("localhost", server.getPort()).usePlaintext(true).build();
-
+        server = InProcessServerBuilder.forName("e2e").addService(svc).build().start();
+        channel = InProcessChannelBuilder.forName("e2e").usePlaintext(true).build();
     }
 
     @AfterClass
@@ -84,9 +85,10 @@ public class BackpressureTest {
         RxNumbersGrpc.RxNumbersStub stub = RxNumbersGrpc.newRxStub(channel);
 
         Flowable<NumberProto.Number> rxRequest = Flowable
-                .fromIterable(new Sequence(500))
+                .fromIterable(new Sequence(200))
                 .doOnNext(i -> System.out.println(i + " -->"))
                 .map(BackpressureTest::protoNum);
+
 
         Single<NumberProto.Number> rxResponse = stub.requestPressure(rxRequest);
 

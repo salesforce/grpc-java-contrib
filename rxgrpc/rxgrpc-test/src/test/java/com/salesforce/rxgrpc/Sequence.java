@@ -29,7 +29,7 @@ public class Sequence implements Iterable<Integer> {
             }
 
             public Integer next() {
-                try { Thread.sleep(50); } catch (InterruptedException e) {}
+                try { Thread.sleep(10); } catch (InterruptedException e) {}
                 return i++;
             }
         };

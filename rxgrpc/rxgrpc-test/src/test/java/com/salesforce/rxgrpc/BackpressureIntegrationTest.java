@@ -17,6 +17,7 @@ import io.grpc.inprocess.InProcessServerBuilder;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -24,10 +25,16 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.assertj.core.api.Assertions.*;
+
 @SuppressWarnings("Duplicates")
 public class BackpressureIntegrationTest {
     private static Server server;
     private static ManagedChannel channel;
+
+    private static final int madMultipleCutoff = 100;
+    private static BackpressureDetector serverRecBPDetector = new BackpressureDetector(madMultipleCutoff);
+    private static BackpressureDetector serverRespBPDetector = new BackpressureDetector(madMultipleCutoff);
 
     @BeforeClass
     public static void setupServer() throws Exception {
@@ -37,6 +44,7 @@ public class BackpressureIntegrationTest {
                 return request
                         .map(proto -> proto.getNumber(0))
                         .doOnNext(i -> {
+                            serverRecBPDetector.tick();
                             System.out.println("    --> " + i);
                             try { Thread.sleep(50); } catch (InterruptedException e) {}
                         })
@@ -47,7 +55,7 @@ public class BackpressureIntegrationTest {
             @Override
             public Flowable<NumberProto.Number> responsePressure(Single<Empty> request) {
                 return Flowable
-                        .fromIterable(new Sequence(200))
+                        .fromIterable(new Sequence(200, serverRespBPDetector))
                         .doOnNext(i -> System.out.println("   <-- " + i))
                         .map(BackpressureIntegrationTest::protoNum);
             }
@@ -58,6 +66,7 @@ public class BackpressureIntegrationTest {
                     .map(proto -> proto.getNumber(0))
                     .subscribe(
                         n -> {
+                            serverRecBPDetector.tick();
                             System.out.println("   --> " + n);
                             try { Thread.sleep(50); } catch (InterruptedException e) {}
                         },
@@ -66,7 +75,7 @@ public class BackpressureIntegrationTest {
                     );
 
                 return Flowable
-                        .fromIterable(new Sequence(200))
+                        .fromIterable(new Sequence(200, serverRespBPDetector))
                         .doOnNext(i -> System.out.println("                  <-- " + i))
                         .map(BackpressureIntegrationTest::protoNum);
             }
@@ -74,6 +83,12 @@ public class BackpressureIntegrationTest {
 
         server = InProcessServerBuilder.forName("e2e").addService(svc).build().start();
         channel = InProcessChannelBuilder.forName("e2e").usePlaintext(true).build();
+    }
+
+    @Before
+    public void resetServerStats() {
+        serverRecBPDetector.reset();
+        serverRespBPDetector.reset();
     }
 
     @AfterClass
@@ -87,9 +102,11 @@ public class BackpressureIntegrationTest {
         Object lock = new Object();
 
         RxNumbersGrpc.RxNumbersStub stub = RxNumbersGrpc.newRxStub(channel);
+        BackpressureDetector clientBackpressureDetector = new BackpressureDetector(madMultipleCutoff);
+        Sequence seq = new Sequence(200, clientBackpressureDetector);
 
         Flowable<NumberProto.Number> rxRequest = Flowable
-                .fromIterable(new Sequence(200))
+                .fromIterable(seq)
                 .doOnNext(i -> System.out.println(i + " -->"))
                 .map(BackpressureIntegrationTest::protoNum);
 
@@ -113,11 +130,15 @@ public class BackpressureIntegrationTest {
         synchronized (lock) {
             lock.wait();
         }
+
+        assertThat(clientBackpressureDetector.backpressureDelayOcurred()).isTrue();
+        assertThat(serverRecBPDetector.backpressureDelayOcurred()).isFalse();
     }
 
     @Test
     public void serverToClientBackpressure() throws InterruptedException {
         Object lock = new Object();
+        BackpressureDetector clientBackpressureDetector = new BackpressureDetector(madMultipleCutoff);
 
         RxNumbersGrpc.RxNumbersStub stub = RxNumbersGrpc.newRxStub(channel);
 
@@ -126,6 +147,7 @@ public class BackpressureIntegrationTest {
         Flowable<NumberProto.Number> rxResponse = stub.responsePressure(rxRequest);
         rxResponse.subscribe(
                 n -> {
+                    clientBackpressureDetector.tick();
                     System.out.println(n.getNumber(0) + "  <--");
                     try { Thread.sleep(50); } catch (InterruptedException e) {}
                 },
@@ -145,16 +167,21 @@ public class BackpressureIntegrationTest {
         synchronized (lock) {
             lock.wait();
         }
+
+        assertThat(clientBackpressureDetector.backpressureDelayOcurred()).isFalse();
+        assertThat(serverRespBPDetector.backpressureDelayOcurred()).isTrue();
     }
 
     @Test
     public void bidiBackpressure() throws InterruptedException {
         Object lock = new Object();
+        BackpressureDetector clientReqBPDetector = new BackpressureDetector(madMultipleCutoff);
+        BackpressureDetector clientRespBPDetector = new BackpressureDetector(madMultipleCutoff);
 
         RxNumbersGrpc.RxNumbersStub stub = RxNumbersGrpc.newRxStub(channel);
 
         Flowable<NumberProto.Number> rxRequest = Flowable
-                .fromIterable(new Sequence(180))
+                .fromIterable(new Sequence(180, clientReqBPDetector))
                 .doOnNext(i -> System.out.println(i + " -->"))
                 .map(BackpressureIntegrationTest::protoNum);
 
@@ -162,6 +189,7 @@ public class BackpressureIntegrationTest {
 
         rxResponse.subscribe(
                 n -> {
+                    clientRespBPDetector.tick();
                     System.out.println("               " + n.getNumber(0) + "  <--");
                     try { Thread.sleep(50); } catch (InterruptedException e) {}
                 },
@@ -181,6 +209,11 @@ public class BackpressureIntegrationTest {
         synchronized (lock) {
             lock.wait();
         }
+
+        assertThat(clientReqBPDetector.backpressureDelayOcurred()).isTrue();
+        assertThat(clientRespBPDetector.backpressureDelayOcurred()).isFalse();
+        assertThat(serverRecBPDetector.backpressureDelayOcurred()).isFalse();
+        assertThat(serverRespBPDetector.backpressureDelayOcurred()).isTrue();
     }
 
     private static NumberProto.Number protoNum(int i) {

@@ -7,15 +7,20 @@
 
 package com.salesforce.rxgrpc;
 
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 public class Sequence implements Iterable<Integer> {
     private final int max;
+    private final BackpressureDetector backpressureDetector;
 
-    public Sequence(int max) {
+    public Sequence(int max, BackpressureDetector backpressureDetector) {
         this.max = max;
+        this.backpressureDetector = backpressureDetector;
     }
 
+    @Override
+    @Nonnull
     public Iterator<Integer> iterator() {
         return new Iterator<Integer>() {
             int i = 0;
@@ -29,6 +34,7 @@ public class Sequence implements Iterable<Integer> {
             }
 
             public Integer next() {
+                backpressureDetector.tick();
                 try { Thread.sleep(10); } catch (InterruptedException e) {}
                 return i++;
             }

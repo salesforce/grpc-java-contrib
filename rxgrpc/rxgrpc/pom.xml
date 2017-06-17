@@ -12,7 +12,7 @@
     <parent>
         <artifactId>grpc-contrib-parent</artifactId>
         <groupId>com.salesforce.servicelibs</groupId>
-        <version>0.5.2-SNAPSHOT</version>
+        <version>0.5.3-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.salesforce.servicelibs</groupId>
             <artifactId>jprotoc</artifactId>
-            <version>0.5.2-SNAPSHOT</version>
+            <version>0.5.3-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

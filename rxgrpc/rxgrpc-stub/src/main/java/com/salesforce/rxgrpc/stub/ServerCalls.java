@@ -7,6 +7,9 @@
 
 package com.salesforce.rxgrpc.stub;
 
+import io.grpc.Status;
+import io.grpc.StatusException;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.CallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import io.reactivex.Flowable;
@@ -36,11 +39,13 @@ public final class ServerCalls {
 
             Single<TResponse> rxResponse = delegate.apply(rxRequest);
             rxResponse.subscribe(
-                    responseObserver::onNext,
-                    responseObserver::onError);
-            responseObserver.onCompleted();
+                value -> {
+                    responseObserver.onNext(value);
+                    responseObserver.onCompleted();
+                },
+                throwable -> responseObserver.onError(prepareError(throwable)));
         } catch (Throwable throwable) {
-            responseObserver.onError(throwable);
+            responseObserver.onError(prepareError(throwable));
         }
     }
 
@@ -58,7 +63,7 @@ public final class ServerCalls {
             rxResponse.subscribe(new RxFlowableBackpressureOnReadyHandler<>(
                     (CallStreamObserver<TResponse>) responseObserver));
         } catch (Throwable throwable) {
-            responseObserver.onError(throwable);
+            responseObserver.onError(prepareError(throwable));
         }
     }
 
@@ -80,10 +85,10 @@ public final class ServerCalls {
                     responseObserver.onNext(value);
                     responseObserver.onCompleted();
                 },
-                responseObserver::onError
+                throwable -> responseObserver.onError(prepareError(throwable))
             );
         } catch (Throwable throwable) {
-            responseObserver.onError(throwable);
+            responseObserver.onError(prepareError(throwable));
         }
 
         return new RxStreamObserver<>(
@@ -108,12 +113,20 @@ public final class ServerCalls {
             rxResponse.subscribe(new RxFlowableBackpressureOnReadyHandler<>(
                     (CallStreamObserver<TResponse>) responseObserver));
         } catch (Throwable throwable) {
-            responseObserver.onError(throwable);
+            responseObserver.onError(prepareError(throwable));
         }
 
         return new RxStreamObserver<>(
                 streamObserverPublisher::onNext,
                 streamObserverPublisher::onError,
                 streamObserverPublisher::onCompleted);
+    }
+
+    private static Throwable prepareError(Throwable throwable) {
+        if (throwable instanceof StatusException || throwable instanceof StatusRuntimeException) {
+            return throwable;
+        } else {
+            return Status.fromThrowable(throwable).asException();
+        }
     }
 }

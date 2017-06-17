@@ -11,9 +11,9 @@ import com.google.protobuf.Empty;
 import com.salesforce.servicelibs.NumberProto;
 import com.salesforce.servicelibs.RxNumbersGrpc;
 import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
-import io.grpc.inprocess.InProcessChannelBuilder;
-import io.grpc.inprocess.InProcessServerBuilder;
+import io.grpc.ServerBuilder;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import org.junit.AfterClass;
@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("Duplicates")
 public class BackpressureIntegrationTest {
@@ -81,8 +81,10 @@ public class BackpressureIntegrationTest {
             }
         };
 
-        server = InProcessServerBuilder.forName("e2e").addService(svc).build().start();
-        channel = InProcessChannelBuilder.forName("e2e").usePlaintext(true).build();
+//        server = InProcessServerBuilder.forName("e2e").addService(svc).build().start();
+//        channel = InProcessChannelBuilder.forName("e2e").usePlaintext(true).build();
+        server = ServerBuilder.forPort(0).addService(svc).build().start();
+        channel = ManagedChannelBuilder.forAddress("localhost", server.getPort()).usePlaintext(true).build();
     }
 
     @Before

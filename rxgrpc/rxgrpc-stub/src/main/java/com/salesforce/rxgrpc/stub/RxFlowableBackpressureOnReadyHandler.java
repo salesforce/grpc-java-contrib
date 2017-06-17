@@ -7,6 +7,9 @@
 
 package com.salesforce.rxgrpc.stub;
 
+import io.grpc.Status;
+import io.grpc.StatusException;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.CallStreamObserver;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -64,11 +67,19 @@ public class RxFlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, R
 
     @Override
     public void onError(Throwable throwable) {
-        requestStream.onError(throwable);
+        requestStream.onError(prepareError(throwable));
     }
 
     @Override
     public void onComplete() {
         requestStream.onCompleted();
+    }
+
+    private static Throwable prepareError(Throwable throwable) {
+        if (throwable instanceof StatusException || throwable instanceof StatusRuntimeException) {
+            return throwable;
+        } else {
+            return Status.fromThrowable(throwable).asException();
+        }
     }
 }

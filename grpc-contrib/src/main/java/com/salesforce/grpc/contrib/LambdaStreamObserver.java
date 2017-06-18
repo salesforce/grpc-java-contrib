@@ -49,7 +49,7 @@ public class LambdaStreamObserver<T> implements StreamObserver<T> {
     /**
      * OnErrorNotImplementedException is used to signal that LambdaStreamObserver's onError handler was not implemented.
      */
-    public static class OnErrorNotImplementedException extends RuntimeException {
+    public static final class OnErrorNotImplementedException extends RuntimeException {
         private OnErrorNotImplementedException(Throwable cause) {
             super(cause.getMessage(), cause);
         }

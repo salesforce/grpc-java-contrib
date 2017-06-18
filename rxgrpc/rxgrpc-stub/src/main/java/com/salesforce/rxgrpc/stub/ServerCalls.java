@@ -7,6 +7,7 @@
 
 package com.salesforce.rxgrpc.stub;
 
+import com.salesforce.grpc.contrib.LambdaStreamObserver;
 import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.StatusRuntimeException;
@@ -91,7 +92,7 @@ public final class ServerCalls {
             responseObserver.onError(prepareError(throwable));
         }
 
-        return new RxStreamObserver<>(
+        return new LambdaStreamObserver<>(
                 streamObserverPublisher::onNext,
                 streamObserverPublisher::onError,
                 streamObserverPublisher::onCompleted);
@@ -116,7 +117,7 @@ public final class ServerCalls {
             responseObserver.onError(prepareError(throwable));
         }
 
-        return new RxStreamObserver<>(
+        return new LambdaStreamObserver<>(
                 streamObserverPublisher::onNext,
                 streamObserverPublisher::onError,
                 streamObserverPublisher::onCompleted);

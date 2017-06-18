@@ -8,6 +8,7 @@
 package com.salesforce.rxgrpc.stub;
 
 import com.google.common.util.concurrent.Runnables;
+import com.salesforce.grpc.contrib.LambdaStreamObserver;
 import io.grpc.stub.StreamObserver;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
@@ -33,7 +34,7 @@ public final class ClientCalls {
             BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
         try {
             return Single.create(emitter -> rxRequest.subscribe(
-                request -> delegate.accept(request, new RxStreamObserver<TResponse>(
+                request -> delegate.accept(request, new LambdaStreamObserver<TResponse>(
                     emitter::onSuccess,
                     emitter::onError,
                     Runnables.doNothing()

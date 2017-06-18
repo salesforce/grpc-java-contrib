@@ -7,6 +7,7 @@
 
 package com.salesforce.rxgrpc.stub;
 
+import com.salesforce.grpc.contrib.LambdaStreamObserver;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientResponseObserver;
 import io.reactivex.Flowable;
@@ -14,12 +15,12 @@ import io.reactivex.Flowable;
 import java.util.function.Consumer;
 
 /**
- * RxStreamObserver configures client-side manual flow control for the producing end of a message stream.
+ * LambdaStreamObserver configures client-side manual flow control for the producing end of a message stream.
  *
  * @param <TRequest>
  * @param <TResponse>
  */
-public class RxProducerStreamObserver<TRequest, TResponse> extends RxStreamObserver<TResponse>  implements ClientResponseObserver<TRequest, TResponse> {
+public class RxProducerStreamObserver<TRequest, TResponse> extends LambdaStreamObserver<TResponse> implements ClientResponseObserver<TRequest, TResponse> {
     private Flowable<TRequest> rxProducer;
 
     public RxProducerStreamObserver(Flowable<TRequest> rxProducer, Consumer<TResponse> onNext, Consumer<Throwable> onError, Runnable onCompleted) {

@@ -7,6 +7,8 @@
 
 package com.salesforce.rxgrpc.stub;
 
+import io.grpc.Status;
+import io.grpc.StatusException;
 import io.grpc.stub.CallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import org.reactivestreams.Publisher;
@@ -50,7 +52,7 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
 
             @Override
             public void cancel() {
-
+                callStreamObserver.onError(new StatusException(Status.CANCELLED));
             }
         });
     }

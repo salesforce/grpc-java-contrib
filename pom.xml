@@ -50,7 +50,7 @@
         <module>jprotoc</module>
         <module>grpc-spring</module>
         <module>jprotoc-test</module>
-        <module>grpc-java-contrib-demo</module>
+        <module>demos/grpc-java-contrib-demo</module>
         <module>rxgrpc/rxgrpc</module>
         <module>rxgrpc/rxgrpc-test</module>
         <module>rxgrpc/rxgrpc-stub</module>

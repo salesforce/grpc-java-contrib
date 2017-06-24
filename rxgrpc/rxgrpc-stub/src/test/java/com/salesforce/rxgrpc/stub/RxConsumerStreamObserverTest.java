@@ -14,6 +14,8 @@ import org.junit.Test;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -44,7 +46,7 @@ public class RxConsumerStreamObserverTest {
         rxObs.onNext(obj);
         rxObs.onCompleted();
 
-        testSubscriber.awaitTerminalEvent();
+        testSubscriber.awaitTerminalEvent(1, TimeUnit.SECONDS);
         testSubscriber.assertValues(obj);
     }
 
@@ -62,7 +64,7 @@ public class RxConsumerStreamObserverTest {
         Throwable obj = new Exception();
         rxObs.onError(obj);
 
-        testSubscriber.awaitTerminalEvent();
+        testSubscriber.awaitTerminalEvent(1, TimeUnit.SECONDS);
         testSubscriber.assertError(obj);
     }
 }

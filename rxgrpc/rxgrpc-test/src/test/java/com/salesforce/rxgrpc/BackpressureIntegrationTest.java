@@ -24,6 +24,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -130,7 +131,7 @@ public class BackpressureIntegrationTest {
                 });
 
         synchronized (lock) {
-            lock.wait();
+            lock.wait(TimeUnit.SECONDS.toMillis(20));
         }
 
         assertThat(clientBackpressureDetector.backpressureDelayOcurred()).isTrue();
@@ -167,7 +168,7 @@ public class BackpressureIntegrationTest {
                 });
 
         synchronized (lock) {
-            lock.wait();
+            lock.wait(TimeUnit.SECONDS.toMillis(20));
         }
 
         assertThat(clientBackpressureDetector.backpressureDelayOcurred()).isFalse();
@@ -209,7 +210,7 @@ public class BackpressureIntegrationTest {
                 });
 
         synchronized (lock) {
-            lock.wait();
+            lock.wait(TimeUnit.SECONDS.toMillis(20));
         }
 
         assertThat(clientReqBPDetector.backpressureDelayOcurred()).isTrue();

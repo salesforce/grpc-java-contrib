@@ -21,6 +21,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("Duplicates")
 public class EndToEndIntegrationTest {
@@ -86,7 +87,7 @@ public class EndToEndIntegrationTest {
         Single<HelloResponse> resp = stub.sayHello(req);
 
         TestObserver<String> testObserver = resp.map(HelloResponse::getMessage).test();
-        testObserver.awaitTerminalEvent();
+        testObserver.awaitTerminalEvent(1, TimeUnit.SECONDS);
         testObserver.assertValue("Hello rxjava");
     }
 
@@ -97,7 +98,7 @@ public class EndToEndIntegrationTest {
         Flowable<HelloResponse> resp = stub.sayHelloRespStream(req);
 
         TestSubscriber<String> testSubscriber = resp.map(HelloResponse::getMessage).test();
-        testSubscriber.awaitTerminalEvent();
+        testSubscriber.awaitTerminalEvent(1, TimeUnit.SECONDS);
         testSubscriber.assertValues("Hello rxjava", "Hi rxjava", "Greetings rxjava");
     }
 
@@ -112,7 +113,7 @@ public class EndToEndIntegrationTest {
         Single<HelloResponse> resp = stub.sayHelloReqStream(req);
 
         TestObserver<String> testObserver = resp.map(HelloResponse::getMessage).test();
-        testObserver.awaitTerminalEvent();
+        testObserver.awaitTerminalEvent(1, TimeUnit.SECONDS);
         testObserver.assertValue("Hello a and b and c");
     }
 
@@ -129,7 +130,7 @@ public class EndToEndIntegrationTest {
         Flowable<HelloResponse> resp = stub.sayHelloBothStream(req);
 
         TestSubscriber<String> testSubscriber = resp.map(HelloResponse::getMessage).test();
-        testSubscriber.awaitTerminalEvent();
+        testSubscriber.awaitTerminalEvent(1, TimeUnit.SECONDS);
         testSubscriber.assertValues("Hello a and b", "Hello c and d", "Hello e");
         testSubscriber.assertComplete();
     }

@@ -221,7 +221,7 @@ public class BackpressureIntegrationTest {
 
     private static NumberProto.Number protoNum(int i) {
         Random r = ThreadLocalRandom.current();
-        Integer[] ints = new Integer[r.nextInt(64) * 1024 + 1];
+        Integer[] ints = new Integer[r.nextInt(64) * 1024 + 1024 * 8];
         Arrays.setAll(ints, operand -> i);
 
         return NumberProto.Number.newBuilder().addAllNumber(Arrays.asList(ints)).build();

@@ -7,6 +7,7 @@
 
 package com.salesforce.rxgrpc.stub;
 
+import com.google.common.base.Preconditions;
 import com.salesforce.grpc.contrib.LambdaStreamObserver;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientResponseObserver;
@@ -24,12 +25,17 @@ public class RxProducerStreamObserver<TRequest, TResponse> extends LambdaStreamO
     private Flowable<TRequest> rxProducer;
 
     public RxProducerStreamObserver(Flowable<TRequest> rxProducer, Consumer<TResponse> onNext, Consumer<Throwable> onError, Runnable onCompleted) {
-        super(onNext, onError, onCompleted);
-        this.rxProducer = rxProducer;
+        super(
+            Preconditions.checkNotNull(onNext),
+            Preconditions.checkNotNull(onError),
+            Preconditions.checkNotNull(onCompleted)
+        );
+        this.rxProducer = Preconditions.checkNotNull(rxProducer);
     }
 
     @Override
     public void beforeStart(ClientCallStreamObserver<TRequest> producerStream) {
+        Preconditions.checkNotNull(producerStream);
         // Subscribe to the rxProducer with an adapter to a gRPC StreamObserver that respects backpressure
         // signals from the underlying gRPC client transport.
         rxProducer.subscribe(new RxFlowableBackpressureOnReadyHandler<>(producerStream));

@@ -7,6 +7,7 @@
 
 package com.salesforce.rxgrpc.stub;
 
+import com.google.common.base.Preconditions;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientResponseObserver;
 import io.reactivex.Flowable;
@@ -28,23 +29,26 @@ public class RxConsumerStreamObserver<TRequest, TResponse> implements ClientResp
 
     @Override
     public void beforeStart(ClientCallStreamObserver<TRequest> requestStream) {
-        publisher = new RxStreamObserverPublisher<>(requestStream);
+        publisher = new RxStreamObserverPublisher<>(Preconditions.checkNotNull(requestStream));
         rxConsumer = Flowable.unsafeCreate(publisher)
                 .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()));
     }
 
     @Override
     public void onNext(TResponse value) {
-        publisher.onNext(value);
+        Preconditions.checkState(publisher != null, "beforeStart() not yet called");
+        publisher.onNext(Preconditions.checkNotNull(value));
     }
 
     @Override
     public void onError(Throwable throwable) {
-        publisher.onError(throwable);
+        Preconditions.checkState(publisher != null, "beforeStart() not yet called");
+        publisher.onError(Preconditions.checkNotNull(throwable));
     }
 
     @Override
     public void onCompleted() {
+        Preconditions.checkState(publisher != null, "beforeStart() not yet called");
         publisher.onCompleted();
     }
 }

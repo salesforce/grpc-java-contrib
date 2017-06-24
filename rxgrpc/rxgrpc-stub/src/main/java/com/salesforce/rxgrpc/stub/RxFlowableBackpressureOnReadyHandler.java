@@ -7,6 +7,7 @@
 
 package com.salesforce.rxgrpc.stub;
 
+import com.google.common.base.Preconditions;
 import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.StatusRuntimeException;
@@ -42,7 +43,7 @@ public class RxFlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, R
     private Subscription subscription;
 
     public RxFlowableBackpressureOnReadyHandler(CallStreamObserver<T> requestStream) {
-        this.requestStream = requestStream;
+        this.requestStream = Preconditions.checkNotNull(requestStream);
         requestStream.setOnReadyHandler(this);
     }
 
@@ -53,18 +54,19 @@ public class RxFlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, R
 
     @Override
     public void run() {
+        Preconditions.checkState(subscription != null, "onSubscribe() not yet called");
         // restart the pump
         subscription.request(1);
     }
 
     @Override
     public void onSubscribe(Subscription subscription) {
-        this.subscription = subscription;
+        this.subscription = Preconditions.checkNotNull(subscription);
     }
 
     @Override
     public void onNext(T t) {
-        requestStream.onNext(t);
+        requestStream.onNext(Preconditions.checkNotNull(t));
         if (requestStream.isReady()) {
             // keep the pump going
             subscription.request(1);
@@ -73,7 +75,7 @@ public class RxFlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, R
 
     @Override
     public void onError(Throwable throwable) {
-        requestStream.onError(prepareError(throwable));
+        requestStream.onError(prepareError(Preconditions.checkNotNull(throwable)));
     }
 
     @Override

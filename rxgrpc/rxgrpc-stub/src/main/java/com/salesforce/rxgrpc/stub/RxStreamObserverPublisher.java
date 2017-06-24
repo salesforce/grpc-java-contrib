@@ -7,6 +7,7 @@
 
 package com.salesforce.rxgrpc.stub;
 
+import com.google.common.base.Preconditions;
 import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.stub.CallStreamObserver;
@@ -37,13 +38,14 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
     private Subscriber<? super T> subscriber;
 
     public RxStreamObserverPublisher(CallStreamObserver callStreamObserver) {
+        Preconditions.checkNotNull(callStreamObserver);
         this.callStreamObserver = callStreamObserver;
         callStreamObserver.disableAutoInboundFlowControl();
     }
 
     @Override
     public void subscribe(Subscriber<? super T> subscriber) {
-        this.subscriber = subscriber;
+        Preconditions.checkNotNull(subscriber);
         subscriber.onSubscribe(new Subscription() {
             @Override
             public void request(long l) {
@@ -55,20 +57,24 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
                 callStreamObserver.onError(new StatusException(Status.CANCELLED));
             }
         });
+        this.subscriber = subscriber;
     }
 
     @Override
     public void onNext(T value) {
-        subscriber.onNext(value);
+        Preconditions.checkState(subscriber != null, "subscribe() has not been called yet");
+        subscriber.onNext(Preconditions.checkNotNull(value));
     }
 
     @Override
     public void onError(Throwable t) {
-        subscriber.onError(t);
+        Preconditions.checkState(subscriber != null, "subscribe() has not been called yet");
+        subscriber.onError(Preconditions.checkNotNull(t));
     }
 
     @Override
     public void onCompleted() {
+        Preconditions.checkState(subscriber != null, "subscribe() has not been called yet");
         subscriber.onComplete();
     }
 }

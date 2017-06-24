@@ -7,6 +7,7 @@
 
 package com.salesforce.rxgrpc.stub;
 
+import com.google.common.base.Preconditions;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.reactivex.Flowable;
 
@@ -26,7 +27,7 @@ public class RxProducerConsumerStreamObserver<TRequest, TResponse> extends RxCon
 
     @Override
     public void beforeStart(ClientCallStreamObserver<TRequest> requestStream) {
-        super.beforeStart(requestStream);
+        super.beforeStart(Preconditions.checkNotNull(requestStream));
         rxProducer.subscribe(new RxFlowableBackpressureOnReadyHandler<>(requestStream));
     }
 }

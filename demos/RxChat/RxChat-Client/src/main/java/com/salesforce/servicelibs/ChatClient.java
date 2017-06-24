@@ -32,13 +32,13 @@ public final class ChatClient {
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", PORT).usePlaintext(true).build();
         RxChatGrpc.RxChatStub stub = RxChatGrpc.newRxStub(channel);
 
-        String author = System.console().readLine("Who are you? > ");
+        ConsoleReader console = new ConsoleReader();
+
+        console.println("Press ctrl+D to quit");
+        String author = console.readLine("Who are you? > ");
         stub.postMessage(Single.just(ChatProto.ChatMessage.newBuilder().setAuthor(author).setMessage(author + " joined.").build())).subscribe();
 
-        ConsoleReader console = new ConsoleReader();
-        console.setPrompt("chat> ");
-        console.println("Press ctrl+D to quit");
-
+        // Subscribe to incoming messages
         Disposable chatSubscription = stub.getMessages(Single.just(Empty.getDefaultInstance())).subscribe(
             message -> {
                 CursorBuffer stashed = stashLine(console);
@@ -49,8 +49,8 @@ public final class ChatClient {
             }
         );
 
-        String line = null;
-        while ((line = console.readLine()) != null) {
+        String line;
+        while ((line = console.readLine("chat> ")) != null) {
             stub.postMessage(Single.just(ChatProto.ChatMessage.newBuilder().setAuthor(author).setMessage(line).build())).subscribe(
                 empty -> { },
                 throwable -> {

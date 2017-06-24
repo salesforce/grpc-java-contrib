@@ -12,6 +12,7 @@ import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.CallStreamObserver;
+import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
@@ -62,7 +63,7 @@ public final class ServerCalls {
 
             Flowable<TResponse> rxResponse = delegate.apply(rxRequest);
             rxResponse.subscribe(new RxFlowableBackpressureOnReadyHandler<>(
-                    (CallStreamObserver<TResponse>) responseObserver));
+                    (ServerCallStreamObserver<TResponse>) responseObserver));
         } catch (Throwable throwable) {
             responseObserver.onError(prepareError(throwable));
         }
@@ -76,7 +77,7 @@ public final class ServerCalls {
             StreamObserver<TResponse> responseObserver,
             Function<Flowable<TRequest>, Single<TResponse>> delegate) {
         RxStreamObserverPublisher<TRequest> streamObserverPublisher =
-                new RxStreamObserverPublisher<>((CallStreamObserver) responseObserver);
+                new RxStreamObserverPublisher<>((CallStreamObserver<TResponse>) responseObserver);
 
         try {
             Single<TResponse> rxResponse = delegate.apply(
@@ -107,13 +108,13 @@ public final class ServerCalls {
             StreamObserver<TResponse> responseObserver,
             Function<Flowable<TRequest>, Flowable<TResponse>> delegate) {
         RxStreamObserverPublisher<TRequest> streamObserverPublisher =
-                new RxStreamObserverPublisher<>((CallStreamObserver) responseObserver);
+                new RxStreamObserverPublisher<>((CallStreamObserver<TResponse>) responseObserver);
 
         try {
             Flowable<TResponse> rxResponse = delegate.apply(
                     Flowable.unsafeCreate(streamObserverPublisher).observeOn(Schedulers.from(RxExecutor.getSerializingExecutor())));
             rxResponse.subscribe(new RxFlowableBackpressureOnReadyHandler<>(
-                    (CallStreamObserver<TResponse>) responseObserver));
+                    (ServerCallStreamObserver<TResponse>) responseObserver));
         } catch (Throwable throwable) {
             responseObserver.onError(prepareError(throwable));
         }

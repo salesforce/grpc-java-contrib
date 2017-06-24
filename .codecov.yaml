@@ -5,6 +5,6 @@
 #  - "[a-z]+/test_.*"  # regexp accepted
 
 ignore:
-  - "grpc-java-contrib-demo"
+  - "demos"
   - "jprotoc/src/main/java/com/salesforce/jprotoc/jdk8/Jdk8Generator.java"
-  - "rxgrpc/src/main/java/com/salesforce/rxgrpc/RxGrpcGenerator.java"
+  - "rxgrpc/rxgrpc/src/main/java/com/salesforce/rxgrpc/RxGrpcGenerator.java"

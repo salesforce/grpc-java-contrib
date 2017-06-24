@@ -63,7 +63,7 @@ public class ServerErrorIntegrationTest {
         Single<HelloResponse> resp = stub.sayHello(Single.just(HelloRequest.getDefaultInstance()));
         TestObserver<HelloResponse> test = resp.test();
 
-        test.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        test.awaitTerminalEvent(3, TimeUnit.SECONDS);
         test.assertError(t -> t instanceof StatusRuntimeException);
         test.assertError(t -> ((StatusRuntimeException)t).getStatus() == Status.INTERNAL);
     }
@@ -74,7 +74,7 @@ public class ServerErrorIntegrationTest {
         Flowable<HelloResponse> resp = stub.sayHelloRespStream(Single.just(HelloRequest.getDefaultInstance()));
         TestSubscriber<HelloResponse> test = resp.test();
 
-        test.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        test.awaitTerminalEvent(3, TimeUnit.SECONDS);
         test.assertError(t -> t instanceof StatusRuntimeException);
         test.assertError(t -> ((StatusRuntimeException)t).getStatus() == Status.INTERNAL);
     }
@@ -85,7 +85,7 @@ public class ServerErrorIntegrationTest {
         Single<HelloResponse> resp = stub.sayHelloReqStream(Flowable.just(HelloRequest.getDefaultInstance()));
         TestObserver<HelloResponse> test = resp.test();
 
-        test.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        test.awaitTerminalEvent(3, TimeUnit.SECONDS);
         test.assertError(t -> t instanceof StatusRuntimeException);
         test.assertError(t -> ((StatusRuntimeException)t).getStatus() == Status.INTERNAL);
     }
@@ -96,7 +96,7 @@ public class ServerErrorIntegrationTest {
         Flowable<HelloResponse> resp = stub.sayHelloBothStream(Flowable.just(HelloRequest.getDefaultInstance()));
         TestSubscriber<HelloResponse> test = resp.test();
 
-        test.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        test.awaitTerminalEvent(3, TimeUnit.SECONDS);
         test.assertError(t -> t instanceof StatusRuntimeException);
         test.assertError(t -> ((StatusRuntimeException)t).getStatus() == Status.INTERNAL);
     }

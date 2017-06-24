@@ -137,7 +137,7 @@ public class ClientErrorIntegrationTest {
 //                t -> System.out.println("Client " + t)
 //        );
 //
-//        test.awaitTerminalEvent(1, TimeUnit.SECONDS);
+//        test.awaitTerminalEvent(3, TimeUnit.SECONDS);
 //        assertThat(svc.getThrowable()).isNotNull();
 //    }
 //
@@ -163,7 +163,7 @@ public class ClientErrorIntegrationTest {
 ////                t -> System.out.println("Client " + t)
 ////        );
 //
-//        test.awaitTerminalEvent(1, TimeUnit.SECONDS);
+//        test.awaitTerminalEvent(3, TimeUnit.SECONDS);
 //        assertThat(svc.getThrowable()).isNotNull();
 //    }
 

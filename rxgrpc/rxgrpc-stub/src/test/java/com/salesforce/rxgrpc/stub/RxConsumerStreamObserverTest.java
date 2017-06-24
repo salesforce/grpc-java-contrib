@@ -46,7 +46,7 @@ public class RxConsumerStreamObserverTest {
         rxObs.onNext(obj);
         rxObs.onCompleted();
 
-        testSubscriber.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        testSubscriber.awaitTerminalEvent(3, TimeUnit.SECONDS);
         testSubscriber.assertValues(obj);
     }
 
@@ -64,7 +64,7 @@ public class RxConsumerStreamObserverTest {
         Throwable obj = new Exception();
         rxObs.onError(obj);
 
-        testSubscriber.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        testSubscriber.awaitTerminalEvent(3, TimeUnit.SECONDS);
         testSubscriber.assertError(obj);
     }
 }

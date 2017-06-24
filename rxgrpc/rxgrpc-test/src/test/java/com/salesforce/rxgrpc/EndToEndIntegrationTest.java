@@ -87,7 +87,7 @@ public class EndToEndIntegrationTest {
         Single<HelloResponse> resp = stub.sayHello(req);
 
         TestObserver<String> testObserver = resp.map(HelloResponse::getMessage).test();
-        testObserver.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        testObserver.awaitTerminalEvent(3, TimeUnit.SECONDS);
         testObserver.assertValue("Hello rxjava");
     }
 
@@ -98,7 +98,7 @@ public class EndToEndIntegrationTest {
         Flowable<HelloResponse> resp = stub.sayHelloRespStream(req);
 
         TestSubscriber<String> testSubscriber = resp.map(HelloResponse::getMessage).test();
-        testSubscriber.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        testSubscriber.awaitTerminalEvent(3, TimeUnit.SECONDS);
         testSubscriber.assertValues("Hello rxjava", "Hi rxjava", "Greetings rxjava");
     }
 
@@ -113,7 +113,7 @@ public class EndToEndIntegrationTest {
         Single<HelloResponse> resp = stub.sayHelloReqStream(req);
 
         TestObserver<String> testObserver = resp.map(HelloResponse::getMessage).test();
-        testObserver.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        testObserver.awaitTerminalEvent(3, TimeUnit.SECONDS);
         testObserver.assertValue("Hello a and b and c");
     }
 
@@ -130,7 +130,7 @@ public class EndToEndIntegrationTest {
         Flowable<HelloResponse> resp = stub.sayHelloBothStream(req);
 
         TestSubscriber<String> testSubscriber = resp.map(HelloResponse::getMessage).test();
-        testSubscriber.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        testSubscriber.awaitTerminalEvent(3, TimeUnit.SECONDS);
         testSubscriber.assertValues("Hello a and b", "Hello c and d", "Hello e");
         testSubscriber.assertComplete();
     }

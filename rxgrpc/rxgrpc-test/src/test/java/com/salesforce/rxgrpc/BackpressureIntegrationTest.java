@@ -33,7 +33,7 @@ public class BackpressureIntegrationTest {
     private static Server server;
     private static ManagedChannel channel;
 
-    private static final int madMultipleCutoff = 100;
+    private static final int madMultipleCutoff = 80;
     private static BackpressureDetector serverRecBPDetector = new BackpressureDetector(madMultipleCutoff);
     private static BackpressureDetector serverRespBPDetector = new BackpressureDetector(madMultipleCutoff);
 

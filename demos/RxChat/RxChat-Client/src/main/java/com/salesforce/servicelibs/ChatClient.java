@@ -12,12 +12,10 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
-import jline.TerminalFactory;
 import jline.console.ConsoleReader;
 import jline.console.CursorBuffer;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -41,23 +39,20 @@ public final class ChatClient {
         // Subscribe to incoming messages
         Disposable chatSubscription = stub.getMessages(Single.just(Empty.getDefaultInstance())).subscribe(
             message -> {
-                CursorBuffer stashed = stashLine(console);
-                console.println(">> " + message.getAuthor() + ": " + message.getMessage());
-                console.redrawLine();
-                unstashLine(console, stashed);
-                console.flush();
-            }
+                // Don't re-print our own messages
+                if (!message.getAuthor().equals(author)) {
+                    printLine(console, message.getAuthor(), message.getMessage());
+                }
+            },
+            throwable -> printLine(console, "ERROR", throwable.getMessage())
         );
 
         String line;
-        while ((line = console.readLine("chat> ")) != null) {
-            stub.postMessage(Single.just(ChatProto.ChatMessage.newBuilder().setAuthor(author).setMessage(line).build())).subscribe(
+        while ((line = console.readLine(author + " > ")) != null) {
+            ChatProto.ChatMessage message = ChatProto.ChatMessage.newBuilder().setAuthor(author).setMessage(line).build();
+            stub.postMessage(Single.just(message)).subscribe(
                 empty -> { },
-                throwable -> {
-                    console.println(":: FROM SERVER ::");
-                    throwable.printStackTrace(new PrintWriter(console.getOutput()));
-                    console.flush();
-                }
+                throwable -> printLine(console, "ERROR", throwable.getMessage())
             );
         }
 
@@ -65,8 +60,15 @@ public final class ChatClient {
         chatSubscription.dispose();
         channel.shutdown();
         channel.awaitTermination(1, TimeUnit.SECONDS);
-        TerminalFactory.get().restore();
+        console.getTerminal().restore();
 
+    }
+
+    private static void printLine(ConsoleReader console, String author, String message) throws IOException {
+        CursorBuffer stashed = stashLine(console);
+        console.println(author + " > " + message);
+        unstashLine(console, stashed);
+        console.flush();
     }
 
     private static CursorBuffer stashLine(ConsoleReader console) {

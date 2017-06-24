@@ -47,7 +47,7 @@ public class RxFlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, R
     }
 
     public RxFlowableBackpressureOnReadyHandler(ServerCallStreamObserver<T> requestStream) {
-        this((CallStreamObserver<T>)requestStream);
+        this((CallStreamObserver<T>) requestStream);
         requestStream.setOnCancelHandler(() -> subscription.cancel());
     }
 

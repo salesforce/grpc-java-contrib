@@ -10,13 +10,15 @@ package com.salesforce.servicelibs;
 import com.google.protobuf.Empty;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 import jline.console.ConsoleReader;
-import jline.console.CursorBuffer;
 
-import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import static com.salesforce.servicelibs.ConsoleUtil.*;
 
 /**
  * Demonstrates building a gRPC streaming client using RxJava and RxGrpc.
@@ -27,14 +29,17 @@ public final class ChatClient {
     private ChatClient() { }
 
     public static void main(String[] args) throws Exception {
+        // Connect to the sever
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", PORT).usePlaintext(true).build();
         RxChatGrpc.RxChatStub stub = RxChatGrpc.newRxStub(channel);
 
+        CountDownLatch done = new CountDownLatch(1);
         ConsoleReader console = new ConsoleReader();
 
+        // Prompt the user for their name
         console.println("Press ctrl+D to quit");
         String author = console.readLine("Who are you? > ");
-        stub.postMessage(Single.just(ChatProto.ChatMessage.newBuilder().setAuthor(author).setMessage(author + " joined.").build())).subscribe();
+        stub.postMessage(toMessage(author, author + " joined.")).subscribe();
 
         // Subscribe to incoming messages
         Disposable chatSubscription = stub.getMessages(Single.just(Empty.getDefaultInstance())).subscribe(
@@ -44,50 +49,41 @@ public final class ChatClient {
                     printLine(console, message.getAuthor(), message.getMessage());
                 }
             },
-            throwable -> printLine(console, "ERROR", throwable.getMessage())
+            throwable -> {
+                printLine(console, "ERROR", throwable.getMessage());
+                done.countDown();
+            },
+            done::countDown
         );
 
-        String line;
-        while ((line = console.readLine(author + " > ")) != null) {
-            ChatProto.ChatMessage message = ChatProto.ChatMessage.newBuilder().setAuthor(author).setMessage(line).build();
-            stub.postMessage(Single.just(message)).subscribe(
+        // Publish outgoing messages
+        Observable.fromIterable(new ConsoleIterator(console, author + " > "))
+            .map(msg -> toMessage(author, msg))
+            .flatMapSingle(stub::postMessage)
+            .subscribe(
                 empty -> { },
-                throwable -> printLine(console, "ERROR", throwable.getMessage())
+                throwable -> {
+                    printLine(console, "ERROR", throwable.getMessage());
+                    done.countDown();
+                },
+                done::countDown
             );
-        }
 
-        stub.postMessage(Single.just(ChatProto.ChatMessage.newBuilder().setAuthor(author).setMessage(author + " left.").build())).subscribe();
+        // Wait for a signal to exit, then clean up
+        done.await();
+        stub.postMessage(toMessage(author, author + " left.")).subscribe();
         chatSubscription.dispose();
         channel.shutdown();
         channel.awaitTermination(1, TimeUnit.SECONDS);
         console.getTerminal().restore();
-
     }
 
-    private static void printLine(ConsoleReader console, String author, String message) throws IOException {
-        CursorBuffer stashed = stashLine(console);
-        console.println(author + " > " + message);
-        unstashLine(console, stashed);
-        console.flush();
-    }
-
-    private static CursorBuffer stashLine(ConsoleReader console) {
-        CursorBuffer stashed = console.getCursorBuffer().copy();
-        try {
-            console.getOutput().write("\u001b[1G\u001b[K");
-            console.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return stashed;
-    }
-
-
-    private static void unstashLine(ConsoleReader console, CursorBuffer stashed) {
-        try {
-            console.resetPromptLine(console.getPrompt(), stashed.toString(), stashed.cursor);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private static Single<ChatProto.ChatMessage> toMessage(String author, String message) {
+        return Single.just(
+            ChatProto.ChatMessage.newBuilder()
+                .setAuthor(author)
+                .setMessage(message)
+                .build()
+        );
     }
 }

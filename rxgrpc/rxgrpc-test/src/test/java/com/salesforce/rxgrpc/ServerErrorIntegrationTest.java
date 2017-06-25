@@ -36,7 +36,6 @@ public class ServerErrorIntegrationTest {
             @Override
             public Flowable<HelloResponse> sayHelloRespStream(Single<HelloRequest> rxRequest) {
                 return Flowable.error(new StatusRuntimeException(Status.INTERNAL));
-//                return Flowable.just(HelloResponse.getDefaultInstance());
             }
 
             @Override
@@ -50,8 +49,6 @@ public class ServerErrorIntegrationTest {
             }
         };
 
-//        server = ServerBuilder.forPort(0).addService(svc).build().start();
-//        channel = ManagedChannelBuilder.forAddress("localhost", server.getPort()).usePlaintext(true).build();
         server = InProcessServerBuilder.forName("e2e").addService(svc).build().start();
         channel = InProcessChannelBuilder.forName("e2e").usePlaintext(true).build();
     }

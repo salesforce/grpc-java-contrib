@@ -72,7 +72,7 @@ An example of back-pressure in action can be found in `BackpressureIntegrationTe
 Exception Handling
 ==============
 Exception handling with RxGrpc is a little strange due to the way gRPC deals with errors. Servers that produce an error
-by calling `onError(Throwable)` will terminate the call with a `StatusRuntimeException`. The client will have itsgit rm --cached <file>
+by calling `onError(Throwable)` will terminate the call with a `StatusRuntimeException`. The client will have its
 `onError(Throwable)` subscription handler called as expected.
  
 Exceptions going from client to server are a little less predictable. Depending on the timing, gRPC may cancel

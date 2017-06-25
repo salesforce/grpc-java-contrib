@@ -40,7 +40,7 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
     private CallStreamObserver callStreamObserver;
     private Subscriber<? super T> subscriber;
 
-    // A gRPC server can sometimes send an error before subscribe() has been called and the consumer may not have
+    // A gRPC server can sometimes send messages before subscribe() has been called and the consumer may not have
     // finished setting up the consumer pipeline. Buffer up to one error and 16 messages from the server in case this
     // happens.
     private Throwable errorBuffer;

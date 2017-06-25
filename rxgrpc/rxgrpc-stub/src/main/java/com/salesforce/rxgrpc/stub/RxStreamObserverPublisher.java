@@ -16,6 +16,8 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import java.util.concurrent.ArrayBlockingQueue;
+
 /**
  * RxStreamObserverPublisher bridges the manual flow control idioms of gRPC and RxJava. This class takes
  * messages off of a {@link StreamObserver} and feeds them into a {@link Publisher} while respecting backpressure. This
@@ -37,7 +39,12 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
     private CallStreamObserver callStreamObserver;
     private Subscriber<? super T> subscriber;
 
+    // A gRPC server can sometimes send an error before subscribe() has been called and the consumer may not have
+    // finished setting up the consumer pipeline. Buffer up to one error and 16 messages from the server in case this
+    // happens.
     private Throwable errorBuffer;
+    private ArrayBlockingQueue<T> messageBuffer = new ArrayBlockingQueue<>(16);
+    private boolean completedBuffer;
 
     public RxStreamObserverPublisher(CallStreamObserver callStreamObserver) {
         Preconditions.checkNotNull(callStreamObserver);
@@ -61,17 +68,27 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
         });
         this.subscriber = subscriber;
 
-        // A gRPC server can send an error before request(1) has been called and the client may not have finished
-        // setting up the response pipeline. Buffer up to one error from the server in case this happens.
+        // Process any buffered responses
+        if (!messageBuffer.isEmpty()) {
+            for (T msg : messageBuffer) {
+                onNext(msg);
+            }
+        }
         if (errorBuffer != null) {
             onError(errorBuffer);
+        }
+        if (completedBuffer) {
+            onCompleted();
         }
     }
 
     @Override
     public void onNext(T value) {
-        Preconditions.checkState(subscriber != null, "subscribe() has not been called yet");
-        subscriber.onNext(Preconditions.checkNotNull(value));
+        if (subscriber == null) {
+            Preconditions.checkState(messageBuffer.offer(value), "more than 16 calls to onNext() before subscribe()");
+        } else {
+            subscriber.onNext(Preconditions.checkNotNull(value));
+        }
     }
 
     @Override
@@ -86,7 +103,10 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
 
     @Override
     public void onCompleted() {
-        Preconditions.checkState(subscriber != null, "subscribe() has not been called yet");
-        subscriber.onComplete();
+        if (subscriber == null) {
+            completedBuffer = true;
+        } else {
+            subscriber.onComplete();
+        }
     }
 }

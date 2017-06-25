@@ -36,6 +36,7 @@ import java.util.concurrent.ArrayBlockingQueue;
  * @param <T>
  */
 public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserver<T> {
+    private static final int MESSAGE_BUFFER_SIZE = 16;
     private CallStreamObserver callStreamObserver;
     private Subscriber<? super T> subscriber;
 
@@ -43,7 +44,7 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
     // finished setting up the consumer pipeline. Buffer up to one error and 16 messages from the server in case this
     // happens.
     private Throwable errorBuffer;
-    private ArrayBlockingQueue<T> messageBuffer = new ArrayBlockingQueue<>(16);
+    private ArrayBlockingQueue<T> messageBuffer = new ArrayBlockingQueue<>(MESSAGE_BUFFER_SIZE);
     private boolean completedBuffer;
 
     public RxStreamObserverPublisher(CallStreamObserver callStreamObserver) {

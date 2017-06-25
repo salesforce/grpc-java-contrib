@@ -37,6 +37,8 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
     private CallStreamObserver callStreamObserver;
     private Subscriber<? super T> subscriber;
 
+    private Throwable errorBuffer;
+
     public RxStreamObserverPublisher(CallStreamObserver callStreamObserver) {
         Preconditions.checkNotNull(callStreamObserver);
         this.callStreamObserver = callStreamObserver;
@@ -58,6 +60,12 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
             }
         });
         this.subscriber = subscriber;
+
+        // A gRPC server can send an error before request(1) has been called and the client may not have finished
+        // setting up the response pipeline. Buffer up to one error from the server in case this happens.
+        if (errorBuffer != null) {
+            onError(errorBuffer);
+        }
     }
 
     @Override
@@ -68,8 +76,12 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
 
     @Override
     public void onError(Throwable t) {
-        Preconditions.checkState(subscriber != null, "subscribe() has not been called yet");
-        subscriber.onError(Preconditions.checkNotNull(t));
+        if (subscriber == null) {
+            Preconditions.checkState(errorBuffer == null, "onError() called twice before subscribe()");
+            errorBuffer = t;
+        } else {
+            subscriber.onError(Preconditions.checkNotNull(t));
+        }
     }
 
     @Override

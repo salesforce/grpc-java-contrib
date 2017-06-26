@@ -17,6 +17,7 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * RxStreamObserverPublisher bridges the manual flow control idioms of gRPC and RxJava. This class takes
@@ -41,11 +42,9 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
     private Subscriber<? super T> subscriber;
 
     // A gRPC server can sometimes send messages before subscribe() has been called and the consumer may not have
-    // finished setting up the consumer pipeline. Buffer up to one error and 16 messages from the server in case this
-    // happens.
-    private Throwable errorBuffer;
-    private ArrayBlockingQueue<T> messageBuffer = new ArrayBlockingQueue<>(MESSAGE_BUFFER_SIZE);
-    private boolean completedBuffer;
+    // finished setting up the consumer pipeline. Use a countdown latch to prevent messages from processing before
+    // subscribe() has been called.
+    private CountDownLatch subscribed = new CountDownLatch(1);
 
     public RxStreamObserverPublisher(CallStreamObserver callStreamObserver) {
         Preconditions.checkNotNull(callStreamObserver);
@@ -69,45 +68,24 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
         });
         this.subscriber = subscriber;
 
-        // Process any buffered responses
-        if (!messageBuffer.isEmpty()) {
-            for (T msg : messageBuffer) {
-                onNext(msg);
-            }
-        }
-        if (errorBuffer != null) {
-            onError(errorBuffer);
-        }
-        if (completedBuffer) {
-            onCompleted();
-        }
+        subscribed.countDown();
     }
 
     @Override
     public void onNext(T value) {
-        if (subscriber == null) {
-            Preconditions.checkState(messageBuffer.offer(value), "more than 16 calls to onNext() before subscribe()");
-        } else {
-            subscriber.onNext(Preconditions.checkNotNull(value));
-        }
+        try { subscribed.await(); } catch (InterruptedException e) { }
+        subscriber.onNext(Preconditions.checkNotNull(value));
     }
 
     @Override
     public void onError(Throwable t) {
-        if (subscriber == null) {
-            Preconditions.checkState(errorBuffer == null, "onError() called twice before subscribe()");
-            errorBuffer = t;
-        } else {
-            subscriber.onError(Preconditions.checkNotNull(t));
-        }
+        try { subscribed.await(); } catch (InterruptedException e) { }
+        subscriber.onError(Preconditions.checkNotNull(t));
     }
 
     @Override
     public void onCompleted() {
-        if (subscriber == null) {
-            completedBuffer = true;
-        } else {
-            subscriber.onComplete();
-        }
+        try { subscribed.await(); } catch (InterruptedException e) { }
+        subscriber.onComplete();
     }
 }

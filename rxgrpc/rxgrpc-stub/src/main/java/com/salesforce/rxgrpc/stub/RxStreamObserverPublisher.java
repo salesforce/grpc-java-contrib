@@ -16,7 +16,6 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -37,7 +36,6 @@ import java.util.concurrent.CountDownLatch;
  * @param <T>
  */
 public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserver<T> {
-    private static final int MESSAGE_BUFFER_SIZE = 16;
     private CallStreamObserver callStreamObserver;
     private Subscriber<? super T> subscriber;
 
@@ -73,19 +71,31 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
 
     @Override
     public void onNext(T value) {
-        try { subscribed.await(); } catch (InterruptedException e) { }
+        try {
+            subscribed.await();
+        } catch (InterruptedException e) {
+
+        }
         subscriber.onNext(Preconditions.checkNotNull(value));
     }
 
     @Override
     public void onError(Throwable t) {
-        try { subscribed.await(); } catch (InterruptedException e) { }
+        try {
+            subscribed.await();
+        } catch (InterruptedException e) {
+
+        }
         subscriber.onError(Preconditions.checkNotNull(t));
     }
 
     @Override
     public void onCompleted() {
-        try { subscribed.await(); } catch (InterruptedException e) { }
+        try {
+            subscribed.await();
+        } catch (InterruptedException e) {
+
+        }
         subscriber.onComplete();
     }
 }

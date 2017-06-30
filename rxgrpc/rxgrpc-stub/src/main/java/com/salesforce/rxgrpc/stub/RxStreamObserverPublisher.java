@@ -10,8 +10,10 @@ package com.salesforce.rxgrpc.stub;
 import com.google.common.base.Preconditions;
 import io.grpc.Status;
 import io.grpc.StatusException;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.CallStreamObserver;
 import io.grpc.stub.StreamObserver;
+import io.reactivex.subscribers.SafeSubscriber;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -53,6 +55,7 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
     @Override
     public void subscribe(Subscriber<? super T> subscriber) {
         Preconditions.checkNotNull(subscriber);
+        subscriber = new SafeSubscriber<>(subscriber);
         subscriber.onSubscribe(new Subscription() {
             @Override
             public void request(long l) {
@@ -61,7 +64,7 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
 
             @Override
             public void cancel() {
-                callStreamObserver.onError(new StatusException(Status.CANCELLED));
+                callStreamObserver.onError(Status.CANCELLED.asRuntimeException());
             }
         });
         this.subscriber = subscriber;
@@ -86,7 +89,16 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
         } catch (InterruptedException e) {
 
         }
-        subscriber.onError(Preconditions.checkNotNull(t));
+
+        if (t instanceof StatusException &&
+                ((StatusException) t).getStatus().getCode() == Status.Code.CANCELLED) {
+            subscriber.onComplete();
+        } else if (t instanceof StatusRuntimeException &&
+                ((StatusRuntimeException) t).getStatus().getCode() == Status.Code.CANCELLED) {
+            subscriber.onComplete();
+        } else {
+            subscriber.onError(Preconditions.checkNotNull(t));
+        }
     }
 
     @Override

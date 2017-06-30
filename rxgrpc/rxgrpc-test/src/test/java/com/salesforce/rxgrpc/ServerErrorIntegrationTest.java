@@ -74,7 +74,12 @@ public class ServerErrorIntegrationTest {
     public void oneToMany() {
         RxGreeterGrpc.RxGreeterStub stub = RxGreeterGrpc.newRxStub(channel);
         Flowable<HelloResponse> resp = stub.sayHelloRespStream(Single.just(HelloRequest.getDefaultInstance()));
-        TestSubscriber<HelloResponse> test = resp.test();
+        TestSubscriber<HelloResponse> test = resp
+                .doOnNext(msg -> System.out.println(msg))
+                .doOnError(throwable -> System.out.println(throwable.getMessage()))
+                .doOnComplete(() -> System.out.println("Completed"))
+                .doOnCancel(() -> System.out.println("Client canceled"))
+                .test();
 
         test.awaitTerminalEvent(3, TimeUnit.SECONDS);
         test.assertError(t -> t instanceof StatusRuntimeException);

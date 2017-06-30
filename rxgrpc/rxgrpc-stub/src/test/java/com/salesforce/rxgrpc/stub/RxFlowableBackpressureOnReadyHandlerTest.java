@@ -8,6 +8,7 @@
 package com.salesforce.rxgrpc.stub;
 
 import io.grpc.stub.CallStreamObserver;
+import io.grpc.stub.ClientCallStreamObserver;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.*;
 public class RxFlowableBackpressureOnReadyHandlerTest {
     @Test
     public void runPrimesThePump() {
-        CallStreamObserver<Object> obs = mock(CallStreamObserver.class);
+        ClientCallStreamObserver<Object> obs = mock(ClientCallStreamObserver.class);
         RxFlowableBackpressureOnReadyHandler<Object> handler = new RxFlowableBackpressureOnReadyHandler<>(obs);
         Subscription sub = mock(Subscription.class);
 
@@ -29,7 +30,7 @@ public class RxFlowableBackpressureOnReadyHandlerTest {
 
     @Test
     public void onNextKeepsPumpRunning() {
-        CallStreamObserver<Object> obs = mock(CallStreamObserver.class);
+        ClientCallStreamObserver<Object> obs = mock(ClientCallStreamObserver.class);
         when(obs.isReady()).thenReturn(true);
 
         RxFlowableBackpressureOnReadyHandler<Object> handler = new RxFlowableBackpressureOnReadyHandler<>(obs);
@@ -46,7 +47,7 @@ public class RxFlowableBackpressureOnReadyHandlerTest {
 
     @Test
     public void onNextStopsPump() {
-        CallStreamObserver<Object> obs = mock(CallStreamObserver.class);
+        ClientCallStreamObserver<Object> obs = mock(ClientCallStreamObserver.class);
         when(obs.isReady()).thenReturn(false);
 
         RxFlowableBackpressureOnReadyHandler<Object> handler = new RxFlowableBackpressureOnReadyHandler<>(obs);

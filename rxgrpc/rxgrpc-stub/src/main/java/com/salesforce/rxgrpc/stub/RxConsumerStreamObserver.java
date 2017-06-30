@@ -27,11 +27,14 @@ public class RxConsumerStreamObserver<TRequest, TResponse> implements ClientResp
         return rxConsumer;
     }
 
+
     @Override
     public void beforeStart(ClientCallStreamObserver<TRequest> requestStream) {
         publisher = new RxStreamObserverPublisher<>(Preconditions.checkNotNull(requestStream));
+
         rxConsumer = Flowable.unsafeCreate(publisher)
-                .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()));
+                .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()))
+                .compose(FlowableCancellationBridge::new);
     }
 
     @Override

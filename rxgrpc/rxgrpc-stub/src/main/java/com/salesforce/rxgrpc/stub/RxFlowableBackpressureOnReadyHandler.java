@@ -12,6 +12,7 @@ import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.CallStreamObserver;
+import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ServerCallStreamObserver;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -42,13 +43,14 @@ public class RxFlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, R
     private CallStreamObserver<T> requestStream;
     private Subscription subscription;
 
-    public RxFlowableBackpressureOnReadyHandler(CallStreamObserver<T> requestStream) {
+    public RxFlowableBackpressureOnReadyHandler(ClientCallStreamObserver<T> requestStream) {
         this.requestStream = Preconditions.checkNotNull(requestStream);
         requestStream.setOnReadyHandler(this);
     }
 
     public RxFlowableBackpressureOnReadyHandler(ServerCallStreamObserver<T> requestStream) {
-        this((CallStreamObserver<T>) requestStream);
+        this.requestStream = Preconditions.checkNotNull(requestStream);
+        requestStream.setOnReadyHandler(this);
         requestStream.setOnCancelHandler(() -> subscription.cancel());
     }
 

@@ -14,6 +14,10 @@ public class Sequence implements Iterable<Integer> {
     private final int max;
     private final BackpressureDetector backpressureDetector;
 
+    public Sequence(int max) {
+        this(max, null);
+    }
+
     public Sequence(int max, BackpressureDetector backpressureDetector) {
         this.max = max;
         this.backpressureDetector = backpressureDetector;
@@ -23,7 +27,7 @@ public class Sequence implements Iterable<Integer> {
     @Nonnull
     public Iterator<Integer> iterator() {
         return new Iterator<Integer>() {
-            int i = 0;
+            int i = 1;
 
             public void remove() {
                 throw new UnsupportedOperationException();
@@ -34,7 +38,9 @@ public class Sequence implements Iterable<Integer> {
             }
 
             public Integer next() {
-                backpressureDetector.tick();
+                if (backpressureDetector != null) {
+                    backpressureDetector.tick();
+                }
                 try { Thread.sleep(10); } catch (InterruptedException e) {}
                 return i++;
             }

@@ -7,6 +7,7 @@
 
 package com.salesforce.rxgrpc.stub;
 
+import com.google.common.base.Preconditions;
 import com.salesforce.grpc.contrib.LambdaStreamObserver;
 import io.grpc.Status;
 import io.grpc.StatusException;
@@ -17,6 +18,7 @@ import io.grpc.stub.StreamObserver;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.SafeSubscriber;
 
 import java.util.function.Function;
 
@@ -39,7 +41,7 @@ public final class ServerCalls {
         try {
             Single<TRequest> rxRequest = Single.just(request);
 
-            Single<TResponse> rxResponse = delegate.apply(rxRequest);
+            Single<TResponse> rxResponse = Preconditions.checkNotNull(delegate.apply(rxRequest));
             rxResponse.subscribe(
                 value -> {
                     responseObserver.onNext(value);
@@ -61,9 +63,9 @@ public final class ServerCalls {
         try {
             Single<TRequest> rxRequest = Single.just(request);
 
-            Flowable<TResponse> rxResponse = delegate.apply(rxRequest);
-            rxResponse.subscribe(new RxFlowableBackpressureOnReadyHandler<>(
-                    (ServerCallStreamObserver<TResponse>) responseObserver));
+            Flowable<TResponse> rxResponse = Preconditions.checkNotNull(delegate.apply(rxRequest));
+            rxResponse.subscribe(new SafeSubscriber<>(new RxFlowableBackpressureOnReadyHandler<>(
+                    (ServerCallStreamObserver<TResponse>) responseObserver)));
         } catch (Throwable throwable) {
             responseObserver.onError(prepareError(throwable));
         }
@@ -80,9 +82,10 @@ public final class ServerCalls {
                 new RxStreamObserverPublisher<>((CallStreamObserver<TResponse>) responseObserver);
 
         try {
-            Single<TResponse> rxResponse = delegate.apply(
+            Single<TResponse> rxResponse = Preconditions.checkNotNull(delegate.apply(
                     Flowable.unsafeCreate(streamObserverPublisher)
-                            .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor())));
+                            .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()))
+                            .compose(FlowableCancellationBridge::new)));
             rxResponse.subscribe(
                 value -> {
                     responseObserver.onNext(value);
@@ -111,10 +114,12 @@ public final class ServerCalls {
                 new RxStreamObserverPublisher<>((CallStreamObserver<TResponse>) responseObserver);
 
         try {
-            Flowable<TResponse> rxResponse = delegate.apply(
-                    Flowable.unsafeCreate(streamObserverPublisher).observeOn(Schedulers.from(RxExecutor.getSerializingExecutor())));
-            rxResponse.subscribe(new RxFlowableBackpressureOnReadyHandler<>(
-                    (ServerCallStreamObserver<TResponse>) responseObserver));
+            Flowable<TResponse> rxResponse = Preconditions.checkNotNull(delegate.apply(
+                    Flowable.unsafeCreate(streamObserverPublisher)
+                            .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor())))
+                            .compose(FlowableCancellationBridge::new));
+            rxResponse.subscribe(new SafeSubscriber<>(new RxFlowableBackpressureOnReadyHandler<>(
+                    (ServerCallStreamObserver<TResponse>) responseObserver)));
         } catch (Throwable throwable) {
             responseObserver.onError(prepareError(throwable));
         }

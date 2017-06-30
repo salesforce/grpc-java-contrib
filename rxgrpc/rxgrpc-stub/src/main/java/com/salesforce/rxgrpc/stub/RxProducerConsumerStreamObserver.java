@@ -10,6 +10,7 @@ package com.salesforce.rxgrpc.stub;
 import com.google.common.base.Preconditions;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.reactivex.Flowable;
+import io.reactivex.subscribers.SafeSubscriber;
 
 /**
  * RxProducerConsumerStreamObserver configures client-side manual flow control for when the client is both producing
@@ -28,6 +29,6 @@ public class RxProducerConsumerStreamObserver<TRequest, TResponse> extends RxCon
     @Override
     public void beforeStart(ClientCallStreamObserver<TRequest> requestStream) {
         super.beforeStart(Preconditions.checkNotNull(requestStream));
-        rxProducer.subscribe(new RxFlowableBackpressureOnReadyHandler<>(requestStream));
+        rxProducer.subscribe(new SafeSubscriber<>(new RxFlowableBackpressureOnReadyHandler<>(requestStream)));
     }
 }

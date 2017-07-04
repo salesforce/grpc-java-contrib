@@ -8,10 +8,13 @@
 package com.salesforce.rxgrpc.stub;
 
 import com.google.common.base.Preconditions;
+import io.grpc.Status;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientResponseObserver;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
+
+import java.util.concurrent.CountDownLatch;
 
 /**
  * RxConsumerStreamObserver configures client-side manual flow control for the consuming end of a message stream.
@@ -22,8 +25,14 @@ import io.reactivex.schedulers.Schedulers;
 public class RxConsumerStreamObserver<TRequest, TResponse> implements ClientResponseObserver<TRequest, TResponse> {
     private RxStreamObserverPublisher<TResponse> publisher;
     private Flowable<TResponse> rxConsumer;
+    private CountDownLatch beforeStartCalled = new CountDownLatch(1);
 
     public Flowable<TResponse> getRxConsumer() {
+        try {
+            beforeStartCalled.await();
+        } catch (InterruptedException e) {
+            throw Status.INTERNAL.withCause(e).asRuntimeException();
+        }
         return rxConsumer;
     }
 
@@ -35,6 +44,7 @@ public class RxConsumerStreamObserver<TRequest, TResponse> implements ClientResp
         rxConsumer = Flowable.unsafeCreate(publisher)
                 .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()))
                 .compose(FlowableCancellationBridge::new);
+        beforeStartCalled.countDown();
     }
 
     @Override

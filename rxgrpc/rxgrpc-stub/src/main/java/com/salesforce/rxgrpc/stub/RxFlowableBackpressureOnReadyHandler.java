@@ -42,6 +42,7 @@ import org.reactivestreams.Subscription;
 public class RxFlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, Runnable {
     private CallStreamObserver<T> requestStream;
     private Subscription subscription;
+    private boolean canceled = false;
 
     public RxFlowableBackpressureOnReadyHandler(ClientCallStreamObserver<T> requestStream) {
         this.requestStream = Preconditions.checkNotNull(requestStream);
@@ -57,8 +58,19 @@ public class RxFlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, R
     @Override
     public void run() {
         Preconditions.checkState(subscription != null, "onSubscribe() not yet called");
-        // restart the pump
-        subscription.request(1);
+        if (!isCanceled()) {
+            // restart the pump
+            subscription.request(1);
+        }
+    }
+
+    public void cancel() {
+        canceled = true;
+        subscription.cancel();
+    }
+
+    public boolean isCanceled() {
+        return canceled;
     }
 
     @Override
@@ -68,10 +80,12 @@ public class RxFlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, R
 
     @Override
     public void onNext(T t) {
-        requestStream.onNext(Preconditions.checkNotNull(t));
-        if (requestStream.isReady()) {
-            // keep the pump going
-            subscription.request(1);
+        if (!isCanceled()) {
+            requestStream.onNext(Preconditions.checkNotNull(t));
+            if (requestStream.isReady()) {
+                // keep the pump going
+                subscription.request(1);
+            }
         }
     }
 

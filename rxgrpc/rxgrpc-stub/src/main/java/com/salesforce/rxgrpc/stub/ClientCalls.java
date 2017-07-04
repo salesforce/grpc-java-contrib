@@ -70,12 +70,16 @@ public final class ClientCalls {
             Flowable<TRequest> rxRequest,
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
         try {
-            return Single.create(emitter -> delegate.apply(new RxProducerStreamObserver<>(
-                rxRequest,
-                emitter::onSuccess,
-                emitter::onError,
-                Runnables.doNothing()))
-            );
+            return Single.create(emitter -> {
+                RxProducerStreamObserver<TRequest, TResponse> rxProducerStreamObserver = new RxProducerStreamObserver<>(
+                        rxRequest,
+                        emitter::onSuccess,
+                        emitter::onError,
+                        Runnables.doNothing());
+                delegate.apply(
+                        new CancellableStreamObserver<>(rxProducerStreamObserver,
+                        rxProducerStreamObserver::cancel));
+            });
         } catch (Throwable throwable) {
             return Single.error(throwable);
         }
@@ -90,7 +94,7 @@ public final class ClientCalls {
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
         try {
             RxProducerConsumerStreamObserver<TRequest, TResponse> consumerStreamObserver = new RxProducerConsumerStreamObserver<>(rxRequest);
-            delegate.apply(consumerStreamObserver);
+            delegate.apply(new CancellableStreamObserver<>(consumerStreamObserver, consumerStreamObserver::cancel));
             return consumerStreamObserver.getRxConsumer();
         } catch (Throwable throwable) {
             return Flowable.error(throwable);

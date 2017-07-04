@@ -24,6 +24,7 @@ import java.util.function.Consumer;
  */
 public class RxProducerStreamObserver<TRequest, TResponse> extends LambdaStreamObserver<TResponse> implements ClientResponseObserver<TRequest, TResponse> {
     private Flowable<TRequest> rxProducer;
+    private RxFlowableBackpressureOnReadyHandler<TRequest> onReadyHandler;
 
     public RxProducerStreamObserver(Flowable<TRequest> rxProducer, Consumer<TResponse> onNext, Consumer<Throwable> onError, Runnable onCompleted) {
         super(
@@ -39,6 +40,11 @@ public class RxProducerStreamObserver<TRequest, TResponse> extends LambdaStreamO
         Preconditions.checkNotNull(producerStream);
         // Subscribe to the rxProducer with an adapter to a gRPC StreamObserver that respects backpressure
         // signals from the underlying gRPC client transport.
-        rxProducer.subscribe(new SafeSubscriber<>(new RxFlowableBackpressureOnReadyHandler<>(producerStream)));
+        onReadyHandler = new RxFlowableBackpressureOnReadyHandler<>(producerStream);
+        rxProducer.subscribe(new SafeSubscriber<>(onReadyHandler));
+    }
+
+    public void cancel() {
+        onReadyHandler.cancel();
     }
 }

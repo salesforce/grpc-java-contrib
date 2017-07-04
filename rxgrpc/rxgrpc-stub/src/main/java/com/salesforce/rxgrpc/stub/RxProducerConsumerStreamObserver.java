@@ -21,6 +21,7 @@ import io.reactivex.subscribers.SafeSubscriber;
  */
 public class RxProducerConsumerStreamObserver<TRequest, TResponse> extends RxConsumerStreamObserver<TRequest, TResponse> {
     private Flowable<TRequest> rxProducer;
+    private RxFlowableBackpressureOnReadyHandler<TRequest> onReadyHandler;
 
     public RxProducerConsumerStreamObserver(Flowable<TRequest> rxProducer) {
         this.rxProducer = rxProducer;
@@ -29,6 +30,11 @@ public class RxProducerConsumerStreamObserver<TRequest, TResponse> extends RxCon
     @Override
     public void beforeStart(ClientCallStreamObserver<TRequest> requestStream) {
         super.beforeStart(Preconditions.checkNotNull(requestStream));
-        rxProducer.subscribe(new SafeSubscriber<>(new RxFlowableBackpressureOnReadyHandler<>(requestStream)));
+        onReadyHandler = new RxFlowableBackpressureOnReadyHandler<>(requestStream);
+        rxProducer.subscribe(new SafeSubscriber<>(onReadyHandler));
+    }
+
+    public void cancel() {
+        onReadyHandler.cancel();
     }
 }

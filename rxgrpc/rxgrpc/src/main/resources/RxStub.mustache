@@ -14,8 +14,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static com.salesforce.rxgrpc.stub.ClientCalls.*;
-import static com.salesforce.rxgrpc.stub.ServerCalls.*;
+import com.salesforce.rxgrpc.stub.ClientCalls;
+import com.salesforce.rxgrpc.stub.ServerCalls;
 
 {{#deprecated}}@Deprecated{{/deprecated}}
 @javax.annotation.Generated(
@@ -36,22 +36,22 @@ public final class {{className}} {
         }
         {{#oneToOne}}{{#deprecated}}@Deprecated{{/deprecated}}
         public Single<{{outputType}}> {{methodName}}(Single<{{inputType}}> rxRequest) {
-            return oneToOne(rxRequest, delegateStub::{{methodName}});
+            return ClientCalls.oneToOne(rxRequest, delegateStub::{{methodName}});
         }
         {{/oneToOne}}
         {{#oneToMany}}{{#deprecated}}@Deprecated{{/deprecated}}
         public Flowable<{{outputType}}> {{methodName}}(Single<{{inputType}}> rxRequest) {
-            return oneToMany(rxRequest, delegateStub::{{methodName}});
+            return ClientCalls.oneToMany(rxRequest, delegateStub::{{methodName}});
         }
         {{/oneToMany}}
         {{#manyToOne}}{{#deprecated}}@Deprecated{{/deprecated}}
         public Single<{{outputType}}> {{methodName}}(Flowable<{{inputType}}> rxRequest) {
-            return manyToOne(rxRequest, delegateStub::{{methodName}});
+            return ClientCalls.manyToOne(rxRequest, delegateStub::{{methodName}});
         }
         {{/manyToOne}}
         {{#manyToMany}}{{#deprecated}}@Deprecated{{/deprecated}}
         public Flowable<{{outputType}}> {{methodName}}(Flowable<{{inputType}}> rxRequest) {
-            return manyToMany(rxRequest, delegateStub::{{methodName}});
+            return ClientCalls.manyToMany(rxRequest, delegateStub::{{methodName}});
         }
         {{/manyToMany}}
     }
@@ -64,7 +64,7 @@ public final class {{className}} {
 
         @Override
         public void {{methodName}}({{inputType}} request, StreamObserver<{{outputType}}> responseObserver) {
-            oneToOne(request, responseObserver, this::{{methodName}});
+            ServerCalls.oneToOne(request, responseObserver, this::{{methodName}});
         }
         {{/oneToOne}}
         {{#oneToMany}}{{#deprecated}}@Deprecated{{/deprecated}}
@@ -74,7 +74,7 @@ public final class {{className}} {
 
         @Override
         public void {{methodName}}({{inputType}} request, StreamObserver<{{outputType}}> responseObserver) {
-            oneToMany(request, responseObserver, this::{{methodName}});
+            ServerCalls.oneToMany(request, responseObserver, this::{{methodName}});
         }
         {{/oneToMany}}
         {{#manyToOne}}{{#deprecated}}@Deprecated{{/deprecated}}
@@ -84,7 +84,7 @@ public final class {{className}} {
 
         @Override
         public StreamObserver<{{inputType}}> {{methodName}}(StreamObserver<{{outputType}}> responseObserver) {
-            return manyToOne(responseObserver, this::{{methodName}});
+            return ServerCalls.manyToOne(responseObserver, this::{{methodName}});
         }
         {{/manyToOne}}
         {{#manyToMany}}{{#deprecated}}@Deprecated{{/deprecated}}
@@ -94,7 +94,7 @@ public final class {{className}} {
 
         @Override
         public StreamObserver<{{inputType}}> {{methodName}}(StreamObserver<{{outputType}}> responseObserver) {
-            return manyToMany(responseObserver, this::{{methodName}});
+            return ServerCalls.manyToMany(responseObserver, this::{{methodName}});
         }
         {{/manyToMany}}
     }

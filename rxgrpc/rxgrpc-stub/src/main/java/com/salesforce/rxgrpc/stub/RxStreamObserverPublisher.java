@@ -12,6 +12,7 @@ import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.CallStreamObserver;
+import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import io.reactivex.subscribers.SafeSubscriber;
 import org.reactivestreams.Publisher;
@@ -64,6 +65,10 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
 
             @Override
             public void cancel() {
+                if (callStreamObserver instanceof ServerCallStreamObserver &&
+                        ((ServerCallStreamObserver) callStreamObserver).isCancelled()) {
+                    return;
+                }
                 callStreamObserver.onError(Status.CANCELLED.asRuntimeException());
             }
         });

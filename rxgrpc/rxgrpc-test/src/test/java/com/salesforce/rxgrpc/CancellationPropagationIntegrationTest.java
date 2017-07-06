@@ -129,7 +129,6 @@ public class CancellationPropagationIntegrationTest {
         subscription.awaitTerminalEvent(1, TimeUnit.SECONDS);
         // Cancellation may or may not deliver the last generated message due to delays in the gRPC processing thread
         assertThat(Math.abs(subscription.valueCount() - svc.getLastNumberProduced())).isLessThanOrEqualTo(3);
-        subscription.assertTerminated();
         assertThat(svc.wasCanceled()).isTrue();
     }
 

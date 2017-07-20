@@ -56,7 +56,6 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
     @Override
     public void subscribe(Subscriber<? super T> subscriber) {
         Preconditions.checkNotNull(subscriber);
-        subscriber = new SafeSubscriber<>(subscriber);
         subscriber.onSubscribe(new Subscription() {
             @Override
             public void request(long l) {
@@ -69,6 +68,7 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
                         ((ServerCallStreamObserver) callStreamObserver).isCancelled()) {
                     return;
                 }
+
                 callStreamObserver.onError(Status.CANCELLED.asRuntimeException());
             }
         });

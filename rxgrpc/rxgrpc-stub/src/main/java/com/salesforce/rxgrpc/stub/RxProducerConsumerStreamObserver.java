@@ -31,7 +31,7 @@ public class RxProducerConsumerStreamObserver<TRequest, TResponse> extends RxCon
     public void beforeStart(ClientCallStreamObserver<TRequest> requestStream) {
         super.beforeStart(Preconditions.checkNotNull(requestStream));
         onReadyHandler = new RxFlowableBackpressureOnReadyHandler<>(requestStream);
-        rxProducer.subscribe(new SafeSubscriber<>(onReadyHandler));
+        rxProducer.subscribe(onReadyHandler);
     }
 
     public void cancel() {

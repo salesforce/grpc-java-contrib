@@ -41,7 +41,7 @@ public class RxProducerStreamObserver<TRequest, TResponse> extends LambdaStreamO
         // Subscribe to the rxProducer with an adapter to a gRPC StreamObserver that respects backpressure
         // signals from the underlying gRPC client transport.
         onReadyHandler = new RxFlowableBackpressureOnReadyHandler<>(producerStream);
-        rxProducer.subscribe(new SafeSubscriber<>(onReadyHandler));
+        rxProducer.subscribe(onReadyHandler);
     }
 
     public void cancel() {

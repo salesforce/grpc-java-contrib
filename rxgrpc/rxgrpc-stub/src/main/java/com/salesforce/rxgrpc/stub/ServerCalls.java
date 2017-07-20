@@ -64,8 +64,8 @@ public final class ServerCalls {
             Single<TRequest> rxRequest = Single.just(request);
 
             Flowable<TResponse> rxResponse = Preconditions.checkNotNull(delegate.apply(rxRequest));
-            rxResponse.subscribe(new SafeSubscriber<>(new RxFlowableBackpressureOnReadyHandler<>(
-                    (ServerCallStreamObserver<TResponse>) responseObserver)));
+            rxResponse.subscribe(new RxFlowableBackpressureOnReadyHandler<>(
+                    (ServerCallStreamObserver<TResponse>) responseObserver));
         } catch (Throwable throwable) {
             responseObserver.onError(prepareError(throwable));
         }
@@ -116,8 +116,8 @@ public final class ServerCalls {
             Flowable<TResponse> rxResponse = Preconditions.checkNotNull(delegate.apply(
                     Flowable.unsafeCreate(streamObserverPublisher)
                             .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()))));
-            rxResponse.subscribe(new SafeSubscriber<>(new RxFlowableBackpressureOnReadyHandler<>(
-                    (ServerCallStreamObserver<TResponse>) responseObserver)));
+            rxResponse.subscribe(new RxFlowableBackpressureOnReadyHandler<>(
+                    (ServerCallStreamObserver<TResponse>) responseObserver));
         } catch (Throwable throwable) {
             responseObserver.onError(prepareError(throwable));
         }

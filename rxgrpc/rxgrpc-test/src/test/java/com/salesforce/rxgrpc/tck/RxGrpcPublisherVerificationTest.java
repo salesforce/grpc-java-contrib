@@ -17,6 +17,7 @@ import org.reactivestreams.tck.PublisherVerification;
 import org.reactivestreams.tck.TestEnvironment;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.IOException;
 
@@ -64,5 +65,10 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
 
     private Message toMessage(int i) {
         return Message.newBuilder().setNumber(i).build();
+    }
+
+    @Override @Test
+    public void optional_spec104_mustSignalOnErrorWhenFails() throws Throwable {
+        super.optional_spec104_mustSignalOnErrorWhenFails();
     }
 }

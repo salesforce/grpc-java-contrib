@@ -15,11 +15,10 @@ import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.tck.PublisherVerification;
 import org.reactivestreams.tck.TestEnvironment;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Publisher tests from the Reactive Streams Technology Compatibility Kit.
@@ -36,13 +35,14 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
     private static Server server;
     private static ManagedChannel channel;
 
-    @BeforeClass
+    @BeforeTest
     public static void setup() throws IOException {
-        server = InProcessServerBuilder.forName("RxGrpcPublisherVerificationTest").addService(new TckService()).build().start();
-        channel = InProcessChannelBuilder.forName("RxGrpcPublisherVerificationTest").usePlaintext(true).build();
+        UUID name = UUID.randomUUID();
+        server = InProcessServerBuilder.forName(name.toString()).addService(new TckService()).build().start();
+        channel = InProcessChannelBuilder.forName(name.toString()).usePlaintext(true).build();
     }
 
-    @AfterClass
+    @AfterTest
     public static void tearDown() {
         server.shutdownNow();
         channel.shutdownNow();

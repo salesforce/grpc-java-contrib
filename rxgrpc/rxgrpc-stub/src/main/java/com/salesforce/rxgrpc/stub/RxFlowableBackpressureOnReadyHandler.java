@@ -66,8 +66,10 @@ public class RxFlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, R
 
     public void cancel() {
         canceled = true;
-        subscription.cancel();
-        subscription = null;
+        if (subscription != null) {
+            subscription.cancel();
+            subscription = null;
+        }
     }
 
     public boolean isCanceled() {

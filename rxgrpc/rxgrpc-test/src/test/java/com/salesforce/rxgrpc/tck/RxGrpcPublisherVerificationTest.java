@@ -20,6 +20,8 @@ import org.testng.annotations.*;
 import java.io.IOException;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.*;
+
 /**
  * Publisher tests from the Reactive Streams Technology Compatibility Kit.
  * https://github.com/reactive-streams/reactive-streams-jvm/tree/master/tck
@@ -84,36 +86,6 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
     @Override
     public void required_spec313_cancelMustMakeThePublisherEventuallyDropAllReferencesToTheSubscriber() throws Throwable {
         super.required_spec313_cancelMustMakeThePublisherEventuallyDropAllReferencesToTheSubscriber();
-    }
-
-    @Test(enabled = false, description = "gRPC streams are hot, so multiple subscribes don't make sense and aren't supported")
-    @Override
-    public void optional_spec111_maySupportMultiSubscribe() throws Throwable {
-        super.optional_spec111_maySupportMultiSubscribe();
-    }
-
-    @Test(enabled = false, description = "gRPC streams are hot, so multiple subscribes don't make sense and aren't supported")
-    @Override
-    public void optional_spec111_registeredSubscribersMustReceiveOnNextOrOnCompleteSignals() throws Throwable {
-        super.optional_spec111_registeredSubscribersMustReceiveOnNextOrOnCompleteSignals();
-    }
-
-    @Test(enabled = false, description = "gRPC streams are hot, so multiple subscribes don't make sense and aren't supported")
-    @Override
-    public void optional_spec111_multicast_mustProduceTheSameElementsInTheSameSequenceToAllOfItsSubscribersWhenRequestingOneByOne() throws Throwable {
-        super.optional_spec111_multicast_mustProduceTheSameElementsInTheSameSequenceToAllOfItsSubscribersWhenRequestingOneByOne();
-    }
-
-    @Test(enabled = false, description = "gRPC streams are hot, so multiple subscribes don't make sense and aren't supported")
-    @Override
-    public void optional_spec111_multicast_mustProduceTheSameElementsInTheSameSequenceToAllOfItsSubscribersWhenRequestingManyUpfront() throws Throwable {
-        super.optional_spec111_multicast_mustProduceTheSameElementsInTheSameSequenceToAllOfItsSubscribersWhenRequestingManyUpfront();
-    }
-
-    @Test(enabled = false, description = "gRPC streams are hot, so multiple subscribes don't make sense and aren't supported")
-    @Override
-    public void optional_spec111_multicast_mustProduceTheSameElementsInTheSameSequenceToAllOfItsSubscribersWhenRequestingManyUpfrontAndCompleteAsExpected() throws Throwable {
-        super.optional_spec111_multicast_mustProduceTheSameElementsInTheSameSequenceToAllOfItsSubscribersWhenRequestingManyUpfrontAndCompleteAsExpected();
     }
 
     /////////////////////

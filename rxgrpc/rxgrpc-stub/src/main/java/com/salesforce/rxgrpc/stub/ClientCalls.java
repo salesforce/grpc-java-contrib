@@ -33,14 +33,16 @@ public final class ClientCalls {
             Single<TRequest> rxRequest,
             BiConsumer<TRequest, StreamObserver<TResponse>> delegate) {
         try {
-            return Single.create(emitter -> rxRequest.subscribe(
-                request -> delegate.accept(request, new LambdaStreamObserver<TResponse>(
-                    emitter::onSuccess,
-                    emitter::onError,
-                    Runnables.doNothing()
-                )),
-                emitter::onError
-            ));
+            return Single
+                    .<TResponse>create(emitter -> rxRequest.subscribe(
+                        request -> delegate.accept(request, new LambdaStreamObserver<TResponse>(
+                            emitter::onSuccess,
+                            emitter::onError,
+                            Runnables.doNothing()
+                        )),
+                        emitter::onError
+                    ))
+                    .lift(new SubscribeOnlyOnceSingleOperator<>());
         } catch (Throwable throwable) {
             return Single.error(throwable);
         }
@@ -56,7 +58,9 @@ public final class ClientCalls {
         try {
             RxConsumerStreamObserver<TRequest, TResponse> consumerStreamObserver = new RxConsumerStreamObserver<>();
             rxRequest.subscribe(request -> delegate.accept(request, consumerStreamObserver));
-            return consumerStreamObserver.getRxConsumer();
+            return consumerStreamObserver
+                    .getRxConsumer()
+                    .lift(new SubscribeOnlyOnceFlowableOperator<>());
         } catch (Throwable throwable) {
             return Flowable.error(throwable);
         }
@@ -70,17 +74,18 @@ public final class ClientCalls {
             Flowable<TRequest> rxRequest,
             Function<StreamObserver<TResponse>, StreamObserver<TRequest>> delegate) {
         try {
-            return Single.create(emitter -> {
-                RxProducerStreamObserver<TRequest, TResponse> rxProducerStreamObserver = new RxProducerStreamObserver<>(
-                        rxRequest,
-                        emitter::onSuccess,
-                        emitter::onError,
-                        Runnables.doNothing());
-                delegate.apply(
-                        new CancellableStreamObserver<>(rxProducerStreamObserver,
-                        rxProducerStreamObserver::cancel));
-                rxProducerStreamObserver.rxSubscribe();
-            });
+            return Single
+                    .<TResponse>create(emitter -> {
+                        RxProducerStreamObserver<TRequest, TResponse> rxProducerStreamObserver = new RxProducerStreamObserver<>(
+                                rxRequest,
+                                emitter::onSuccess,
+                                emitter::onError,
+                                Runnables.doNothing());
+                        delegate.apply(
+                                new CancellableStreamObserver<>(rxProducerStreamObserver,
+                                rxProducerStreamObserver::cancel));
+                        rxProducerStreamObserver.rxSubscribe();
+                    }).lift(new SubscribeOnlyOnceSingleOperator<>());
         } catch (Throwable throwable) {
             return Single.error(throwable);
         }
@@ -97,7 +102,9 @@ public final class ClientCalls {
             RxProducerConsumerStreamObserver<TRequest, TResponse> consumerStreamObserver = new RxProducerConsumerStreamObserver<>(rxRequest);
             delegate.apply(new CancellableStreamObserver<>(consumerStreamObserver, consumerStreamObserver::cancel));
             consumerStreamObserver.rxSubscribe();
-            return consumerStreamObserver.getRxConsumer();
+            return consumerStreamObserver
+                    .getRxConsumer()
+                    .lift(new SubscribeOnlyOnceFlowableOperator<>());
         } catch (Throwable throwable) {
             return Flowable.error(throwable);
         }

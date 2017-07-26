@@ -18,7 +18,6 @@ import io.grpc.stub.StreamObserver;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.SafeSubscriber;
 
 import java.util.function.Function;
 

@@ -12,7 +12,6 @@ import com.salesforce.grpc.contrib.LambdaStreamObserver;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientResponseObserver;
 import io.reactivex.Flowable;
-import io.reactivex.subscribers.SafeSubscriber;
 
 import java.util.function.Consumer;
 

@@ -8,7 +8,6 @@
 package com.salesforce.rxgrpc.tck;
 
 import com.salesforce.rxgrpc.stub.RxFlowableBackpressureOnReadyHandler;
-import com.salesforce.rxgrpc.tck.Message;
 import io.grpc.stub.ClientCallStreamObserver;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;

@@ -7,8 +7,6 @@
 
 package com.salesforce.rxgrpc.tck;
 
-import com.salesforce.rxgrpc.tck.Message;
-import com.salesforce.rxgrpc.tck.RxTckGrpc;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 

@@ -15,12 +15,12 @@ import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.tck.PublisherVerification;
 import org.reactivestreams.tck.TestEnvironment;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.*;
 
 /**
  * Publisher tests from the Reactive Streams Technology Compatibility Kit.
@@ -70,19 +70,19 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
     }
 
 
-    @Test(enabled = false)
+    @Test//(enabled = false)
     @Override
     public void optional_spec104_mustSignalOnErrorWhenFails() throws Throwable {
         super.optional_spec104_mustSignalOnErrorWhenFails();
     }
 
-    @Test(enabled = false)
+    @Test//(enabled = false)
     @Override
     public void required_spec109_mayRejectCallsToSubscribeIfPublisherIsUnableOrUnwillingToServeThemRejectionMustTriggerOnErrorAfterOnSubscribe() throws Throwable {
         super.required_spec109_mayRejectCallsToSubscribeIfPublisherIsUnableOrUnwillingToServeThemRejectionMustTriggerOnErrorAfterOnSubscribe();
     }
 
-    @Test(enabled = false)
+    @Test//(enabled = false)
     @Override
     public void required_spec313_cancelMustMakeThePublisherEventuallyDropAllReferencesToTheSubscriber() throws Throwable {
         super.required_spec313_cancelMustMakeThePublisherEventuallyDropAllReferencesToTheSubscriber();

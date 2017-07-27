@@ -103,6 +103,8 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
         } else {
             subscriber.onError(Preconditions.checkNotNull(t));
         }
+        // Release the subscriber, we don't need a reference to it anymore
+        subscriber = null;
     }
 
     @Override
@@ -113,5 +115,7 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
 
         }
         subscriber.onComplete();
+        // Release the subscriber, we don't need a reference to it anymore
+        subscriber = null;
     }
 }

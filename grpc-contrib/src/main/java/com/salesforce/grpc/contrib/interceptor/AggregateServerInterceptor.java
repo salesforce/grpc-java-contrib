@@ -21,7 +21,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * {@code ServerInterceptor}. Each inner {@code ServerInterceptor} is applied in order when
  * {@link AggregateServerInterceptor#interceptCall(ServerCall, Metadata, ServerCallHandler)} is called.
  */
-
 public class AggregateServerInterceptor implements ServerInterceptor {
     private final List<ServerInterceptor> interceptors;
 
@@ -63,7 +62,7 @@ public class AggregateServerInterceptor implements ServerInterceptor {
      * @param <ReqT>
      * @param <RespT>
      */
-    private static class InterceptorServerCallHandler<ReqT, RespT> implements ServerCallHandler<ReqT, RespT> {
+    private static final class InterceptorServerCallHandler<ReqT, RespT> implements ServerCallHandler<ReqT, RespT> {
         private final ServerCallHandler<ReqT, RespT> next;
         private final ServerInterceptor interceptor;
 

@@ -7,7 +7,6 @@
 
 package com.salesforce.grpc.contrib.interceptor;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import io.grpc.*;
 
@@ -61,13 +60,13 @@ public class AggregateClientInterceptor implements ClientInterceptor {
     /**
      * A {@link Channel} implementation used to chain {@link ClientInterceptor} instances together.
      */
-    private static class InterceptorChannel extends Channel {
+    private static final class InterceptorChannel extends Channel {
         private final Channel channel;
         private final ClientInterceptor interceptor;
 
         private InterceptorChannel(Channel channel, ClientInterceptor interceptor) {
             this.channel = channel;
-            this.interceptor = Preconditions.checkNotNull(interceptor, "interceptor");
+            this.interceptor = checkNotNull(interceptor, "interceptor");
         }
 
         @Override

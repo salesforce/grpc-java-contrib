@@ -1,0 +1,22 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+    classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.1'
+  }
+}
+
+allprojects {
+  apply plugin: 'java'
+  apply plugin: 'com.google.protobuf'
+
+  apply from: "${rootDir}/dependencies.gradle"
+
+  repositories {
+    mavenCentral()
+  }
+
+  group = 'com.salesforce.servicelibs'
+}

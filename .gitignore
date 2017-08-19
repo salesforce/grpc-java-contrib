@@ -1,4 +1,7 @@
+.gradle/
 .idea/
+build/
+out/
 target/
 generated-resources/
 *.iml

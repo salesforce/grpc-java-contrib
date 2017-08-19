@@ -1,0 +1,22 @@
+apply from: "${rootDir}/protobuf-protoc.gradle"
+
+protobuf {
+  plugins {
+    grpc {
+      artifact = dep('io.grpc:protoc-gen-grpc-java')
+    }
+  }
+  generateProtoTasks {
+    all()*.plugins {
+      grpc {}
+    }
+  }
+}
+
+sourceSets {
+  main {
+    java {
+      srcDir "${protobuf.generatedFilesBaseDir}/test/grpc"
+    }
+  }
+}

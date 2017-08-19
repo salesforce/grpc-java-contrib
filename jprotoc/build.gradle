@@ -1,0 +1,36 @@
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+mainClassName = 'com.salesforce.jprotoc.jdk8.Jdk8Generator'
+
+dependencies {
+  compile dep('io.grpc:grpc-protobuf')
+  compile dep('com.github.spullara.mustache.java:compiler')
+
+  testCompile dep('commons-lang:commons-lang')
+  testCompile dep('junit:junit')
+  testCompile dep('org.assertj:assertj-core')
+}
+
+jar {
+  manifest {
+    attributes 'Main-Class': mainClassName
+  }
+}
+
+task createJarExe(dependsOn: installShadowDist) {
+  final outputFile = file("${buildDir}/install/jprotoc-shadow/bin/${project.name}.exe")
+
+  doLast {
+    outputFile.text = '#!/bin/bash\n'
+    outputFile.append('exec java -jar "$0" "$@"')
+    outputFile.append(inputs.files.first().readBytes())
+    outputFile.setExecutable(true)
+  }
+
+  inputs.files file("${buildDir}/install/${project.name}-shadow/lib/${project.name}-all.jar")
+  outputs.file outputFile
+  doFirst {
+    mkdir outputFile.getParent()
+  }
+}

@@ -1,0 +1,13 @@
+apply from: "${rootDir}/protobuf-protoc.gradle"
+
+dependencies {
+  compile dep('io.grpc:grpc-context')
+  compile dep('io.grpc:grpc-core')
+  compile dep('io.grpc:grpc-protobuf')
+
+  testCompile dep('io.grpc:grpc-testing')
+  testCompile dep('junit:junit')
+  testCompile dep('org.assertj:assertj-core')
+  testCompile dep('org.awaitility:awaitility')
+  testCompile dep('org.mockito:mockito-core')
+}

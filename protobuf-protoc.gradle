@@ -1,0 +1,13 @@
+protobuf {
+  protoc {
+    artifact = dep('com.google.protobuf:protoc')
+  }
+}
+
+sourceSets {
+  main {
+    java {
+      srcDir "${protobuf.generatedFilesBaseDir}/test/java"
+    }
+  }
+}

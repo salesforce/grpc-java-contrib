@@ -1,0 +1,38 @@
+final orgRev = { o ->
+  final rev = [
+      'com.google.protobuf': '3.2.0',
+      'io.grpc': '1.4.0',
+      'org.springframework': '4.0.0.RELEASE'
+  ]
+
+  project.hasProperty(o) ? project[o] : rev[o]
+}
+
+ext.rev = { m ->
+  [
+      'com.github.spullara.mustache.java:compiler': '0.9.4',
+      'com.google.protobuf:protobuf-java': orgRev('com.google.protobuf'),
+      'com.google.protobuf:protoc': orgRev('com.google.protobuf'),
+      'commons-lang:commons-lang': '2.6',
+      'io.grpc:grpc-context': orgRev('io.grpc'),
+      'io.grpc:grpc-core': orgRev('io.grpc'),
+      'io.grpc:grpc-netty': orgRev('io.grpc'),
+      'io.grpc:grpc-protobuf': orgRev('io.grpc'),
+      'io.grpc:grpc-stub': orgRev('io.grpc'),
+      'io.grpc:grpc-testing': orgRev('io.grpc'),
+      'io.grpc:protoc-gen-grpc-java': orgRev('io.grpc'),
+      'javax.servlet:servlet-api': '2.5',
+      'junit:junit': '4.12',
+      'org.assertj:assertj-core': '3.6.2',
+      'org.awaitility:awaitility': '2.0.0',
+      'org.mockito:mockito-core': '2.7.5',
+      'org.springframework:spring-context': orgRev('org.springframework'),
+      'org.springframework:spring-test': orgRev('org.springframework'),
+      'org.springframework:spring-web': orgRev('org.springframework'),
+      'org.springframework:spring-webmvc': orgRev('org.springframework')
+  ][m]
+}
+
+ext.dep = { m ->
+  "${m}:${project.hasProperty(m) ? project[m] : ext.rev(m)}"
+}

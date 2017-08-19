@@ -1,0 +1,6 @@
+rootProject.name = 'grpc-java-contrib'
+
+include 'jprotoc-test'
+include 'grpc-spring'
+include 'jprotoc'
+include 'grpc-contrib'

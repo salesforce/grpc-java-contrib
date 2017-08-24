@@ -62,7 +62,6 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
         RxTckGrpc.RxTckStub stub = RxTckGrpc.newRxStub(channel);
         Flowable<Message> request = Flowable.just(toMessage(TckService.KABOOM));
         return stub.manyToMany(request);
-//        return null;
     }
 
     private Message toMessage(int i) {
@@ -70,19 +69,19 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
     }
 
 
-    @Test//(enabled = false)
+    @Test(enabled = false)
     @Override
     public void optional_spec104_mustSignalOnErrorWhenFails() throws Throwable {
         super.optional_spec104_mustSignalOnErrorWhenFails();
     }
 
-    @Test//(enabled = false)
+    @Test(enabled = false)
     @Override
     public void required_spec109_mayRejectCallsToSubscribeIfPublisherIsUnableOrUnwillingToServeThemRejectionMustTriggerOnErrorAfterOnSubscribe() throws Throwable {
         super.required_spec109_mayRejectCallsToSubscribeIfPublisherIsUnableOrUnwillingToServeThemRejectionMustTriggerOnErrorAfterOnSubscribe();
     }
 
-    @Test//(enabled = false)
+    @Test(enabled = false)
     @Override
     public void required_spec313_cancelMustMakeThePublisherEventuallyDropAllReferencesToTheSubscriber() throws Throwable {
         super.required_spec313_cancelMustMakeThePublisherEventuallyDropAllReferencesToTheSubscriber();

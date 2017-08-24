@@ -28,7 +28,9 @@ task createJarExe(dependsOn: installShadowDist) {
     outputFile.setExecutable(true)
   }
 
-  inputs.files file("${buildDir}/install/${project.name}-shadow/lib/${project.name}-all.jar")
+  inputs.files fileTree(tasks.findByName('installShadowDist').outputs.getFiles().getFiles().first()).getFiles().find { file ->
+    file.toString().endsWith('.jar')
+  }
   outputs.file outputFile
   doFirst {
     mkdir outputFile.getParent()

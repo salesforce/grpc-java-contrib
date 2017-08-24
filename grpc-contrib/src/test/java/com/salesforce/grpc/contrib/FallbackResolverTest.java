@@ -11,7 +11,6 @@ import io.grpc.Attributes;
 import io.grpc.NameResolver;
 import io.grpc.NameResolverProvider;
 import org.junit.Test;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.URI;
 
@@ -95,17 +94,17 @@ public class FallbackResolverTest {
 
         @Override
         public String getServiceAuthority() {
-            throw new NotImplementedException();
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public void start(Listener listener) {
-            throw new NotImplementedException();
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public void shutdown() {
-            throw new NotImplementedException();
+            throw new UnsupportedOperationException();
         }
     }
 }

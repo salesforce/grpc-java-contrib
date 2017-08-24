@@ -17,12 +17,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * FallbackResolver is a {@link NameResolver.Factory} that allows multiple {@link NameResolver} instances to be
+ * FallbackResolver is a NameResolver Factory that allows multiple {@link NameResolver} instances to be
  * queried in sequence when attempting to resolve an Authority by URI scheme. If the first name resolver cannot handle
  * the Authority's scheme, the remaining resolvers will be tried in turn.
  * <p>
  * FallbackResolver is particularly useful when setting an explicit client resolver via
- * {@link ManagedChannelBuilder#nameResolverFactory(NameResolver.Factory)}, rather than relying on gRPC's default
+ * {@link ManagedChannelBuilder}'s nameResolverFactory() method, rather than relying on gRPC's default
  * resolver discovery system. For example, the {@link StaticResolver#provider(java.net.InetSocketAddress)}.
  * <p>
  * FallbackResolver assumes the default scheme of the first resolver in the sequence.

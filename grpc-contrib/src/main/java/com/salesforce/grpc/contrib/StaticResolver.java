@@ -15,7 +15,7 @@ import java.net.URI;
 import java.util.Collections;
 
 /**
- * StaticResolver is a gRPC {@link NameResolverProvider} and {@link NameResolver.Factory} that resolves every request
+ * StaticResolver is a gRPC NameResolverProvider and NameResolver Factory that resolves every request
  * to the same static address. StaticResolverProvider is useful when name resolution is being delegated to an outside
  * proxy such as Linkerd or Envoy, typically running on localhost. Connecting directly to the proxy is insufficient
  * because each request will have the Authority header for the proxy instead of for the destination service. You can

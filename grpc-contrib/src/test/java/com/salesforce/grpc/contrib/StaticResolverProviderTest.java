@@ -9,7 +9,6 @@ package com.salesforce.grpc.contrib;
 
 import io.grpc.*;
 import org.junit.Test;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -50,7 +49,7 @@ public class StaticResolverProviderTest {
             @Override
             @Deprecated
             public void onUpdate(List<ResolvedServerInfoGroup> servers, Attributes attributes) {
-                throw new NotImplementedException();
+                throw new UnsupportedOperationException();
             }
 
             @Override

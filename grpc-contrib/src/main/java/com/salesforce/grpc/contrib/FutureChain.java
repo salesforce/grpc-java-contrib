@@ -10,9 +10,12 @@ package com.salesforce.grpc.contrib;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.*;
+import io.grpc.Metadata;
+import io.grpc.Status;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -102,6 +105,22 @@ public final class FutureChain<T> {
      */
     public FutureChain<T> onFailure(@Nonnull final Consumer<Throwable> failure) {
         MoreFutures.onFailure(future, failure, executor);
+        return this;
+    }
+
+    /**
+     * @see MoreFutures#onGrpcFailure(ListenableFuture, BiConsumer, Executor)
+     */
+    public FutureChain<T> onGrpcFailure(@Nonnull BiConsumer<Status, Metadata> failure) {
+        MoreFutures.onGrpcFailure(future, failure, executor);
+        return this;
+    }
+
+    /**
+     * @see MoreFutures#onGrpcFailure(ListenableFuture, Status.Code, BiConsumer, Executor)
+     */
+    public FutureChain<T> onGrpcFailure(@Nonnull final Status.Code statusCode, @Nonnull final BiConsumer<Status, Metadata> failure) {
+        MoreFutures.onGrpcFailure(future, statusCode, failure, executor);
         return this;
     }
 

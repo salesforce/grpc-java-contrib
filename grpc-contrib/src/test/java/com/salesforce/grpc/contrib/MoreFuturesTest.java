@@ -8,6 +8,10 @@
 package com.salesforce.grpc.contrib;
 
 import com.google.common.util.concurrent.*;
+import io.grpc.Metadata;
+import io.grpc.Status;
+import io.grpc.StatusException;
+import io.grpc.StatusRuntimeException;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -108,5 +112,95 @@ public class MoreFuturesTest {
         assertThatThrownBy(() -> MoreFutures.getDoneUnchecked(future))
                 .isInstanceOf(UncheckedExecutionException.class)
                 .hasCause(exception);
+    }
+
+    @Test
+    public void onGrpcFailureHandlesStatusException() {
+        AtomicBoolean called = new AtomicBoolean(false);
+
+        Metadata trailers = new Metadata();
+        Throwable exception = Status.NOT_FOUND.asException(trailers);
+
+        SettableFuture<String> future = SettableFuture.create();
+        MoreFutures.onGrpcFailure(future, (status, metadata) -> {
+            assertThat(status.getCode()).isEqualTo(Status.Code.NOT_FOUND);
+            assertThat(metadata).isEqualTo(trailers);
+            called.set(true);
+        }, MoreExecutors.directExecutor());
+
+        assertThat(called.get()).isFalse();
+        future.setException(exception);
+        assertThat(called.get()).isTrue();
+    }
+
+    @Test
+    public void onGrpcFailureHandlesStatusRuntimeException() {
+        AtomicBoolean called = new AtomicBoolean(false);
+
+        Metadata trailers = new Metadata();
+        Throwable exception = Status.NOT_FOUND.asRuntimeException(trailers);
+
+        SettableFuture<String> future = SettableFuture.create();
+        MoreFutures.onGrpcFailure(future, (status, metadata) -> {
+            assertThat(status.getCode()).isEqualTo(Status.Code.NOT_FOUND);
+            assertThat(metadata).isEqualTo(trailers);
+            called.set(true);
+        }, MoreExecutors.directExecutor());
+
+        assertThat(called.get()).isFalse();
+        future.setException(exception);
+        assertThat(called.get()).isTrue();
+    }
+
+    @Test
+    public void onGrpcFailureIgnoresNonGrpcException() {
+        AtomicBoolean called = new AtomicBoolean(false);
+
+        Throwable exception = new Exception("Kaboom!");
+
+        SettableFuture<String> future = SettableFuture.create();
+        MoreFutures.onGrpcFailure(future, (status, metadata) -> {
+            called.set(true);
+        }, MoreExecutors.directExecutor());
+
+        assertThat(called.get()).isFalse();
+        future.setException(exception);
+        assertThat(called.get()).isFalse();
+    }
+
+    @Test
+    public void onGrpcFailureHandlesSpecificStatusException() {
+        AtomicBoolean called = new AtomicBoolean(false);
+
+        Metadata trailers = new Metadata();
+        Throwable exception = Status.NOT_FOUND.asException(trailers);
+
+        SettableFuture<String> future = SettableFuture.create();
+        MoreFutures.onGrpcFailure(future, Status.Code.NOT_FOUND, (status, metadata) -> {
+            assertThat(status.getCode()).isEqualTo(Status.Code.NOT_FOUND);
+            assertThat(metadata).isEqualTo(trailers);
+            called.set(true);
+        }, MoreExecutors.directExecutor());
+
+        assertThat(called.get()).isFalse();
+        future.setException(exception);
+        assertThat(called.get()).isTrue();
+    }
+
+    @Test
+    public void onGrpcFailureHandlesIgnoresSpecificStatusException() {
+        AtomicBoolean called = new AtomicBoolean(false);
+
+        Metadata trailers = new Metadata();
+        Throwable exception = Status.NOT_FOUND.asException(trailers);
+
+        SettableFuture<String> future = SettableFuture.create();
+        MoreFutures.onGrpcFailure(future, Status.Code.UNIMPLEMENTED, (status, metadata) -> {
+            called.set(true);
+        }, MoreExecutors.directExecutor());
+
+        assertThat(called.get()).isFalse();
+        future.setException(exception);
+        assertThat(called.get()).isFalse();
     }
 }

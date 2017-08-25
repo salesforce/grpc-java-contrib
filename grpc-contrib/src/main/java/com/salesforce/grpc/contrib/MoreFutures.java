@@ -8,9 +8,14 @@
 package com.salesforce.grpc.contrib;
 
 import com.google.common.util.concurrent.*;
+import io.grpc.Metadata;
+import io.grpc.Status;
+import io.grpc.StatusException;
+import io.grpc.StatusRuntimeException;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -99,6 +104,76 @@ public final class MoreFutures {
         checkNotNull(executor, "executor");
 
         addCallback(future, v -> { }, failure, executor);
+    }
+
+    /**
+     * Registers a failure callback to be run when the {@code Future}'s
+     * computation is {@linkplain java.util.concurrent.Future#isDone() complete} or, if the
+     * computation is already complete, immediately.
+     *
+     * This callback is only executed if the failure type is a gRPC {@code StatusException} or
+     * {@code StatusRuntimeException}, in which case the gRPC {@code Status} and {@code Trailers} are extracted
+     * and passed to the callback.
+     *
+     * @see Futures#addCallback(ListenableFuture, FutureCallback, Executor)
+     * @param future The future attach the callback to.
+     * @param failure A {@link BiConsumer} of to execute when the future fails with a gRPC status.
+     * @param executor The executor to run {@code callback} when the future completes.
+     */
+    public static <V> void onGrpcFailure(@Nonnull final ListenableFuture<V> future,
+                                         @Nonnull final BiConsumer<Status, Metadata> failure,
+                                         @Nonnull final Executor executor) {
+        checkNotNull(future, "future");
+        checkNotNull(failure, "failure");
+        checkNotNull(executor, "executor");
+
+        addCallback(
+            future,
+            v -> { },
+            t -> {
+                if (t instanceof StatusException) {
+                    failure.accept(((StatusException) t).getStatus(), ((StatusException) t).getTrailers());
+                }
+                if (t instanceof StatusRuntimeException) {
+                    failure.accept(((StatusRuntimeException) t).getStatus(), ((StatusRuntimeException) t).getTrailers());
+                }
+            },
+            executor);
+    }
+
+    /**
+     * Registers a failure callback to be run when the {@code Future}'s
+     * computation is {@linkplain java.util.concurrent.Future#isDone() complete} or, if the
+     * computation is already complete, immediately.
+     *
+     * This callback is only executed if the failure type is a gRPC {@code StatusException} or
+     * {@code StatusRuntimeException} with a specific {@code Status.Code}, in which case the gRPC {@code Status}
+     * and {@code Trailers} are extracted and passed to the callback.
+     *
+     * @see Futures#addCallback(ListenableFuture, FutureCallback, Executor)
+     * @param future The future attach the callback to.
+     * @param statusCode The gRPC status code to match on.
+     * @param failure A {@link BiConsumer} of to execute when the future fails with a gRPC status.
+     * @param executor The executor to run {@code callback} when the future completes.
+     */
+    public static <V> void onGrpcFailure(@Nonnull final ListenableFuture<V> future,
+                                         @Nonnull final Status.Code statusCode,
+                                         @Nonnull final BiConsumer<Status, Metadata> failure,
+                                         @Nonnull final Executor executor) {
+        checkNotNull(future, "future");
+        checkNotNull(statusCode, "statusCode");
+        checkNotNull(failure, "failure");
+        checkNotNull(executor, "executor");
+
+        onGrpcFailure(
+            future,
+            (status, metadata) -> {
+                if (status.getCode() == statusCode) {
+                    failure.accept(status, metadata);
+                }
+            },
+            executor
+        );
     }
 
     /**

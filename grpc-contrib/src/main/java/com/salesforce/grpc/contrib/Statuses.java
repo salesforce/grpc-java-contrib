@@ -32,7 +32,7 @@ import java.util.function.BiFunction;
  *     } catch (Throwable t) {
  *         if (hasStatusCode(t, Status.Code.UNAUTHENTICATED) {
  *             doWithStatus(t, (status, metadata) -> showLoginPrompt();
- *         } else if (Statuses.hasStatus(t) {
+ *         } else if (hasStatus(t) {
  *             doWithStatus(t, (status, metadata) -> handleGrpcProblem(status);
  *         } else {
  *             throw t;

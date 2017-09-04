@@ -27,7 +27,7 @@ import java.util.UUID;
  * https://github.com/reactive-streams/reactive-streams-jvm/tree/master/tck
  */
 public class RxGrpcPublisherVerificationTest extends PublisherVerification<Message> {
-    public static final long DEFAULT_TIMEOUT_MILLIS = 100L;
+    public static final long DEFAULT_TIMEOUT_MILLIS = 500L;
     public static final long PUBLISHER_REFERENCE_CLEANUP_TIMEOUT_MILLIS = 500L;
 
     public RxGrpcPublisherVerificationTest() {

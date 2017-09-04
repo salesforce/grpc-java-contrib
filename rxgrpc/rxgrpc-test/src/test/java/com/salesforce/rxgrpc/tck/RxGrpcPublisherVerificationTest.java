@@ -8,7 +8,9 @@
 package com.salesforce.rxgrpc.tck;
 
 import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
+import io.grpc.ServerBuilder;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 import io.reactivex.Flowable;
@@ -41,15 +43,16 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
         super.setUp();
 
         UUID name = UUID.randomUUID();
-        server = InProcessServerBuilder.forName(name.toString()).addService(new TckService()).build().start();
-        channel = InProcessChannelBuilder.forName(name.toString()).usePlaintext(true).build();
+        server = ServerBuilder.forPort(0).addService(new TckService()).build().start();
+        channel = ManagedChannelBuilder.forAddress("localhost", server.getPort()).usePlaintext(true).build();
     }
 
     @AfterMethod
-    public void tearDown() {
+    public void tearDown() throws Exception {
         System.out.println("TEAR DOWN");
-        server.shutdownNow();
-        channel.shutdownNow();
+        server.shutdown();
+        server.awaitTermination();
+        channel.shutdown();
     }
 
     @Override
@@ -87,23 +90,23 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
         super.required_spec109_mayRejectCallsToSubscribeIfPublisherIsUnableOrUnwillingToServeThemRejectionMustTriggerOnErrorAfterOnSubscribe();
     }
 
-    @Test(enabled = false)
-    @Override
-    public void required_spec313_cancelMustMakeThePublisherEventuallyDropAllReferencesToTheSubscriber() throws Throwable {
-        super.required_spec313_cancelMustMakeThePublisherEventuallyDropAllReferencesToTheSubscriber();
-    }
+//    @Test()
+//    @Override
+//    public void required_spec313_cancelMustMakeThePublisherEventuallyDropAllReferencesToTheSubscriber() throws Throwable {
+//        super.required_spec313_cancelMustMakeThePublisherEventuallyDropAllReferencesToTheSubscriber();
+//    }
 
     /////////////////////
 
-    @Test()
+//    @Test()
 //    @Override
-    public void required_createPublisher1MustProduceAStreamOfExactly1Element() throws Throwable {
-        super.required_createPublisher1MustProduceAStreamOfExactly1Element();
-    }
-
-    @Test()
+//    public void required_createPublisher1MustProduceAStreamOfExactly1Element() throws Throwable {
+//        super.required_createPublisher1MustProduceAStreamOfExactly1Element();
+//    }
+//
+//    @Test()
 //    @Override
-    public void required_createPublisher3MustProduceAStreamOfExactly3Elements() throws Throwable {
-        super.required_createPublisher3MustProduceAStreamOfExactly3Elements();
-    }
+//    public void required_createPublisher3MustProduceAStreamOfExactly3Elements() throws Throwable {
+//        super.required_createPublisher3MustProduceAStreamOfExactly3Elements();
+//    }
 }

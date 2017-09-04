@@ -7,6 +7,7 @@
 
 package com.salesforce.rxgrpc.stub;
 
+import com.google.common.util.concurrent.MoreExecutors;
 import io.grpc.internal.GrpcUtil;
 import io.grpc.internal.SerializingExecutor;
 
@@ -26,6 +27,6 @@ public final class RxExecutor {
      * Get the shared executor.
      */
     public static Executor getSerializingExecutor() {
-        return new SerializingExecutor(executor);
+        return new SerializingExecutor(MoreExecutors.directExecutor());
     }
 }

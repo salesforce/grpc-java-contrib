@@ -15,9 +15,7 @@ import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.tck.PublisherVerification;
 import org.reactivestreams.tck.TestEnvironment;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -34,18 +32,22 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
         super(new TestEnvironment(DEFAULT_TIMEOUT_MILLIS, DEFAULT_TIMEOUT_MILLIS), PUBLISHER_REFERENCE_CLEANUP_TIMEOUT_MILLIS);
     }
 
-    private static Server server;
-    private static ManagedChannel channel;
+    private Server server;
+    private ManagedChannel channel;
 
-    @BeforeTest
-    public static void setup() throws IOException {
+    @BeforeMethod
+    public void setup() throws Exception {
+        System.out.println("SETUP");
+        super.setUp();
+
         UUID name = UUID.randomUUID();
         server = InProcessServerBuilder.forName(name.toString()).addService(new TckService()).build().start();
         channel = InProcessChannelBuilder.forName(name.toString()).usePlaintext(true).build();
     }
 
-    @AfterTest
-    public static void tearDown() {
+    @AfterMethod
+    public void tearDown() {
+        System.out.println("TEAR DOWN");
         server.shutdownNow();
         channel.shutdownNow();
     }
@@ -54,14 +56,18 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
     public Publisher<Message> createPublisher(long elements) {
         RxTckGrpc.RxTckStub stub = RxTckGrpc.newRxStub(channel);
         Flowable<Message> request = Flowable.range(0, (int)elements).map(this::toMessage);
-        return stub.manyToMany(request);
+        Publisher<Message> publisher = stub.manyToMany(request);
+
+        return publisher;
     }
 
     @Override
     public Publisher<Message> createFailedPublisher() {
         RxTckGrpc.RxTckStub stub = RxTckGrpc.newRxStub(channel);
         Flowable<Message> request = Flowable.just(toMessage(TckService.KABOOM));
-        return stub.manyToMany(request);
+        Publisher<Message> publisher = stub.manyToMany(request);
+
+        return publisher;
     }
 
     private Message toMessage(int i) {
@@ -90,13 +96,13 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
     /////////////////////
 
     @Test()
-    @Override
+//    @Override
     public void required_createPublisher1MustProduceAStreamOfExactly1Element() throws Throwable {
         super.required_createPublisher1MustProduceAStreamOfExactly1Element();
     }
 
     @Test()
-    @Override
+//    @Override
     public void required_createPublisher3MustProduceAStreamOfExactly3Elements() throws Throwable {
         super.required_createPublisher3MustProduceAStreamOfExactly3Elements();
     }

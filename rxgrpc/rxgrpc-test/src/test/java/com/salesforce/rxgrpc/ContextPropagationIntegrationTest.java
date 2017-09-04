@@ -95,8 +95,8 @@ public class ContextPropagationIntegrationTest {
 
     @BeforeClass
     public static void setupServer() throws Exception {
-        server = InProcessServerBuilder.forName("e2e").addService(ServerInterceptors.intercept(svc, serverInterceptor)).build().start();
-        channel = InProcessChannelBuilder.forName("e2e").usePlaintext(true).intercept(clientInterceptor).build();
+        server = ServerBuilder.forPort(0).addService(ServerInterceptors.intercept(svc, serverInterceptor)).build().start();
+        channel = ManagedChannelBuilder.forAddress("localhost", server.getPort()).usePlaintext(true).intercept(clientInterceptor).build();
     }
 
     @Before

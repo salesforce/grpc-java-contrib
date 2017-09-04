@@ -7,9 +7,7 @@
 
 package com.salesforce.rxgrpc;
 
-import io.grpc.ManagedChannel;
-import io.grpc.Server;
-import io.grpc.StatusRuntimeException;
+import io.grpc.*;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 import org.junit.AfterClass;
@@ -28,8 +26,8 @@ public class UnimplementedMethodIntegrationTest {
             // Don't implement anything
         };
 
-        server = InProcessServerBuilder.forName("e2e").addService(svc).build().start();
-        channel = InProcessChannelBuilder.forName("e2e").usePlaintext(true).build();
+        server = ServerBuilder.forPort(0).addService(svc).build().start();
+        channel = ManagedChannelBuilder.forAddress("localhost", server.getPort()).usePlaintext(true).build();
     }
 
     @AfterClass

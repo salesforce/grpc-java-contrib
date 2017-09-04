@@ -37,17 +37,16 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
     private Server server;
     private ManagedChannel channel;
 
-    @BeforeMethod
+    @BeforeClass
     public void setup() throws Exception {
         System.out.println("SETUP");
         super.setUp();
 
-        UUID name = UUID.randomUUID();
         server = ServerBuilder.forPort(0).addService(new TckService()).build().start();
         channel = ManagedChannelBuilder.forAddress("localhost", server.getPort()).usePlaintext(true).build();
     }
 
-    @AfterMethod
+    @AfterClass
     public void tearDown() throws Exception {
         System.out.println("TEAR DOWN");
         server.shutdown();
@@ -89,24 +88,4 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
     public void required_spec109_mayRejectCallsToSubscribeIfPublisherIsUnableOrUnwillingToServeThemRejectionMustTriggerOnErrorAfterOnSubscribe() throws Throwable {
         super.required_spec109_mayRejectCallsToSubscribeIfPublisherIsUnableOrUnwillingToServeThemRejectionMustTriggerOnErrorAfterOnSubscribe();
     }
-
-//    @Test()
-//    @Override
-//    public void required_spec313_cancelMustMakeThePublisherEventuallyDropAllReferencesToTheSubscriber() throws Throwable {
-//        super.required_spec313_cancelMustMakeThePublisherEventuallyDropAllReferencesToTheSubscriber();
-//    }
-
-    /////////////////////
-
-//    @Test()
-//    @Override
-//    public void required_createPublisher1MustProduceAStreamOfExactly1Element() throws Throwable {
-//        super.required_createPublisher1MustProduceAStreamOfExactly1Element();
-//    }
-//
-//    @Test()
-//    @Override
-//    public void required_createPublisher3MustProduceAStreamOfExactly3Elements() throws Throwable {
-//        super.required_createPublisher3MustProduceAStreamOfExactly3Elements();
-//    }
 }

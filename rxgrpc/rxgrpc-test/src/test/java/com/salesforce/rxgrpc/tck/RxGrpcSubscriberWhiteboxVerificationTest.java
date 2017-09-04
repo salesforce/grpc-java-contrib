@@ -14,6 +14,8 @@ import org.reactivestreams.Subscription;
 import org.reactivestreams.tck.SubscriberWhiteboxVerification;
 import org.reactivestreams.tck.TestEnvironment;
 
+import javax.annotation.Nullable;
+
 /**
  * Subscriber tests from the Reactive Streams Technology Compatibility Kit.
  * https://github.com/reactive-streams/reactive-streams-jvm/tree/master/tck
@@ -115,6 +117,11 @@ public class RxGrpcSubscriberWhiteboxVerificationTest extends SubscriberWhitebox
         @Override
         public void onCompleted() {
             System.out.println("Completed");
+        }
+
+        @Override
+        public void cancel(@Nullable String s, @Nullable Throwable throwable) {
+            
         }
     }
 }

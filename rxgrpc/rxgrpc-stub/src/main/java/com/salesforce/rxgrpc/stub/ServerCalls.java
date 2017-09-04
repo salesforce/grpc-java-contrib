@@ -43,6 +43,10 @@ public final class ServerCalls {
             Single<TResponse> rxResponse = Preconditions.checkNotNull(delegate.apply(rxRequest));
             rxResponse.subscribe(
                 value -> {
+                    // Don't try to respond if the server has already canceled the request
+                    if (responseObserver instanceof ServerCallStreamObserver && ((ServerCallStreamObserver) responseObserver).isCancelled()) {
+                        return;
+                    }
                     responseObserver.onNext(value);
                     responseObserver.onCompleted();
                 },
@@ -86,6 +90,10 @@ public final class ServerCalls {
                             .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()))));
             rxResponse.subscribe(
                 value -> {
+                    // Don't try to respond if the server has already canceled the request
+                    if (responseObserver instanceof ServerCallStreamObserver && ((ServerCallStreamObserver) responseObserver).isCancelled()) {
+                        return;
+                    }
                     responseObserver.onNext(value);
                     responseObserver.onCompleted();
                 },

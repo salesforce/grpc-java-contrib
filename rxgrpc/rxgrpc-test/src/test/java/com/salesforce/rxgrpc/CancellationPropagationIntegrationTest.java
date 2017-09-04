@@ -156,6 +156,8 @@ public class CancellationPropagationIntegrationTest {
 
     @Test
     public void serverCanCancelClientStreamImplicitly() {
+        System.out.println("++++++++++++++++++++++++");
+
         RxNumbersGrpc.RxNumbersStub stub = RxNumbersGrpc.newRxStub(channel);
 
         svc.setExplicitCancel(false);
@@ -165,7 +167,10 @@ public class CancellationPropagationIntegrationTest {
 
         Flowable<NumberProto.Number> request = Flowable.fromIterable(new Sequence(10000))
                 .map(CancellationPropagationIntegrationTest::protoNum)
-                .doOnNext(x -> didProduce.set(true))
+                .doOnNext(x -> {
+                    didProduce.set(true);
+                    System.out.println("Produced: " + x.getNumber(0));
+                })
                 .doOnCancel(() -> {
                     wasCanceled.set(true);
                     System.out.println("Client canceled");
@@ -178,6 +183,8 @@ public class CancellationPropagationIntegrationTest {
                 .test();
 
         observer.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        System.out.println("++++++++++++++++++++++++");
+
         observer.assertError(StatusRuntimeException.class);
         observer.assertTerminated();
         assertThat(wasCanceled.get()).isTrue();

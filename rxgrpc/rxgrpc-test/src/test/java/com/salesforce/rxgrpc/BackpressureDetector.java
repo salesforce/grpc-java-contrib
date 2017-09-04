@@ -47,7 +47,12 @@ public class BackpressureDetector {
     }
 
     public boolean backpressureDelayOcurred() {
-        return getOutliers().size() > 0;
+        try {
+            return getOutliers().size() > 0;
+        } catch (IndexOutOfBoundsException ex) {
+            ex.printStackTrace();
+            return false;
+        }
     }
 
     public List<Double> getOutliers() {

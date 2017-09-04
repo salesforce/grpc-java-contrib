@@ -59,7 +59,8 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
         subscriber.onSubscribe(new Subscription() {
             @Override
             public void request(long l) {
-                callStreamObserver.request((int) l);
+                // RxJava uses Long.MAX_VALUE to indicate "all messages"; gRPC uses Integer.MAX_VALUE.
+                callStreamObserver.request((int)Long.min(l, Integer.MAX_VALUE));
             }
 
             @Override

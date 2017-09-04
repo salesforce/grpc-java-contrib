@@ -17,6 +17,8 @@ import io.grpc.stub.ServerCallStreamObserver;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * RxFlowableBackpressureOnReadyHandler bridges the manual flow control idioms of RxJava and gRPC. This class takes
  * messages off of a {@link org.reactivestreams.Publisher} and feeds them into a {@link CallStreamObserver}
@@ -43,6 +45,7 @@ public class RxFlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, R
     private CallStreamObserver<T> requestStream;
     private Subscription subscription;
     private boolean canceled = false;
+    private CountDownLatch subscribed = new CountDownLatch(1);
 
     public RxFlowableBackpressureOnReadyHandler(ClientCallStreamObserver<T> requestStream) {
         this.requestStream = Preconditions.checkNotNull(requestStream);
@@ -57,6 +60,11 @@ public class RxFlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, R
 
     @Override
     public void run() {
+        try {
+            subscribed.await();
+        } catch (InterruptedException e) {
+
+        }
         Preconditions.checkState(subscription != null, "onSubscribe() not yet called");
         if (!isCanceled()) {
             // restart the pump
@@ -82,6 +90,7 @@ public class RxFlowableBackpressureOnReadyHandler<T> implements Subscriber<T>, R
             subscription.cancel();
         } else {
             this.subscription = Preconditions.checkNotNull(subscription);
+            subscribed.countDown();
         }
     }
 

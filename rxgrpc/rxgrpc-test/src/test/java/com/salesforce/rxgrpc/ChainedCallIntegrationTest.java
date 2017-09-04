@@ -11,23 +11,21 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-import io.grpc.inprocess.InProcessChannelBuilder;
-import io.grpc.inprocess.InProcessServerBuilder;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
 public class ChainedCallIntegrationTest {
-    private static Server server;
-    private static ManagedChannel channel;
+    private Server server;
+    private ManagedChannel channel;
 
-    @BeforeClass
-    public static void setupServer() throws Exception {
+    @Before
+    public void setupServer() throws Exception {
         GreeterGrpc.GreeterImplBase svc = new RxGreeterGrpc.GreeterImplBase() {
 
             @Override
@@ -69,26 +67,30 @@ public class ChainedCallIntegrationTest {
         channel = ManagedChannelBuilder.forAddress("localhost", server.getPort()).usePlaintext(true).build();
     }
 
-    @AfterClass
-    public static void stopServer() throws InterruptedException {
+    @After
+    public void stopServer() throws InterruptedException {
         server.shutdown();
         server.awaitTermination();
         channel.shutdown();
     }
 
     @Test
-    public void servicesCanCallOtherServices() {
+    public void servicesCanCallOtherServices() throws InterruptedException {
         RxGreeterGrpc.RxGreeterStub stub = RxGreeterGrpc.newRxStub(channel);
 
         Single<HelloRequest> input = Single.just(request("X"));
         Single<HelloRequest> one = stub.sayHello(input)
-                .map(ChainedCallIntegrationTest::bridge);
+                .map(ChainedCallIntegrationTest::bridge)
+                .doOnSuccess(System.out::println);
         Flowable<HelloRequest> two = stub.sayHelloRespStream(one)
-                .map(ChainedCallIntegrationTest::bridge);
+                .map(ChainedCallIntegrationTest::bridge)
+                .doOnNext(System.out::println);
         Flowable<HelloRequest> three = stub.sayHelloBothStream(two)
-                .map(ChainedCallIntegrationTest::bridge);
+                .map(ChainedCallIntegrationTest::bridge)
+                .doOnNext(System.out::println);
         Single<HelloRequest> four = stub.sayHelloReqStream(three)
-                .map(ChainedCallIntegrationTest::bridge);
+                .map(ChainedCallIntegrationTest::bridge)
+                .doOnSuccess(System.out::println);
         Single<String> five = stub.sayHello(four)
                 .map(HelloResponse::getMessage)
                 .doOnSuccess(System.out::println);

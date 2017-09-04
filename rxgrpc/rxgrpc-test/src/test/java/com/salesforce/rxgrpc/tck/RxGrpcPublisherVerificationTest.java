@@ -89,13 +89,13 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
 
     /////////////////////
 
-    @Test(enabled = false)
+    @Test()
     @Override
     public void required_createPublisher1MustProduceAStreamOfExactly1Element() throws Throwable {
         super.required_createPublisher1MustProduceAStreamOfExactly1Element();
     }
 
-    @Test(enabled = false)
+    @Test()
     @Override
     public void required_createPublisher3MustProduceAStreamOfExactly3Elements() throws Throwable {
         super.required_createPublisher3MustProduceAStreamOfExactly3Elements();

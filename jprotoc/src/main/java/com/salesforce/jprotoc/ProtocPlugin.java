@@ -9,13 +9,14 @@ package com.salesforce.jprotoc;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
+import com.google.protobuf.ExtensionRegistry;
+import com.google.protobuf.GeneratedMessage.GeneratedExtension;
 import com.google.protobuf.compiler.PluginProtos;
-
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 /**
  * ProtocPlugin is the main entry point for running one or more java-base protoc plugins. This class handles
@@ -40,13 +41,25 @@ public final class ProtocPlugin {
      * @param generators The list of generators to run.
      */
     public static void generate(@Nonnull List<Generator> generators) {
+        generate(generators, Collections.emptyList());
+    }
+
+    public static void generate(
+            @Nonnull List<Generator> generators, List<GeneratedExtension> extensions) {
         Preconditions.checkNotNull(generators, "generators");
         Preconditions.checkArgument(!generators.isEmpty(), "generators.isEmpty()");
+        Preconditions.checkNotNull(extensions, "extensions");
+
+        ExtensionRegistry extensionRegistry = ExtensionRegistry.newInstance();
+        for (GeneratedExtension extension : extensions) {
+            extensionRegistry.add(extension);
+        }
 
         try {
             // Parse the input stream to extract the generator request
             byte[] generatorRequestBytes = ByteStreams.toByteArray(System.in);
-            PluginProtos.CodeGeneratorRequest request = PluginProtos.CodeGeneratorRequest.parseFrom(generatorRequestBytes);
+            PluginProtos.CodeGeneratorRequest request = PluginProtos.CodeGeneratorRequest.parseFrom(
+                    generatorRequestBytes, extensionRegistry);
 
             // Run each file generator, collecting the output
             List<PluginProtos.CodeGeneratorResponse.File> outputFiles = generators

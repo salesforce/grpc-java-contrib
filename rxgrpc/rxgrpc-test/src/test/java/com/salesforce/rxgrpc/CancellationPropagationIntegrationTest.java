@@ -90,6 +90,11 @@ public class CancellationPropagationIntegrationTest {
                         .map(CancellationPropagationIntegrationTest::protoNum);
             }
         }
+
+        @Override
+        public Flowable<NumberProto.Number> twoWayPressure(Flowable<NumberProto.Number> request) {
+            return requestPressure(request).toFlowable();
+        }
     }
 
     @BeforeClass
@@ -155,8 +160,6 @@ public class CancellationPropagationIntegrationTest {
 
     @Test
     public void serverCanCancelClientStreamImplicitly() {
-        System.out.println("++++++++++++++++++++++++");
-
         RxNumbersGrpc.RxNumbersStub stub = RxNumbersGrpc.newRxStub(channel);
 
         svc.setExplicitCancel(false);
@@ -182,7 +185,6 @@ public class CancellationPropagationIntegrationTest {
                 .test();
 
         observer.awaitTerminalEvent(1, TimeUnit.SECONDS);
-        System.out.println("++++++++++++++++++++++++");
 
         observer.assertError(StatusRuntimeException.class);
         observer.assertTerminated();
@@ -218,6 +220,70 @@ public class CancellationPropagationIntegrationTest {
 
         observer.awaitTerminalEvent();
         observer.assertError(StatusRuntimeException.class);
+        observer.assertTerminated();
+        assertThat(wasCanceled.get()).isTrue();
+        assertThat(didProduce.get()).isTrue();
+    }
+
+    @Test
+    public void serverCanCancelClientStreamImplicitlyBidi() {
+        RxNumbersGrpc.RxNumbersStub stub = RxNumbersGrpc.newRxStub(channel);
+
+        svc.setExplicitCancel(false);
+
+        AtomicBoolean wasCanceled = new AtomicBoolean(false);
+        AtomicBoolean didProduce = new AtomicBoolean(false);
+
+        Flowable<NumberProto.Number> request = Flowable.fromIterable(new Sequence(10000))
+                .map(CancellationPropagationIntegrationTest::protoNum)
+                .doOnNext(x -> {
+                    didProduce.set(true);
+                    System.out.println("Produced: " + x.getNumber(0));
+                })
+                .doOnCancel(() -> {
+                    wasCanceled.set(true);
+                    System.out.println("Client canceled");
+                });
+
+        TestSubscriber<NumberProto.Number> observer = stub
+                .twoWayPressure(request)
+                .doOnNext(number -> System.out.println(number.getNumber(0)))
+                .doOnError(throwable -> System.out.println(throwable.getMessage()))
+                .test();
+
+        observer.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        observer.assertTerminated();
+        assertThat(wasCanceled.get()).isTrue();
+        assertThat(didProduce.get()).isTrue();
+    }
+
+    @Test
+    public void serverCanCancelClientStreamExplicitlyBidi() {
+        RxNumbersGrpc.RxNumbersStub stub = RxNumbersGrpc.newRxStub(channel);
+
+        svc.setExplicitCancel(true);
+
+        AtomicBoolean wasCanceled = new AtomicBoolean(false);
+        AtomicBoolean didProduce = new AtomicBoolean(false);
+
+        Flowable<NumberProto.Number> request = Flowable.fromIterable(new Sequence(10000))
+                .map(CancellationPropagationIntegrationTest::protoNum)
+                .doOnNext(n -> {
+                    didProduce.set(true);
+                    System.out.println("P: " + n.getNumber(0));
+                })
+                .doOnCancel(() -> {
+                    wasCanceled.set(true);
+                    System.out.println("Client canceled");
+                });
+
+        TestSubscriber<NumberProto.Number> observer = stub
+                .twoWayPressure(request)
+                .doOnNext(number -> System.out.println(number.getNumber(0)))
+                .doOnError(throwable -> System.out.println(throwable.getMessage()))
+                .test();
+
+        observer.awaitTerminalEvent();
         observer.assertTerminated();
         assertThat(wasCanceled.get()).isTrue();
         assertThat(didProduce.get()).isTrue();

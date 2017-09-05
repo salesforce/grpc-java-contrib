@@ -41,6 +41,7 @@ import java.util.concurrent.CountDownLatch;
 public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserver<T> {
     private CallStreamObserver callStreamObserver;
     private Subscriber<? super T> subscriber;
+    private volatile boolean isCanceled;
 
     // A gRPC server can sometimes send messages before subscribe() has been called and the consumer may not have
     // finished setting up the consumer pipeline. Use a countdown latch to prevent messages from processing before
@@ -70,6 +71,7 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
                     return;
                 }
 
+                isCanceled = true;
                 if (callStreamObserver instanceof ClientCallStreamObserver) {
                     ((ClientCallStreamObserver) callStreamObserver).cancel("Canceled by request", null);
                 } else {
@@ -123,5 +125,9 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
         subscriber.onComplete();
         // Release the subscriber, we don't need a reference to it anymore
         subscriber = null;
+    }
+
+    public boolean isCanceled() {
+        return isCanceled;
     }
 }

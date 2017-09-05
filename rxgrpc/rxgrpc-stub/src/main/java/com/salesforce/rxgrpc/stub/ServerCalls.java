@@ -17,7 +17,9 @@ import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
+import io.reactivex.internal.subscribers.LambdaSubscriber;
 import io.reactivex.schedulers.Schedulers;
+import org.reactivestreams.Subscriber;
 
 import java.util.function.Function;
 
@@ -91,11 +93,10 @@ public final class ServerCalls {
             rxResponse.subscribe(
                 value -> {
                     // Don't try to respond if the server has already canceled the request
-                    if (responseObserver instanceof ServerCallStreamObserver && ((ServerCallStreamObserver) responseObserver).isCancelled()) {
-                        return;
+                    if (!streamObserverPublisher.isCanceled()) {
+                        responseObserver.onNext(value);
+                        responseObserver.onCompleted();
                     }
-                    responseObserver.onNext(value);
-                    responseObserver.onCompleted();
                 },
                 throwable -> responseObserver.onError(prepareError(throwable))
             );
@@ -123,8 +124,22 @@ public final class ServerCalls {
             Flowable<TResponse> rxResponse = Preconditions.checkNotNull(delegate.apply(
                     Flowable.unsafeCreate(streamObserverPublisher)
                             .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()))));
-            rxResponse.subscribe(new RxFlowableBackpressureOnReadyHandler<>(
-                    (ServerCallStreamObserver<TResponse>) responseObserver));
+            Subscriber<TResponse> subscriber = new RxFlowableBackpressureOnReadyHandler<>(
+                    (ServerCallStreamObserver<TResponse>) responseObserver);
+            rxResponse.subscribe(new LambdaSubscriber<>(
+                tResponse -> {
+                    if (!streamObserverPublisher.isCanceled()) {
+                        subscriber.onNext(tResponse);
+                    }
+                },
+                subscriber::onError,
+                () -> {
+                    if (!streamObserverPublisher.isCanceled()) {
+                        subscriber.onComplete();
+                    }
+                },
+                subscriber::onSubscribe
+            ));
         } catch (Throwable throwable) {
             responseObserver.onError(prepareError(throwable));
         }

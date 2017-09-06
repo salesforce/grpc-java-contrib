@@ -158,7 +158,9 @@ For example:
     }
     ```
 
-2. Use `ProtocPlugin.generate(List<Generator> generators, List<GeneratedExtension> extensions)` so
+2. Run the Protoc generator on the Extension proto.
+
+3. Use `ProtocPlugin.generate(List<Generator> generators, List<GeneratedExtension> extensions)` so
 that the option gets registered:
 
     ```

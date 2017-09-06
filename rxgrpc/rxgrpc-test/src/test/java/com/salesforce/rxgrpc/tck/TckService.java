@@ -20,7 +20,11 @@ public class TckService extends RxTckGrpc.TckImplBase {
 
     @Override
     public Flowable<Message> oneToMany(Single<Message> request) {
-        return request.map(this::maybeExplode).toFlowable();
+        return request
+                .toFlowable()
+                .flatMap(message -> Flowable.range(0, message.getNumber()))
+                .map(this::toMessage)
+                .map(this::maybeExplode);
     }
 
     @Override
@@ -39,5 +43,9 @@ public class TckService extends RxTckGrpc.TckImplBase {
         } else {
             return req;
         }
+    }
+
+    private Message toMessage(int i) {
+        return Message.newBuilder().setNumber(i).build();
     }
 }

@@ -33,8 +33,7 @@ public final class ProtoTypeMap {
     }
 
     /**
-     * Returns an instance of {@link ProtoTypeMap} based on the given {@link DescriptorProtos.FileDescriptorProto}
-     * instances.
+     * Returns an instance of {@link ProtoTypeMap} based on the given FileDescriptorProto instances.
      *
      * @param fileDescriptorProtos the full collection of files descriptors from the code generator request
      */

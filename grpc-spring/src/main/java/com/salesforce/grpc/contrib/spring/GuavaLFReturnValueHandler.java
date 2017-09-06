@@ -25,31 +25,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GuavaLFReturnValueHandler teaches Spring Web how to deal with {@link org.springframework.stereotype.Controller}
- * methods that return {@link ListenableFuture}. This allows you to use `ListenableFuture`-based logic end-to-end to
- * build non-blocking asynchronous mvc services on top of gRPC.
+ * GuavaLFReturnValueHandler teaches Spring Web how to deal with Controller methods that return {@link ListenableFuture}.
+ * This allows you to use `ListenableFuture`-based logic end-to-end to build non-blocking asynchronous mvc services on
+ * top of gRPC.
  *
- * To enable GuavaLFReturnValueHandler, wire it up as an {@link org.springframework.context.annotation.Bean}.
+ * To enable GuavaLFReturnValueHandler, wire it up as a spring {@code {@literal @}Bean}.
  *
- * <blockquote><pre>{@code
- * @Bean
+ * <blockquote><pre><code>
+ * {@literal @}Bean
  * public GuavaLFReturnValueHandler GuavaLFReturnValueHandler(RequestMappingHandlerAdapter requestMappingHandlerAdapter) {
  *     return new GuavaLFReturnValueHandler().install(requestMappingHandlerAdapter);
  * }
- * }</pre></blockquote>
+ * </code></pre></blockquote>
  *
- * Once installed, {@link org.springframework.stereotype.Controller} operations can return a {@link ListenableFuture}s
+ * Once installed, Spring {@code {@literal @}Controller} operations can return a {@link ListenableFuture}s
  * directly.
  *
- * <blockquote><pre>{@code
- * @Controller
+ * <blockquote><pre><code>
+ * {@literal @}Controller
  * public class MyController {
- *     @RequestMapping(method = RequestMethod.GET, value = "/home")
+ *     {@literal @}RequestMapping(method = RequestMethod.GET, value = "/home")
  *     ListenableFuture<ModelAndView> home(HttpServletRequest request, Model model) {
  *         // work that returns a ListenableFuture...
  *     }
  * }
- * }</pre></blockquote>
+ * </code></pre></blockquote>
  *
  * Heavily inspired by https://github.com/AndreasKl/spring-boot-mvc-completablefuture
  */

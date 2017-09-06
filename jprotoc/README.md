@@ -131,3 +131,42 @@ Using the Jdk8 Protoc generator
     ```java
     MyServiceGrpc8.GreeterCompletableFutureStub stub = MyServiceGrpc8.newCompletableFutureStub(channel);
     ```
+    
+Implementing Custom Protoc Options
+==================================
+1. Create a custom option as per https://developers.google.com/protocol-buffers/docs/reference/java-generated#extension.
+For example:
+
+    ```
+    syntax = "proto3";
+    
+    package com.example.proto.options;
+    
+    import "google/protobuf/descriptor.proto";
+    
+    option java_multiple_files = true;
+    option java_outer_classname = "ServerOptionsProto";
+    option java_package = "com.example.proto.options";
+    
+    extend google.protobuf.FileOptions {
+        ServerOptions server = 50621;
+    }
+    
+    message ServerOptions {
+        // Java classname
+        string name = 1;
+    }
+    ```
+
+2. Use `ProtocPlugin.generate(List<Generator> generators, List<GeneratedExtension> extensions)` so
+that the option gets registered:
+
+    ```
+    class Generator extends com.salesforce.jprotoc.Generator {
+      public static void main(String[] args) {
+        ProtocPlugin.generate([new Generator()], [com.example.proto.options.ServerOptionsProto.server]);
+      }
+      
+      // ?
+    }
+    ```

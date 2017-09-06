@@ -44,12 +44,21 @@ public final class ProtocPlugin {
         generate(generators, Collections.emptyList());
     }
 
+    /**
+     * Apply multiple generators to the parsed proto descriptor, aggregating their results.
+     * Also register the given extensions so they may be processed by the generator.
+     *
+     * @param generators The list of generators to run.
+     * @param extensions The list of extensions to register.
+     */
     public static void generate(
             @Nonnull List<Generator> generators, List<GeneratedExtension> extensions) {
         Preconditions.checkNotNull(generators, "generators");
         Preconditions.checkArgument(!generators.isEmpty(), "generators.isEmpty()");
         Preconditions.checkNotNull(extensions, "extensions");
 
+        // As per https://developers.google.com/protocol-buffers/docs/reference/java-generated#extension,
+        // extensions must be registered in order to be processed.
         ExtensionRegistry extensionRegistry = ExtensionRegistry.newInstance();
         for (GeneratedExtension extension : extensions) {
             extensionRegistry.add(extension);

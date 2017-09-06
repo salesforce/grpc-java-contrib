@@ -1,0 +1,46 @@
+apply from: "${rootDir}/protobuf-grpc.gradle"
+
+protobuf {
+  plugins {
+    salesforce_jdk8_generator {
+      path = "${project(':jprotoc').buildDir}/install/jprotoc-shadow/bin/jprotoc.exe"
+    }
+  }
+  generateProtoTasks {
+    all()*.plugins {
+      salesforce_jdk8_generator {
+        outputSubDir = 'salesforce-jdk8-generator'
+      }
+    }
+  }
+}
+
+sourceSets {
+  main {
+    java {
+      srcDir "${protobuf.generatedFilesBaseDir}/test/salesforce-jdk8-generator"
+    }
+  }
+}
+
+dependencies {
+  compile dep('com.google.protobuf:protobuf-java')
+
+  testCompile project(':grpc-contrib')
+  testCompile project(':jprotoc')
+  testCompile dep('commons-lang:commons-lang')
+  testCompile dep('io.grpc:grpc-core')
+  testCompile dep('io.grpc:grpc-netty')
+  testCompile dep('io.grpc:grpc-protobuf')
+  testCompile dep('io.grpc:grpc-stub')
+  testCompile dep('io.grpc:grpc-testing')
+  testCompile dep('junit:junit')
+  testCompile dep('org.assertj:assertj-core')
+  testCompile dep('org.awaitility:awaitility')
+}
+
+tasks.whenTaskAdded { task ->
+  if (task.name == 'generateTestProto') {
+    task.dependsOn(':jprotoc:createJarExe')
+  }
+}

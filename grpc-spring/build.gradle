@@ -1,0 +1,22 @@
+apply from: "${rootDir}/protobuf-grpc.gradle"
+
+dependencies {
+  compileOnly dep('javax.servlet:servlet-api')
+  compileOnly dep('org.springframework:spring-context')
+
+  compile dep('com.google.protobuf:protobuf-java')
+  compile dep('io.grpc:grpc-protobuf')
+  compile dep('io.grpc:grpc-stub')
+  compile dep('org.springframework:spring-webmvc')
+
+  testCompile dep('com.google.protobuf:protoc')
+  testCompile dep('io.grpc:grpc-netty')
+  testCompile dep('io.grpc:grpc-protobuf')
+  testCompile dep('javax.servlet:servlet-api')
+  testCompile dep('junit:junit')
+  testCompile dep('org.assertj:assertj-core')
+  testCompile dep('org.awaitility:awaitility')
+  testCompile dep('org.mockito:mockito-core')
+  testCompile dep('org.springframework:spring-test')
+  testCompile dep('org.springframework:spring-web')
+}

@@ -8,19 +8,15 @@
 package com.salesforce.rxgrpc.tck;
 
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.Server;
-import io.grpc.ServerBuilder;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.tck.PublisherVerification;
 import org.reactivestreams.tck.TestEnvironment;
-import org.testng.annotations.*;
-
-import java.io.IOException;
-import java.util.UUID;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 
 /**
  * Publisher tests from the Reactive Streams Technology Compatibility Kit.
@@ -37,16 +33,16 @@ public class RxGrpcPublisherManyToManyVerificationTest extends PublisherVerifica
     private Server server;
     private ManagedChannel channel;
 
-    @BeforeClass
+    @BeforeMethod
     public void setup() throws Exception {
         System.out.println("SETUP");
         super.setUp();
 
-        server = ServerBuilder.forPort(0).addService(new TckService()).build().start();
-        channel = ManagedChannelBuilder.forAddress("localhost", server.getPort()).usePlaintext(true).build();
+        server = InProcessServerBuilder.forName("RxGrpcPublisherManyToManyVerificationTest").addService(new TckService()).build().start();
+        channel = InProcessChannelBuilder.forName("RxGrpcPublisherManyToManyVerificationTest").usePlaintext(true).build();
     }
 
-    @AfterClass
+    @AfterMethod
     public void tearDown() throws Exception {
         System.out.println("TEAR DOWN");
         server.shutdown();

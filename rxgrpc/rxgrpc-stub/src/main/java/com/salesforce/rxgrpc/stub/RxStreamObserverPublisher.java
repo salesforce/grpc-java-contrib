@@ -9,8 +9,6 @@ package com.salesforce.rxgrpc.stub;
 
 import com.google.common.base.Preconditions;
 import io.grpc.Status;
-import io.grpc.StatusException;
-import io.grpc.StatusRuntimeException;
 import io.grpc.stub.CallStreamObserver;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ServerCallStreamObserver;
@@ -102,15 +100,7 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
 
         }
 
-        if (t instanceof StatusException &&
-                ((StatusException) t).getStatus().getCode() == Status.Code.CANCELLED) {
-            subscriber.onComplete();
-        } else if (t instanceof StatusRuntimeException &&
-                ((StatusRuntimeException) t).getStatus().getCode() == Status.Code.CANCELLED) {
-            subscriber.onComplete();
-        } else {
-            subscriber.onError(Preconditions.checkNotNull(t));
-        }
+        subscriber.onError(Preconditions.checkNotNull(t));
         // Release the subscriber, we don't need a reference to it anymore
         subscriber = null;
     }

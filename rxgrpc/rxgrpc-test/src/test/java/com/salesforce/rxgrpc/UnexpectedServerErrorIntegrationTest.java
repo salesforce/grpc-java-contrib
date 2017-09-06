@@ -18,6 +18,8 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SuppressWarnings("ALL")
 public class UnexpectedServerErrorIntegrationTest {
     private static Server server;
@@ -91,22 +93,25 @@ public class UnexpectedServerErrorIntegrationTest {
     @Test
     public void manyToOne() {
         RxGreeterGrpc.RxGreeterStub stub = RxGreeterGrpc.newRxStub(channel);
-        Single<HelloResponse> resp = stub.sayHelloReqStream(Flowable.just(HelloRequest.getDefaultInstance()));
+        Flowable<HelloRequest> req = Flowable.just(HelloRequest.getDefaultInstance());
+        Single<HelloResponse> resp = stub.sayHelloReqStream(req);
         TestObserver<HelloResponse> test = resp.test();
 
         test.awaitTerminalEvent(3, TimeUnit.SECONDS);
         test.assertError(t -> t instanceof StatusRuntimeException);
-        test.assertError(t -> ((StatusRuntimeException)t).getStatus().getCode() == Status.Code.INTERNAL);
+        // Flowable requests get canceled when unexpected errors happen
+        test.assertError(t -> ((StatusRuntimeException)t).getStatus().getCode() == Status.Code.CANCELLED);
     }
 
     @Test
     public void manyToMany() {
         RxGreeterGrpc.RxGreeterStub stub = RxGreeterGrpc.newRxStub(channel);
-        Flowable<HelloResponse> resp = stub.sayHelloBothStream(Flowable.just(HelloRequest.getDefaultInstance()));
+        Flowable<HelloRequest> req = Flowable.just(HelloRequest.getDefaultInstance());
+        Flowable<HelloResponse> resp = stub.sayHelloBothStream(req);
         TestSubscriber<HelloResponse> test = resp.test();
 
         test.awaitTerminalEvent(3, TimeUnit.SECONDS);
         test.assertError(t -> t instanceof StatusRuntimeException);
-        test.assertError(t -> ((StatusRuntimeException)t).getStatus().getCode() == Status.Code.INTERNAL);
+        test.assertError(t -> ((StatusRuntimeException)t).getStatus().getCode() == Status.Code.CANCELLED);
     }
 }

@@ -75,17 +75,4 @@ public class RxGrpcPublisherVerificationTest extends PublisherVerification<Messa
     private Message toMessage(int i) {
         return Message.newBuilder().setNumber(i).build();
     }
-
-
-    @Test(enabled = false)
-    @Override
-    public void optional_spec104_mustSignalOnErrorWhenFails() throws Throwable {
-        super.optional_spec104_mustSignalOnErrorWhenFails();
-    }
-
-    @Test(enabled = false)
-    @Override
-    public void required_spec109_mayRejectCallsToSubscribeIfPublisherIsUnableOrUnwillingToServeThemRejectionMustTriggerOnErrorAfterOnSubscribe() throws Throwable {
-        super.required_spec109_mayRejectCallsToSubscribeIfPublisherIsUnableOrUnwillingToServeThemRejectionMustTriggerOnErrorAfterOnSubscribe();
-    }
 }

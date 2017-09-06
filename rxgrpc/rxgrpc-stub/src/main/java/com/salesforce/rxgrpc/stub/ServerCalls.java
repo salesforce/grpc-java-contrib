@@ -98,7 +98,12 @@ public final class ServerCalls {
                         responseObserver.onCompleted();
                     }
                 },
-                throwable -> responseObserver.onError(prepareError(throwable))
+                throwable -> {
+                    // Don't try to respond if the server has already canceled the request
+                    if (!streamObserverPublisher.isCanceled()) {
+                        responseObserver.onError(prepareError(throwable));
+                    }
+                }
             );
         } catch (Throwable throwable) {
             responseObserver.onError(prepareError(throwable));
@@ -126,13 +131,18 @@ public final class ServerCalls {
                             .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()))));
             Subscriber<TResponse> subscriber = new RxFlowableBackpressureOnReadyHandler<>(
                     (ServerCallStreamObserver<TResponse>) responseObserver);
+            // Don't try to respond if the server has already canceled the request
             rxResponse.subscribe(new LambdaSubscriber<>(
                 tResponse -> {
                     if (!streamObserverPublisher.isCanceled()) {
                         subscriber.onNext(tResponse);
                     }
                 },
-                subscriber::onError,
+                throwable -> {
+                    if (!streamObserverPublisher.isCanceled()) {
+                        subscriber.onError(throwable);
+                    }
+                },
                 () -> {
                     if (!streamObserverPublisher.isCanceled()) {
                         subscriber.onComplete();

@@ -15,8 +15,8 @@ import java.util.Collection;
 
 /**
  * SimpleGrpcServerFactory is a basic base class for implementing a {@link GrpcServerFactory} based on the stock gRPC
- * {@link ServerBuilder}. If you configure your implementation as a Spring
- * {@link org.springframework.context.annotation.Bean}, {@link GrpcServerHost} will automatically pick it up.
+ * {@link ServerBuilder}. If you configure your implementation as a Spring {@code {@literal @}Bean},
+ * {@link GrpcServerHost} will automatically pick it up.
  */
 public class SimpleGrpcServerFactory implements GrpcServerFactory {
     /**

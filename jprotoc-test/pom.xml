@@ -12,7 +12,7 @@
     <parent>
         <artifactId>grpc-contrib-parent</artifactId>
         <groupId>com.salesforce.servicelibs</groupId>
-        <version>0.5.3-SNAPSHOT</version>
+        <version>0.5.5-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -75,7 +75,18 @@
                 <version>1.4.1.Final</version>
             </extension>
         </extensions>
+
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <configuration>
+                    <!-- Don't install, since there isn't anything to install -->
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>

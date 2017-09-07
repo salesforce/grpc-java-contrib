@@ -17,7 +17,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>rxgrpc-test</artifactId>
+    <artifactId>rxgrpc-tck</artifactId>
 
     <dependencies>
         <dependency>
@@ -47,28 +47,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-context</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
+            <groupId>org.reactivestreams</groupId>
+            <artifactId>reactive-streams-tck</artifactId>
+            <version>1.0.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -123,4 +104,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

@@ -55,6 +55,7 @@
         <module>rxgrpc/rxgrpc</module>
         <module>rxgrpc/rxgrpc-test</module>
         <module>rxgrpc/rxgrpc-stub</module>
+        <module>rxgrpc/rxgrpc-tck</module>
     </modules>
 
     <properties>

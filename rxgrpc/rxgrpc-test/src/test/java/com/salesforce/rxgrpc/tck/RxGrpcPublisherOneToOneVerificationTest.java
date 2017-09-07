@@ -39,7 +39,7 @@ public class RxGrpcPublisherOneToOneVerificationTest extends PublisherVerificati
 
     @BeforeMethod
     public void setup(Method method) throws Exception {
-        System.out.println("SETUP " + method.getName());
+        System.out.println("SETUP " + this.getClass().getSimpleName() + "." + method.getName());
         super.setUp();
 
         server = InProcessServerBuilder.forName("RxGrpcPublisherOneToOneVerificationTest").addService(new TckService()).build().start();

@@ -15,10 +15,8 @@ import io.reactivex.Single;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.tck.PublisherVerification;
 import org.reactivestreams.tck.TestEnvironment;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-
-import java.lang.reflect.Method;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 
 /**
  * Publisher tests from the Reactive Streams Technology Compatibility Kit.
@@ -32,21 +30,17 @@ public class RxGrpcPublisherOneToManyVerificationTest extends PublisherVerificat
         super(new TestEnvironment(DEFAULT_TIMEOUT_MILLIS, DEFAULT_TIMEOUT_MILLIS), PUBLISHER_REFERENCE_CLEANUP_TIMEOUT_MILLIS);
     }
 
-    private Server server;
-    private ManagedChannel channel;
+    private static Server server;
+    private static ManagedChannel channel;
 
-    @BeforeMethod
-    public void setup(Method method) throws Exception {
-        System.out.println("SETUP " + this.getClass().getSimpleName() + "." + method.getName());
-        super.setUp();
-
+    @BeforeClass
+    public static void setup() throws Exception {
         server = InProcessServerBuilder.forName("RxGrpcPublisherOneToManyVerificationTest").addService(new TckService()).build().start();
         channel = InProcessChannelBuilder.forName("RxGrpcPublisherOneToManyVerificationTest").usePlaintext(true).build();
     }
 
-    @AfterMethod
-    public void tearDown(Method method) throws Exception {
-        System.out.println("TEAR DOWN " + method.getName());
+    @AfterClass
+    public static void tearDown() throws Exception {
         server.shutdown();
         server.awaitTermination();
         channel.shutdown();

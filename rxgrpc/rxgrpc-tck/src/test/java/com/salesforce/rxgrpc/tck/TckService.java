@@ -22,7 +22,8 @@ public class TckService extends RxTckGrpc.TckImplBase {
     public Flowable<Message> oneToMany(Single<Message> request) {
         return request
                 .map(this::maybeExplode)
-                .flatMapPublisher(message -> Flowable.range(0, message.getNumber()))
+                // send back no more than 10 responses
+                .flatMapPublisher(message -> Flowable.range(0, Math.min(message.getNumber(), 10)))
                 .map(this::toMessage);
     }
 

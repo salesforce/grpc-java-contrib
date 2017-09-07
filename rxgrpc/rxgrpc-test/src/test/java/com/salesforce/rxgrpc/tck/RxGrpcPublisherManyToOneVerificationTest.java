@@ -19,6 +19,8 @@ import org.reactivestreams.tck.TestEnvironment;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
+import java.lang.reflect.Method;
+
 /**
  * Publisher tests from the Reactive Streams Technology Compatibility Kit.
  * https://github.com/reactive-streams/reactive-streams-jvm/tree/master/tck
@@ -35,8 +37,8 @@ public class RxGrpcPublisherManyToOneVerificationTest extends PublisherVerificat
     private ManagedChannel channel;
 
     @BeforeMethod
-    public void setup() throws Exception {
-        System.out.println("SETUP");
+    public void setup(Method method) throws Exception {
+        System.out.println("SETUP " + method.getName());
         super.setUp();
 
         server = InProcessServerBuilder.forName("RxGrpcPublisherManyToOneVerificationTest").addService(new TckService()).build().start();
@@ -44,8 +46,8 @@ public class RxGrpcPublisherManyToOneVerificationTest extends PublisherVerificat
     }
 
     @AfterMethod
-    public void tearDown() throws Exception {
-        System.out.println("TEAR DOWN");
+    public void tearDown(Method method) throws Exception {
+        System.out.println("TEAR DOWN " + method.getName());
         server.shutdown();
         server.awaitTermination();
         channel.shutdown();

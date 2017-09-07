@@ -18,6 +18,7 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * RxStreamObserverPublisher bridges the manual flow control idioms of gRPC and RxJava. This class takes
@@ -59,7 +60,20 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
             @Override
             public void request(long l) {
                 // RxJava uses Long.MAX_VALUE to indicate "all messages"; gRPC uses Integer.MAX_VALUE.
-                callStreamObserver.request((int) Long.min(l, Integer.MAX_VALUE));
+                int i = (int) Long.min(l, Integer.MAX_VALUE);
+
+                // Very rarely, request() gets called before the client has finished setting up its stream. If this
+                // happens, wait momentarily and try again.
+                try {
+                    callStreamObserver.request(i);
+                } catch (IllegalStateException ex) {
+                    try {
+                        Thread.sleep(2);
+                    } catch (InterruptedException e) {
+                        // no-op
+                    }
+                    callStreamObserver.request(i);
+                }
             }
 
             @Override

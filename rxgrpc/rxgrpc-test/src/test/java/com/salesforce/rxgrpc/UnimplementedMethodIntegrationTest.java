@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SuppressWarnings("Duplicates")
 public class UnimplementedMethodIntegrationTest {
     private static Server server;
     private static ManagedChannel channel;
@@ -33,6 +34,9 @@ public class UnimplementedMethodIntegrationTest {
         server.shutdown();
         server.awaitTermination();
         channel.shutdown();
+
+        server = null;
+        channel = null;
     }
 
     @Test

@@ -55,6 +55,9 @@ public class ServerErrorIntegrationTest {
     public static void stopServer() {
         server.shutdown();
         channel.shutdown();
+
+        server = null;
+        channel = null;
     }
 
     @Test

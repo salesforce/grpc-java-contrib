@@ -83,6 +83,9 @@ public class StandardClientReactiveServerInteropTest {
         server.shutdown();
         server.awaitTermination();
         channel.shutdown();
+
+        server = null;
+        channel = null;
     }
 
     @Test

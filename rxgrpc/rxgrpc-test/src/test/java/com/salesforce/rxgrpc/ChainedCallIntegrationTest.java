@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("Duplicates")
 public class ChainedCallIntegrationTest {
     private Server server;
     private ManagedChannel channel;
@@ -72,6 +73,9 @@ public class ChainedCallIntegrationTest {
         server.shutdown();
         server.awaitTermination();
         channel.shutdown();
+
+        server = null;
+        channel = null;
     }
 
     @Test

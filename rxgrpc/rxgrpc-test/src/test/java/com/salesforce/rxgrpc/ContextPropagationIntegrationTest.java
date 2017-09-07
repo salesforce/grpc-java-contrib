@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SuppressWarnings("Duplicates")
 public class ContextPropagationIntegrationTest {
     private static Server server;
     private static ManagedChannel channel;
@@ -108,6 +109,9 @@ public class ContextPropagationIntegrationTest {
         server.shutdown();
         server.awaitTermination();
         channel.shutdown();
+
+        server = null;
+        channel = null;
     }
 
     @Test

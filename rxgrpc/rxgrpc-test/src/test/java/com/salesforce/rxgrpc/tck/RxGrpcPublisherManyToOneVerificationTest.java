@@ -23,6 +23,7 @@ import org.testng.annotations.BeforeClass;
  * Publisher tests from the Reactive Streams Technology Compatibility Kit.
  * https://github.com/reactive-streams/reactive-streams-jvm/tree/master/tck
  */
+@SuppressWarnings("Duplicates")
 public class RxGrpcPublisherManyToOneVerificationTest extends PublisherVerification<Message> {
     public static final long DEFAULT_TIMEOUT_MILLIS = 500L;
     public static final long PUBLISHER_REFERENCE_CLEANUP_TIMEOUT_MILLIS = 500L;
@@ -46,6 +47,9 @@ public class RxGrpcPublisherManyToOneVerificationTest extends PublisherVerificat
         server.shutdown();
         server.awaitTermination();
         channel.shutdown();
+
+        server = null;
+        channel = null;
     }
 
     @Override

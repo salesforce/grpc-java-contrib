@@ -89,7 +89,7 @@ public final class ServerCalls {
         try {
             Single<TResponse> rxResponse = Preconditions.checkNotNull(delegate.apply(
                     Flowable.unsafeCreate(streamObserverPublisher)
-                            .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()))));
+                            .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()), true)));
             rxResponse.subscribe(
                 value -> {
                     // Don't try to respond if the server has already canceled the request
@@ -128,7 +128,7 @@ public final class ServerCalls {
         try {
             Flowable<TResponse> rxResponse = Preconditions.checkNotNull(delegate.apply(
                     Flowable.unsafeCreate(streamObserverPublisher)
-                            .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()))));
+                            .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()), true)));
             Subscriber<TResponse> subscriber = new RxFlowableBackpressureOnReadyHandler<>(
                     (ServerCallStreamObserver<TResponse>) responseObserver);
             // Don't try to respond if the server has already canceled the request

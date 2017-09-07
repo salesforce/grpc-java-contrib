@@ -23,6 +23,7 @@ public class TckService extends RxTckGrpc.TckImplBase {
         return request
                 .toFlowable()
                 .flatMap(message -> Flowable.range(0, message.getNumber()))
+                .doOnNext(System.out::println)
                 .map(this::toMessage)
                 .map(this::maybeExplode);
     }

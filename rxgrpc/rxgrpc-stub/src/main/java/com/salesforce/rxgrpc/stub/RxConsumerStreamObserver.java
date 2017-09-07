@@ -42,7 +42,7 @@ public class RxConsumerStreamObserver<TRequest, TResponse> implements ClientResp
         publisher = new RxStreamObserverPublisher<>(Preconditions.checkNotNull(requestStream));
 
         rxConsumer = Flowable.unsafeCreate(publisher)
-                .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()));
+                .observeOn(Schedulers.from(RxExecutor.getSerializingExecutor()), true);
         beforeStartCalled.countDown();
     }
 

@@ -18,6 +18,10 @@
 
     <artifactId>jprotoc-test</artifactId>
 
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
     <dependencies>
         <!-- Test dependencies -->
         <dependency>

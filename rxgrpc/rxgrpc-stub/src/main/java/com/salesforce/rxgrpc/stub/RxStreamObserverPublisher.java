@@ -18,7 +18,6 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * RxStreamObserverPublisher bridges the manual flow control idioms of gRPC and RxJava. This class takes

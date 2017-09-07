@@ -8,8 +8,6 @@
 package com.salesforce.rxgrpc;
 
 import io.grpc.*;
-import io.grpc.inprocess.InProcessChannelBuilder;
-import io.grpc.inprocess.InProcessServerBuilder;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 import org.junit.AfterClass;
@@ -19,7 +17,7 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ContextPropagationIntegrationTest {
     private static Server server;

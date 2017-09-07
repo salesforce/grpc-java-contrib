@@ -7,9 +7,7 @@
 
 package com.salesforce.rxgrpc.tck;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public class TckService extends RxTckGrpc.TckImplBase {

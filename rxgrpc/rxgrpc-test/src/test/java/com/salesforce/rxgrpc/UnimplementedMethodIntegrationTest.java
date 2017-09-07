@@ -8,8 +8,6 @@
 package com.salesforce.rxgrpc;
 
 import io.grpc.*;
-import io.grpc.inprocess.InProcessChannelBuilder;
-import io.grpc.inprocess.InProcessServerBuilder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

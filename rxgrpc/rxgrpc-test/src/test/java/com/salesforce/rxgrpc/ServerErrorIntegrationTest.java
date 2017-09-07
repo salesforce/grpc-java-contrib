@@ -8,8 +8,6 @@
 package com.salesforce.rxgrpc;
 
 import io.grpc.*;
-import io.grpc.inprocess.InProcessChannelBuilder;
-import io.grpc.inprocess.InProcessServerBuilder;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;

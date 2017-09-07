@@ -18,8 +18,6 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SuppressWarnings("ALL")
 public class UnexpectedServerErrorIntegrationTest {
     private static Server server;

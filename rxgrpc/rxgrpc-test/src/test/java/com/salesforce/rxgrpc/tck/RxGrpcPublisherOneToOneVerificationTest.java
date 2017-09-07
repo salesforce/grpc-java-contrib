@@ -35,6 +35,7 @@ public class RxGrpcPublisherOneToOneVerificationTest extends PublisherVerificati
 
     @BeforeClass
     public static void setup() throws Exception {
+        System.out.println("RxGrpcPublisherOneToOneVerificationTest");
         server = InProcessServerBuilder.forName("RxGrpcPublisherOneToOneVerificationTest").addService(new TckService()).build().start();
         channel = InProcessChannelBuilder.forName("RxGrpcPublisherOneToOneVerificationTest").usePlaintext(true).build();
     }

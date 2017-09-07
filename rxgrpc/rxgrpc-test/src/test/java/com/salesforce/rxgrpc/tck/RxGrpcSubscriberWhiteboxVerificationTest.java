@@ -13,6 +13,7 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.reactivestreams.tck.SubscriberWhiteboxVerification;
 import org.reactivestreams.tck.TestEnvironment;
+import org.testng.annotations.BeforeClass;
 
 import javax.annotation.Nullable;
 
@@ -23,6 +24,11 @@ import javax.annotation.Nullable;
 public class RxGrpcSubscriberWhiteboxVerificationTest extends SubscriberWhiteboxVerification<Message> {
     public RxGrpcSubscriberWhiteboxVerificationTest() {
         super(new TestEnvironment());
+    }
+
+    @BeforeClass
+    public static void setup() throws Exception {
+        System.out.println("RxGrpcSubscriberWhiteboxVerificationTest");
     }
 
     @Override

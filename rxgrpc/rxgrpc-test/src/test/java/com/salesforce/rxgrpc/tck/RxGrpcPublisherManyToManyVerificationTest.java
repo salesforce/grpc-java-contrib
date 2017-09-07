@@ -35,6 +35,7 @@ public class RxGrpcPublisherManyToManyVerificationTest extends PublisherVerifica
 
     @BeforeClass
     public static void setup() throws Exception {
+        System.out.println("RxGrpcPublisherManyToManyVerificationTest");
         server = InProcessServerBuilder.forName("RxGrpcPublisherManyToManyVerificationTest").addService(new TckService()).build().start();
         channel = InProcessChannelBuilder.forName("RxGrpcPublisherManyToManyVerificationTest").usePlaintext(true).build();
     }

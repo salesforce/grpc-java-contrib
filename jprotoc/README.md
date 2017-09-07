@@ -112,7 +112,7 @@ Using the Jdk8 Protoc generator
                             <protocPlugins>
                                 <protocPlugin>
                                     <id>java8</id>
-                                    <groupId>com.salesforce.grpc.contrib</groupId>
+                                    <groupId>com.salesforce.servicelibs</groupId>
                                     <artifactId>jprotoc</artifactId>
                                     <version>${project.version}</version>
                                     <mainClass>com.salesforce.jprotoc.jdk8.Jdk8Generator</mainClass>

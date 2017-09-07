@@ -47,7 +47,7 @@ public class CompletableFutureEndToEndTest {
 
         CompletableFuture<HelloResponse> response = stub.sayHello(HelloRequest.newBuilder().setName(name).build());
 
-        await().atMost(1, TimeUnit.SECONDS).until(() -> response.isDone() && response.get().getMessage().contains(name));
+        await().atMost(3, TimeUnit.SECONDS).until(() -> response.isDone() && response.get().getMessage().contains(name));
 
         channel.shutdown();
         channel.awaitTermination(1, TimeUnit.MINUTES);

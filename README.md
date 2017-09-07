@@ -14,6 +14,8 @@ This project is broken down into multiple sub-modules, each solving a different 
 
 * [*jprotoc*](https://github.com/salesforce/grpc-java-contrib/tree/master/jprotoc) - A framework for building protoc extension plugins in Java.
 
+* [*rxgrpc*](https://github.com/salesforce/grpc-java-contrib/tree/master/rxgrpc) - A protoc extension plugin for [RxJava](https://github.com/ReactiveX/RxJava).
+
 Demos
 =====
 A pair of demo applications are in the `grpc-java-contrib-demo` directory.

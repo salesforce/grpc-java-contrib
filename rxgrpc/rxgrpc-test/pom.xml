@@ -118,6 +118,7 @@
                             <value>false</value>
                         </property>
                     </properties>
+                    <argLine>-Xmx2048m -XX:MaxPermSize=256m</argLine>
                 </configuration>
                 <dependencies>
                     <dependency>

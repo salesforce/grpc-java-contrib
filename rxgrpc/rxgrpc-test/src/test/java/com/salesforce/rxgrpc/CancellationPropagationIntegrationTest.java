@@ -130,7 +130,7 @@ public class CancellationPropagationIntegrationTest {
         subscription.dispose();
         Thread.sleep(250);
 
-        subscription.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        subscription.awaitTerminalEvent(3, TimeUnit.SECONDS);
         // Cancellation may or may not deliver the last generated message due to delays in the gRPC processing thread
         assertThat(Math.abs(subscription.valueCount() - svc.getLastNumberProduced())).isLessThanOrEqualTo(3);
         assertThat(svc.wasCanceled()).isTrue();
@@ -152,7 +152,7 @@ public class CancellationPropagationIntegrationTest {
         Thread.sleep(TimeUnit.SECONDS.toMillis(1));
         subscription.dispose();
 
-        subscription.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        subscription.awaitTerminalEvent(3, TimeUnit.SECONDS);
         subscription.assertValueCount(10);
         subscription.assertTerminated();
         assertThat(svc.wasCanceled()).isTrue();
@@ -164,17 +164,17 @@ public class CancellationPropagationIntegrationTest {
 
         svc.setExplicitCancel(false);
 
-        AtomicBoolean wasCanceled = new AtomicBoolean(false);
-        AtomicBoolean didProduce = new AtomicBoolean(false);
+        AtomicBoolean requestWasCanceled = new AtomicBoolean(false);
+        AtomicBoolean requestDidProduce = new AtomicBoolean(false);
 
         Flowable<NumberProto.Number> request = Flowable.fromIterable(new Sequence(10000))
                 .map(CancellationPropagationIntegrationTest::protoNum)
                 .doOnNext(x -> {
-                    didProduce.set(true);
+                    requestDidProduce.set(true);
                     System.out.println("Produced: " + x.getNumber(0));
                 })
                 .doOnCancel(() -> {
-                    wasCanceled.set(true);
+                    requestWasCanceled.set(true);
                     System.out.println("Client canceled");
                 });
 
@@ -184,12 +184,12 @@ public class CancellationPropagationIntegrationTest {
                 .doOnError(throwable -> System.out.println(throwable.getMessage()))
                 .test();
 
-        observer.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        observer.awaitTerminalEvent(3, TimeUnit.SECONDS);
 
         observer.assertError(StatusRuntimeException.class);
         observer.assertTerminated();
-        assertThat(wasCanceled.get()).isTrue();
-        assertThat(didProduce.get()).isTrue();
+        assertThat(requestWasCanceled.get()).isTrue();
+        assertThat(requestDidProduce.get()).isTrue();
     }
 
     @Test
@@ -198,17 +198,17 @@ public class CancellationPropagationIntegrationTest {
 
         svc.setExplicitCancel(true);
 
-        AtomicBoolean wasCanceled = new AtomicBoolean(false);
-        AtomicBoolean didProduce = new AtomicBoolean(false);
+        AtomicBoolean requestWasCanceled = new AtomicBoolean(false);
+        AtomicBoolean requestDidProduce = new AtomicBoolean(false);
 
         Flowable<NumberProto.Number> request = Flowable.fromIterable(new Sequence(10000))
                 .map(CancellationPropagationIntegrationTest::protoNum)
                 .doOnNext(n -> {
-                    didProduce.set(true);
+                    requestDidProduce.set(true);
                     System.out.println("P: " + n.getNumber(0));
                 })
                 .doOnCancel(() -> {
-                    wasCanceled.set(true);
+                    requestWasCanceled.set(true);
                     System.out.println("Client canceled");
                 });
 
@@ -221,8 +221,8 @@ public class CancellationPropagationIntegrationTest {
         observer.awaitTerminalEvent();
         observer.assertError(StatusRuntimeException.class);
         observer.assertTerminated();
-        assertThat(wasCanceled.get()).isTrue();
-        assertThat(didProduce.get()).isTrue();
+        assertThat(requestWasCanceled.get()).isTrue();
+        assertThat(requestDidProduce.get()).isTrue();
     }
 
     @Test
@@ -231,17 +231,17 @@ public class CancellationPropagationIntegrationTest {
 
         svc.setExplicitCancel(false);
 
-        AtomicBoolean wasCanceled = new AtomicBoolean(false);
-        AtomicBoolean didProduce = new AtomicBoolean(false);
+        AtomicBoolean requestWasCanceled = new AtomicBoolean(false);
+        AtomicBoolean requestDidProduce = new AtomicBoolean(false);
 
         Flowable<NumberProto.Number> request = Flowable.fromIterable(new Sequence(10000))
                 .map(CancellationPropagationIntegrationTest::protoNum)
                 .doOnNext(x -> {
-                    didProduce.set(true);
+                    requestDidProduce.set(true);
                     System.out.println("Produced: " + x.getNumber(0));
                 })
                 .doOnCancel(() -> {
-                    wasCanceled.set(true);
+                    requestWasCanceled.set(true);
                     System.out.println("Client canceled");
                 });
 
@@ -251,10 +251,10 @@ public class CancellationPropagationIntegrationTest {
                 .doOnError(throwable -> System.out.println(throwable.getMessage()))
                 .test();
 
-        observer.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        observer.awaitTerminalEvent(3, TimeUnit.SECONDS);
         observer.assertTerminated();
-        assertThat(wasCanceled.get()).isTrue();
-        assertThat(didProduce.get()).isTrue();
+        assertThat(requestWasCanceled.get()).isTrue();
+        assertThat(requestDidProduce.get()).isTrue();
     }
 
     @Test
@@ -263,17 +263,17 @@ public class CancellationPropagationIntegrationTest {
 
         svc.setExplicitCancel(true);
 
-        AtomicBoolean wasCanceled = new AtomicBoolean(false);
-        AtomicBoolean didProduce = new AtomicBoolean(false);
+        AtomicBoolean requestWasCanceled = new AtomicBoolean(false);
+        AtomicBoolean requestDidProduce = new AtomicBoolean(false);
 
         Flowable<NumberProto.Number> request = Flowable.fromIterable(new Sequence(10000))
                 .map(CancellationPropagationIntegrationTest::protoNum)
                 .doOnNext(n -> {
-                    didProduce.set(true);
+                    requestDidProduce.set(true);
                     System.out.println("P: " + n.getNumber(0));
                 })
                 .doOnCancel(() -> {
-                    wasCanceled.set(true);
+                    requestWasCanceled.set(true);
                     System.out.println("Client canceled");
                 });
 
@@ -285,8 +285,8 @@ public class CancellationPropagationIntegrationTest {
 
         observer.awaitTerminalEvent();
         observer.assertTerminated();
-        assertThat(wasCanceled.get()).isTrue();
-        assertThat(didProduce.get()).isTrue();
+        assertThat(requestWasCanceled.get()).isTrue();
+        assertThat(requestDidProduce.get()).isTrue();
     }
 
     private static NumberProto.Number protoNum(int i) {

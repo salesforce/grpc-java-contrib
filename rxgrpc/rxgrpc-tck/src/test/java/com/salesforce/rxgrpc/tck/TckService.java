@@ -21,11 +21,9 @@ public class TckService extends RxTckGrpc.TckImplBase {
     @Override
     public Flowable<Message> oneToMany(Single<Message> request) {
         return request
-                .toFlowable()
-                .flatMap(message -> Flowable.range(0, message.getNumber()))
-                .onBackpressureBuffer()
-                .map(this::toMessage)
-                .map(this::maybeExplode);
+                .map(this::maybeExplode)
+                .flatMapPublisher(message -> Flowable.range(0, message.getNumber()))
+                .map(this::toMessage);
     }
 
     @Override

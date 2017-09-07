@@ -7,7 +7,9 @@
 
 package com.salesforce.rxgrpc.tck;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public class TckService extends RxTckGrpc.TckImplBase {
@@ -23,7 +25,7 @@ public class TckService extends RxTckGrpc.TckImplBase {
         return request
                 .toFlowable()
                 .flatMap(message -> Flowable.range(0, message.getNumber()))
-                .doOnNext(System.out::println)
+                .onBackpressureBuffer()
                 .map(this::toMessage)
                 .map(this::maybeExplode);
     }

@@ -29,7 +29,7 @@ public class TckService extends RxTckGrpc.TckImplBase {
 
     @Override
     public Single<Message> manyToOne(Flowable<Message> request) {
-        return request.map(this::maybeExplode).lastOrError();
+        return request.map(this::maybeExplode).last(Message.newBuilder().setNumber(0).build());
     }
 
     @Override

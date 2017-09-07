@@ -71,9 +71,9 @@ public class RxStreamObserverPublisher<T> implements Publisher<T>, StreamObserve
 
                 isCanceled = true;
                 if (callStreamObserver instanceof ClientCallStreamObserver) {
-                    ((ClientCallStreamObserver) callStreamObserver).cancel("Canceled by request", null);
+                    ((ClientCallStreamObserver) callStreamObserver).cancel("Client canceled request", null);
                 } else {
-                    callStreamObserver.onError(Status.CANCELLED.asRuntimeException());
+                    callStreamObserver.onError(Status.CANCELLED.withDescription("Server canceled request").asRuntimeException());
                 }
             }
         });

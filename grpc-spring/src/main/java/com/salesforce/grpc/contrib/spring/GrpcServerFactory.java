@@ -7,10 +7,13 @@
 
 package com.salesforce.grpc.contrib.spring;
 
+import com.google.common.collect.ImmutableList;
 import io.grpc.BindableService;
 import io.grpc.Server;
 
+import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Implement this interface in a bean to override how {@link GrpcServerHost} initializes a {@link Server} from a
@@ -25,4 +28,15 @@ public interface GrpcServerFactory {
      * @return A new grpc {@link Server}
      */
     Server buildServerForServices(int port, Collection<BindableService> services);
+
+    /**
+     * The {@link Annotation}s this GrpcServerFactory will match on when discovering gRPC service implementations.
+     * Override this method to provide your own set of annotations instead of the default
+     * {@code {@literal @}GrpcService} annotation.
+     *
+     * @return a set of java annotations to match on.
+     */
+    default List<Class<? extends Annotation>> forAnnotations() {
+        return ImmutableList.of(GrpcService.class);
+    }
 }

@@ -7,6 +7,7 @@
 
 package com.salesforce.grpc.contrib.spring;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -23,7 +24,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -101,6 +104,11 @@ public class GrpcServerHostEndToEndTest {
                     System.out.println("Building a service for " + services.size() + " services");
                     return super.buildServerForServices(port, services);
                 }
+
+                @Override
+                public List<Class<? extends Annotation>> forAnnotations() {
+                    return ImmutableList.of(GrpcService.class, AlsoAGrpcService.class);
+                }
             };
         }
 
@@ -111,6 +119,7 @@ public class GrpcServerHostEndToEndTest {
     }
 
     @GrpcService
+    @AlsoAGrpcService
     private static class GreeterImpl extends GreeterGrpc.GreeterImplBase {
         @Autowired
         private GreetingComposer composer;

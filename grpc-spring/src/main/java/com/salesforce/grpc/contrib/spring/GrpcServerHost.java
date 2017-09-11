@@ -21,7 +21,9 @@ import org.springframework.context.ApplicationContextAware;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -123,15 +125,16 @@ public class GrpcServerHost implements AutoCloseable, ApplicationContextAware {
      * @throws IllegalStateException if any non-{@link BindableService} classes are annotated with {@link GrpcService}
      */
     public void start() throws IOException {
+        if (serverFactory == null) {
+            serverFactory = findServerFactory();
+        }
+
         final Collection<BindableService> services = getServicesFromApplicationContext();
 
         if (services.isEmpty()) {
             throw new IOException("gRPC server not started because no services were found in the application context.");
         }
 
-        if (serverFactory == null) {
-            serverFactory = findServerFactory();
-        }
         server = serverFactory.buildServerForServices(port, services);
         server.start();
     }
@@ -157,8 +160,6 @@ public class GrpcServerHost implements AutoCloseable, ApplicationContextAware {
         final Server server = server();
 
         if (server != null) {
-            final int port = getPort();
-
             server.shutdown();
 
             try {
@@ -173,7 +174,11 @@ public class GrpcServerHost implements AutoCloseable, ApplicationContextAware {
     }
 
     private Collection<BindableService> getServicesFromApplicationContext() {
-        Map<String, Object> possibleServices = applicationContext.getBeansWithAnnotation(GrpcService.class);
+        Map<String, Object> possibleServices = new HashMap<>();
+
+        for (Class<? extends Annotation> annotation : serverFactory.forAnnotations()) {
+            possibleServices.putAll(applicationContext.getBeansWithAnnotation(annotation));
+        }
 
         Collection<String> invalidServiceNames = possibleServices.entrySet().stream()
                 .filter(e -> !(e.getValue() instanceof BindableService))

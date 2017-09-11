@@ -167,7 +167,7 @@ public class GrpcServerHostTest {
         assertThatThrownBy(runner::start).isInstanceOf(IOException.class);
 
         // Make sure the server builder was not used.
-        verifyZeroInteractions(factory);
+        verify(factory, never()).buildServerForServices(anyInt(), any());
 
         assertThat(runner.server()).isNull();
     }

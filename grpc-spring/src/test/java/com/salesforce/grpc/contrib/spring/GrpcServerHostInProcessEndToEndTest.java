@@ -13,6 +13,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.grpc.*;
+import io.grpc.inprocess.InProcessChannelBuilder;
+import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.stub.StreamObserver;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +39,8 @@ import static org.awaitility.Awaitility.await;
 @SuppressWarnings("Duplicates")
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-public class GrpcServerHostEndToEndTest {
+public class GrpcServerHostInProcessEndToEndTest {
+    private static String SERVER_NAME = "GrpcServerHostInProcessEndToEndTest";
 
     @Autowired
     private GrpcServerHost grpcServerHost;
@@ -47,8 +50,8 @@ public class GrpcServerHostEndToEndTest {
         final String name = UUID.randomUUID().toString();
         grpcServerHost.start();
 
-        ManagedChannel channel = ManagedChannelBuilder
-                .forAddress("localhost", grpcServerHost.getPort())
+        ManagedChannel channel = InProcessChannelBuilder
+                .forName(SERVER_NAME)
                 .usePlaintext(true)
                 .build();
 
@@ -102,13 +105,16 @@ public class GrpcServerHostEndToEndTest {
             return new SimpleGrpcServerFactory() {
                 @Override
                 public Server buildServerForServices(int port, Collection<BindableService> services) {
-                    System.out.println("Building a service for " + services.size() + " services");
-                    return super.buildServerForServices(port, services);
+                    System.out.println("Building an IN-PROC service for " + services.size() + " services");
+
+                    ServerBuilder builder = InProcessServerBuilder.forName(SERVER_NAME);
+                    services.forEach(builder::addService);
+                    return builder.build();
                 }
 
                 @Override
                 public List<Class<? extends Annotation>> forAnnotations() {
-                    return ImmutableList.of(GrpcService.class, AlsoAGrpcService.class);
+                    return ImmutableList.of(InProcessGrpcService.class);
                 }
             };
         }
@@ -119,8 +125,7 @@ public class GrpcServerHostEndToEndTest {
         }
     }
 
-    @GrpcService
-    @AlsoAGrpcService
+    @InProcessGrpcService
     private static class GreeterImpl extends GreeterGrpc.GreeterImplBase {
         @Autowired
         private GreetingComposer composer;

@@ -28,7 +28,6 @@
         <dependency>
             <groupId>com.salesforce.servicelibs</groupId>
             <artifactId>jprotoc</artifactId>
-            <version>0.6.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

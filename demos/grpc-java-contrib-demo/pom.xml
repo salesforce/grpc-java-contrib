@@ -13,14 +13,16 @@
     <artifactId>grpc-java-contrib-demo</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+        <spring.boot.version>1.4.2.RELEASE</spring.boot.version>
+    </properties>
+
     <modules>
         <module>time-client-demo</module>
         <module>time-service-demo</module>
     </modules>
-
-    <properties>
-        <spring.boot.version>1.4.2.RELEASE</spring.boot.version>
-    </properties>
 
     <dependencyManagement>
         <dependencies>

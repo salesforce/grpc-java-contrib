@@ -29,7 +29,7 @@ public class DefaultDeadlineInterceptor implements ClientInterceptor {
     }
 
     /**
-     * Get the current default deadline duration
+     * Get the current default deadline duration.
      *
      * @return the current default deadline duration
      */
@@ -38,7 +38,7 @@ public class DefaultDeadlineInterceptor implements ClientInterceptor {
     }
 
     /**
-     * Set a new default deadline duration
+     * Set a new default deadline duration.
      *
      * @param duration the new default deadline duration
      */

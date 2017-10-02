@@ -10,6 +10,7 @@ package com.salesforce.grpc.contrib.interceptor;
 import com.google.common.base.Preconditions;
 import io.grpc.*;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,21 +19,38 @@ import java.util.concurrent.TimeUnit;
  * implicit deadline will be used instead.
  */
 public class DefaultDeadlineInterceptor implements ClientInterceptor {
-    private final long duration;
-    private final TimeUnit timeUnit;
+    private Duration duration;
 
-    public DefaultDeadlineInterceptor(long duration, TimeUnit timeUnit) {
-        Preconditions.checkArgument(duration > 0, "duration must be greater than zero");
-        Preconditions.checkNotNull(timeUnit, "timeUnit");
+    public DefaultDeadlineInterceptor(Duration duration) {
+        Preconditions.checkNotNull(duration, "duration");
+        Preconditions.checkArgument(!duration.isNegative(), "duration must be greater than zero");
 
         this.duration = duration;
-        this.timeUnit = timeUnit;
+    }
+
+    /**
+     * Get the current default deadline duration
+     *
+     * @return the current default deadline duration
+     */
+    public Duration getDuration() {
+        return duration;
+    }
+
+    /**
+     * Set a new default deadline duration
+     *
+     * @param duration the new default deadline duration
+     */
+    public void setDuration(Duration duration) {
+        this.duration = duration;
     }
 
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
+        // Only add a deadline if no other deadline has been set.
         if (callOptions.getDeadline() == null && Context.current().getDeadline() == null) {
-            callOptions = callOptions.withDeadlineAfter(duration, timeUnit);
+            callOptions = callOptions.withDeadlineAfter(duration.toMillis(), TimeUnit.MILLISECONDS);
         }
 
         return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(next.newCall(method, callOptions)) {

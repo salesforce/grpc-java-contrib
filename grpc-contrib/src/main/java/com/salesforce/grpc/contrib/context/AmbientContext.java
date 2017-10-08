@@ -8,6 +8,7 @@
 package com.salesforce.grpc.contrib.context;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import io.grpc.*;
 
 /**
@@ -19,16 +20,22 @@ public final class AmbientContext {
     static final Context.Key<Metadata> KEY = Context.key("AmbientContext");
 
     /**
-     * TODO.
-     * @return
+     * Attaches an empty ambient context to the provided gRPC {@code Context}.
+     *
+     * @throws IllegalStateException  if an ambient context has already been attached to the
+     * provided gRPC {@code Context}.
      */
     public static Context initialize(Context context) {
+        Preconditions.checkNotNull(context, "context");
+        Preconditions.checkState(KEY.get(context) == null,
+                "AmbientContext has already been created in the scope of the current context");
         return context.withValue(KEY, new Metadata());
     }
 
     /**
-     * TODO.
-     * @return
+     * Returns the ambient context attached to the current gRPC {@code Context}.
+     *
+     * @throws  IllegalStateException  if no ambient context is attached to the current gRPC {@code Context}.
      */
     public static Metadata current() {
         return current(Context.current());
@@ -36,11 +43,10 @@ public final class AmbientContext {
 
     @VisibleForTesting
     static Metadata current(Context context) {
-        Metadata current = KEY.get(context);
-        if (current == null) {
-            throw new IllegalStateException("AmbientContext has not yet been created in the scope of the current context");
-        } else {
-            return KEY.get();
-        }
+        Preconditions.checkNotNull(context, "context");
+        Preconditions.checkState(KEY.get(context) != null,
+                "AmbientContext has not yet been created in the scope of the current context");
+
+        return KEY.get(context);
     }
 }

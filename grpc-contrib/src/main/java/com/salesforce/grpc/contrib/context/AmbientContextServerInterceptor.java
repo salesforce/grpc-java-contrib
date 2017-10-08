@@ -26,7 +26,9 @@ public class AmbientContextServerInterceptor implements ServerInterceptor {
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-        final Metadata ctx = new Metadata();
+        Metadata ctx = AmbientContext.KEY.get();
+        // Only initialize ctx if not yet initialized
+        ctx = ctx != null ? ctx : new Metadata();
         for (String keyName : headers.keys()) {
             if (!keyName.startsWith(headerPrefix)) {
                 continue;

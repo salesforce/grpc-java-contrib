@@ -9,6 +9,10 @@ package com.salesforce.grpc.contrib.context;
 
 import io.grpc.*;
 
+/**
+ * {@code AmbientContextClientInterceptor} transparently deserializes prefixed request headers into a well-known gRPC
+ * {@code Context} property.
+ */
 public class AmbientContextClientInterceptor implements ClientInterceptor {
     private String headerPrefix;
 

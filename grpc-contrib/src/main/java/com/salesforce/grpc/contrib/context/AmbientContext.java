@@ -12,7 +12,10 @@ import com.google.common.base.Preconditions;
 import io.grpc.*;
 
 /**
- * TODO.
+ * {@code AmbientContext} is entry point for working with the ambient context managed by {@link AmbientContextClientInterceptor}
+ * and {@link AmbientContextServerInterceptor}.
+ *
+ * See package javadoc for more info.
  */
 public final class AmbientContext {
     private AmbientContext() { }

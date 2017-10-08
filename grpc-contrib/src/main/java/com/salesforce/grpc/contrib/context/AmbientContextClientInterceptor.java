@@ -10,21 +10,24 @@ package com.salesforce.grpc.contrib.context;
 import io.grpc.*;
 
 /**
- * {@code AmbientContextClientInterceptor} transparently deserializes prefixed request headers into a well-known gRPC
- * {@code Context} property.
+ * {@code AmbientContextClientInterceptor} transparently deserializes prefixed request headers into an ambient context.
+ * Header values can be accessed using the {@link AmbientContext} class.
+ *
+ * <p>Each {@code AmbientContextClientInterceptor} marshals headers with a know prefix. If multiple prefixes are needed,
+ * add multiple {@code AmbientContextClientInterceptor} instances to the gRPC interceptor chain.
+ *
+ * See package javadoc for more info.
  */
 public class AmbientContextClientInterceptor implements ClientInterceptor {
     private String headerPrefix;
 
+    /**
+     * Constructs an {@code AmbientContextClientInterceptor} that marshals request headers with a know prefix into the
+     * {@link AmbientContext}.
+     *
+     * @param headerPrefix the header prefix to marshal.
+     */
     public AmbientContextClientInterceptor(String headerPrefix) {
-        this.headerPrefix = headerPrefix;
-    }
-
-    public String getHeaderPrefix() {
-        return headerPrefix;
-    }
-
-    public void setHeaderPrefix(String headerPrefix) {
         this.headerPrefix = headerPrefix;
     }
 

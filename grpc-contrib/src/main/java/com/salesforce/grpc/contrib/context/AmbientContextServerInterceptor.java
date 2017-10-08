@@ -9,18 +9,26 @@ package com.salesforce.grpc.contrib.context;
 
 import io.grpc.*;
 
+/**
+ * {@code AmbientContextServerInterceptor} transparently serializes prefixed ambient context values into outbound request
+ * headers.
+ *
+ * <p>Each {@code AmbientContextServerInterceptor} marshals headers with a know prefix. If multiple prefixes are needed,
+ * add multiple {@code AmbientContextServerInterceptor} instances to the gRPC interceptor chain.
+ *
+ * See package javadoc for more info.
+ */
 public class AmbientContextServerInterceptor implements ServerInterceptor {
     private String headerPrefix;
 
+    /**
+     * Constructs an {@code AmbientContextServerInterceptor} that marshals ambient context values with a know prefix
+     * into outbound request headers.
+     * {@link AmbientContext}.
+     *
+     * @param headerPrefix the header prefix to marshal.
+     */
     public AmbientContextServerInterceptor(String headerPrefix) {
-        this.headerPrefix = headerPrefix;
-    }
-
-    public String getHeaderPrefix() {
-        return headerPrefix;
-    }
-
-    public void setHeaderPrefix(String headerPrefix) {
         this.headerPrefix = headerPrefix;
     }
 

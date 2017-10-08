@@ -7,20 +7,25 @@
 
 package com.salesforce.grpc.contrib.context;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import io.grpc.*;
+import io.grpc.Context;
+import io.grpc.Metadata;
+
+import javax.annotation.Nullable;
+import java.util.Set;
 
 /**
  * {@code AmbientContext} is entry point for working with the ambient context managed by {@link AmbientContextClientInterceptor}
- * and {@link AmbientContextServerInterceptor}.
+ * and {@link AmbientContextServerInterceptor}. The interface for this class is very similar to gRPC's {@code Metadata}
+ * class.
  *
  * See package javadoc for more info.
  */
 public final class AmbientContext {
     private AmbientContext() { }
 
-    static final Context.Key<Metadata> KEY = Context.key("AmbientContext");
+    static final Context.Key<Metadata> DATA_KEY = Context.key("AmbientContext");
+    private static final AmbientContext instance = new AmbientContext();
 
     /**
      * Attaches an empty ambient context to the provided gRPC {@code Context}.
@@ -30,9 +35,9 @@ public final class AmbientContext {
      */
     public static Context initialize(Context context) {
         Preconditions.checkNotNull(context, "context");
-        Preconditions.checkState(KEY.get(context) == null,
+        Preconditions.checkState(DATA_KEY.get(context) == null,
                 "AmbientContext has already been created in the scope of the current context");
-        return context.withValue(KEY, new Metadata());
+        return context.withValue(DATA_KEY, new Metadata());
     }
 
     /**
@@ -40,16 +45,100 @@ public final class AmbientContext {
      *
      * @throws  IllegalStateException  if no ambient context is attached to the current gRPC {@code Context}.
      */
-    public static Metadata current() {
-        return current(Context.current());
+    public static AmbientContext current() {
+        internalCurrent();
+        return instance;
     }
 
-    @VisibleForTesting
-    static Metadata current(Context context) {
-        Preconditions.checkNotNull(context, "context");
-        Preconditions.checkState(KEY.get(context) != null,
+    private static Metadata internalCurrent() {
+        Preconditions.checkState(DATA_KEY.get() != null,
                 "AmbientContext has not yet been created in the scope of the current context");
+        return DATA_KEY.get();
+    }
 
-        return KEY.get(context);
+
+
+    /**
+     * Returns true if a value is defined for the given key.
+     *
+     * <p>This is done by linear search, so if it is followed by {@link #get} or {@link #getAll},
+     * prefer calling them directly and checking the return value against {@code null}.
+     */
+    public boolean containsKey(Metadata.Key<?> key) {
+        return internalCurrent().containsKey(key);
+    }
+
+    /**
+     * Remove all values for the given key without returning them. This is a minor performance
+     * optimization if you do not need the previous values.
+     */
+    public <T> void discardAll(Metadata.Key<T> key) {
+        internalCurrent().discardAll(key);
+    }
+
+    /**
+     * Returns the last metadata entry added with the name 'name' parsed as T.
+     *
+     * @return the parsed metadata entry or null if there are none.
+     */
+    @Nullable
+    public <T> T get(Metadata.Key<T> key) {
+        return internalCurrent().get(key);
+    }
+
+    /**
+     * Returns all the metadata entries named 'name', in the order they were received, parsed as T, or
+     * null if there are none. The iterator is not guaranteed to be "live." It may or may not be
+     * accurate if Metadata is mutated.
+     */
+    @Nullable
+    public <T> Iterable<T> getAll(final Metadata.Key<T> key) {
+        return internalCurrent().getAll(key);
+    }
+
+    /**
+     * Returns set of all keys in store.
+     *
+     * @return unmodifiable Set of keys
+     */
+    public Set<String> keys() {
+        return internalCurrent().keys();
+    }
+
+    /**
+     * Adds the {@code key, value} pair. If {@code key} already has values, {@code value} is added to
+     * the end. Duplicate values for the same key are permitted.
+     *
+     * @throws NullPointerException if key or value is null
+     */
+    public <T> void put(Metadata.Key<T> key, T value) {
+        internalCurrent().put(key, value);
+    }
+
+    /**
+     * Removes the first occurrence of {@code value} for {@code key}.
+     *
+     * @param key key for value
+     * @param value value
+     * @return {@code true} if {@code value} removed; {@code false} if {@code value} was not present
+     * @throws NullPointerException if {@code key} or {@code value} is null
+     */
+    public <T> boolean remove(Metadata.Key<T> key, T value) {
+        return internalCurrent().remove(key, value);
+    }
+
+    /** Remove all values for the given key. If there were no values, {@code null} is returned. */
+    public <T> Iterable<T> removeAll(Metadata.Key<T> key) {
+        return internalCurrent().removeAll(key);
+    }
+
+    @Override
+    public String toString() {
+        Metadata ctx = DATA_KEY.get();
+        if (ctx != null) {
+            return ctx.toString();
+        } else {
+            return "[MISSING AMBIENT CONTEXT]";
+        }
     }
 }

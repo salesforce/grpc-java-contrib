@@ -34,7 +34,7 @@ public class AmbientContextServerInterceptor implements ServerInterceptor {
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-        Metadata ctx = AmbientContext.KEY.get();
+        Metadata ctx = AmbientContext.DATA_KEY.get();
         // Only initialize ctx if not yet initialized
         ctx = ctx != null ? ctx : new Metadata();
         for (String keyName : headers.keys()) {
@@ -51,6 +51,6 @@ public class AmbientContextServerInterceptor implements ServerInterceptor {
             ctx.put(key, value);
         }
 
-        return Contexts.interceptCall(Context.current().withValue(AmbientContext.KEY, ctx), call, headers, next);
+        return Contexts.interceptCall(Context.current().withValue(AmbientContext.DATA_KEY, ctx), call, headers, next);
     }
 }

@@ -36,7 +36,7 @@ public class AmbientContextClientInterceptor implements ClientInterceptor {
         return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(next.newCall(method, callOptions)) {
             @Override
             public void start(Listener<RespT> responseListener, Metadata headers) {
-                Metadata ctx = AmbientContext.current();
+                AmbientContext ctx = AmbientContext.current();
                 if (ctx != null) {
                     for (String keyString : ctx.keys()) {
                         if (keyString.startsWith(headerPrefix)) {

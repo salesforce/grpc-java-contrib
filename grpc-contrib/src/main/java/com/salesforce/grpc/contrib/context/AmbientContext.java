@@ -12,6 +12,7 @@ import io.grpc.Context;
 import io.grpc.Metadata;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Set;
 
 /**
@@ -19,12 +20,19 @@ import java.util.Set;
  * and {@link AmbientContextServerInterceptor}. The interface for this class is very similar to gRPC's {@code Metadata}
  * class.
  *
- * See package javadoc for more info.
+ * <p>This class is not thread safe, implementations should ensure that ambient context reads and writes do
+ * not occur in multiple threads concurrently.
+ *
+ * <p>See package javadoc for more info.
  */
+@NotThreadSafe
 public final class AmbientContext {
     private AmbientContext() { }
 
     static final Context.Key<Metadata> DATA_KEY = Context.key("AmbientContext");
+    private static final Metadata.Key<String> FREEZE_KEY =
+            Metadata.Key.of("com.salesforce.grpc.contrib.context.frozen", Metadata.ASCII_STRING_MARSHALLER);
+
     private static final AmbientContext instance = new AmbientContext();
 
     /**
@@ -77,7 +85,7 @@ public final class AmbientContext {
     }
 
     /**
-     * Returns the last metadata entry added with the name 'name' parsed as T.
+     * Returns the last ambient context entry added with the name 'name' parsed as T.
      *
      * @return the parsed metadata entry or null if there are none.
      */
@@ -87,9 +95,9 @@ public final class AmbientContext {
     }
 
     /**
-     * Returns all the metadata entries named 'name', in the order they were received, parsed as T, or
+     * Returns all the ambient context entries named 'name', in the order they were received, parsed as T, or
      * null if there are none. The iterator is not guaranteed to be "live." It may or may not be
-     * accurate if Metadata is mutated.
+     * accurate if the ambient context is mutated.
      */
     @Nullable
     public <T> Iterable<T> getAll(final Metadata.Key<T> key) {
@@ -127,7 +135,9 @@ public final class AmbientContext {
         return internalCurrent().remove(key, value);
     }
 
-    /** Remove all values for the given key. If there were no values, {@code null} is returned. */
+    /**
+     * Remove all values for the given key. If there were no values, {@code null} is returned.
+     */
     public <T> Iterable<T> removeAll(Metadata.Key<T> key) {
         return internalCurrent().removeAll(key);
     }

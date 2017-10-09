@@ -16,7 +16,7 @@ import io.grpc.*;
  * <p>Each {@code AmbientContextClientInterceptor} marshals headers with a know prefix. If multiple prefixes are needed,
  * add multiple {@code AmbientContextClientInterceptor} instances to the gRPC interceptor chain.
  *
- * See package javadoc for more info.
+ * <p>See package javadoc for more info.
  */
 public class AmbientContextClientInterceptor implements ClientInterceptor {
     private String headerPrefix;

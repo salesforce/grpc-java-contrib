@@ -8,6 +8,7 @@
 package com.salesforce.grpc.contrib.context;
 
 import io.grpc.Context;
+import io.grpc.Metadata;
 import io.grpc.testing.GrpcServerRule;
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,11 +53,46 @@ public class AmbientContextTest {
 
     @Test
     public void contextFreezingWorks() {
-        fail("Not implemented");
+        Metadata.Key<String> key = Metadata.Key.of("key", Metadata.ASCII_STRING_MARSHALLER);
+        AmbientContext context = new AmbientContext();
+
+        assertThat(context.isFrozen()).isFalse();
+        Object freezeKey = context.freeze();
+        assertThat(context.isFrozen()).isTrue();
+        assertThatThrownBy(() -> context.put(key, "foo")).isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    public void contextDoubleFreezingThrows() {
+        AmbientContext context = new AmbientContext();
+        context.freeze();
+        assertThatThrownBy(context::freeze).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     public void contextThawingWorks() {
-        fail("Not implemented");
+        AmbientContext context = new AmbientContext();
+
+        Object freezeKey = context.freeze();
+        context.thaw(freezeKey);
+        assertThat(context.isFrozen()).isFalse();
+    }
+
+    @Test
+    public void contextThawingNotFrozenThrows() {
+        AmbientContext context = new AmbientContext();
+        assertThatThrownBy(() -> context.thaw(new Object()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("AmbientContext is not frozen.");
+    }
+
+    @Test
+    public void contextThawingWrongKeyThrows() {
+        AmbientContext context = new AmbientContext();
+
+        Object freezeKey = context.freeze();
+        assertThatThrownBy(() -> context.thaw(new Object()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("The provided freezeKey");
     }
 }

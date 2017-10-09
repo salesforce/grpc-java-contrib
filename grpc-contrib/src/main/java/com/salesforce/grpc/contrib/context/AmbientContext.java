@@ -7,13 +7,15 @@
 
 package com.salesforce.grpc.contrib.context;
 
-import com.google.common.base.Preconditions;
 import io.grpc.Context;
 import io.grpc.Metadata;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Set;
+
+import static com.google.common.base.Preconditions.*;
+
 
 /**
  * {@code AmbientContext} is entry point for working with the ambient context managed by {@link AmbientContextClientInterceptor}
@@ -27,13 +29,7 @@ import java.util.Set;
  */
 @NotThreadSafe
 public final class AmbientContext {
-    private AmbientContext() { }
-
-    static final Context.Key<Metadata> DATA_KEY = Context.key("AmbientContext");
-    private static final Metadata.Key<String> FREEZE_KEY =
-            Metadata.Key.of("com.salesforce.grpc.contrib.context.frozen", Metadata.ASCII_STRING_MARSHALLER);
-
-    private static final AmbientContext instance = new AmbientContext();
+    static final Context.Key<AmbientContext> DATA_KEY = Context.key("AmbientContext");
 
     /**
      * Attaches an empty ambient context to the provided gRPC {@code Context}.
@@ -42,10 +38,10 @@ public final class AmbientContext {
      * provided gRPC {@code Context}.
      */
     public static Context initialize(Context context) {
-        Preconditions.checkNotNull(context, "context");
-        Preconditions.checkState(DATA_KEY.get(context) == null,
+        checkNotNull(context, "context");
+        checkState(DATA_KEY.get(context) == null,
                 "AmbientContext has already been created in the scope of the current context");
-        return context.withValue(DATA_KEY, new Metadata());
+        return context.withValue(DATA_KEY, new AmbientContext());
     }
 
     /**
@@ -54,17 +50,43 @@ public final class AmbientContext {
      * @throws  IllegalStateException  if no ambient context is attached to the current gRPC {@code Context}.
      */
     public static AmbientContext current() {
-        internalCurrent();
-        return instance;
-    }
-
-    private static Metadata internalCurrent() {
-        Preconditions.checkState(DATA_KEY.get() != null,
+        checkState(DATA_KEY.get() != null,
                 "AmbientContext has not yet been created in the scope of the current context");
         return DATA_KEY.get();
     }
 
+    private Metadata contextMetadata;
+    private Object freezeKey = null;
 
+    AmbientContext() {
+        this.contextMetadata = new Metadata();
+    }
+
+    /**
+     * Marks this AmbientContext as read-only, preventing any further modification
+     *
+     * @return
+     */
+    public Object freeze() {
+        checkState(!isFrozen(), "AmbientContext already frozen. Cannot freeze() twice.");
+        freezeKey = new Object();
+        return freezeKey;
+    }
+
+    public void thaw(Object freezeKey) {
+        checkState(isFrozen(), "AmbientContext is not frozen. Cannot thaw().");
+        checkState(this.freezeKey == freezeKey,
+                "The provided freezeKey is not the same object returned by freeze()");
+        this.freezeKey = null;
+    }
+
+    public boolean isFrozen() {
+        return freezeKey != null;
+    }
+
+    private void checkFreeze() {
+        checkState(freezeKey == null, "AmbientContext cannot be modified while frozen");
+    }
 
     /**
      * Returns true if a value is defined for the given key.
@@ -73,15 +95,18 @@ public final class AmbientContext {
      * prefer calling them directly and checking the return value against {@code null}.
      */
     public boolean containsKey(Metadata.Key<?> key) {
-        return internalCurrent().containsKey(key);
+        return contextMetadata.containsKey(key);
     }
 
     /**
      * Remove all values for the given key without returning them. This is a minor performance
      * optimization if you do not need the previous values.
+     *
+     * @throws IllegalStateException  if the AmbientContext is frozen
      */
     public <T> void discardAll(Metadata.Key<T> key) {
-        internalCurrent().discardAll(key);
+        checkFreeze();
+        contextMetadata.discardAll(key);
     }
 
     /**
@@ -91,7 +116,7 @@ public final class AmbientContext {
      */
     @Nullable
     public <T> T get(Metadata.Key<T> key) {
-        return internalCurrent().get(key);
+        return contextMetadata.get(key);
     }
 
     /**
@@ -101,7 +126,7 @@ public final class AmbientContext {
      */
     @Nullable
     public <T> Iterable<T> getAll(final Metadata.Key<T> key) {
-        return internalCurrent().getAll(key);
+        return contextMetadata.getAll(key);
     }
 
     /**
@@ -110,7 +135,7 @@ public final class AmbientContext {
      * @return unmodifiable Set of keys
      */
     public Set<String> keys() {
-        return internalCurrent().keys();
+        return contextMetadata.keys();
     }
 
     /**
@@ -118,9 +143,11 @@ public final class AmbientContext {
      * the end. Duplicate values for the same key are permitted.
      *
      * @throws NullPointerException if key or value is null
+     * @throws IllegalStateException  if the AmbientContext is frozen
      */
     public <T> void put(Metadata.Key<T> key, T value) {
-        internalCurrent().put(key, value);
+        checkFreeze();
+        contextMetadata.put(key, value);
     }
 
     /**
@@ -129,26 +156,27 @@ public final class AmbientContext {
      * @param key key for value
      * @param value value
      * @return {@code true} if {@code value} removed; {@code false} if {@code value} was not present
+     *
      * @throws NullPointerException if {@code key} or {@code value} is null
+     * @throws IllegalStateException  if the AmbientContext is frozen
      */
     public <T> boolean remove(Metadata.Key<T> key, T value) {
-        return internalCurrent().remove(key, value);
+        checkFreeze();
+        return contextMetadata.remove(key, value);
     }
 
     /**
      * Remove all values for the given key. If there were no values, {@code null} is returned.
+     *
+     * @throws IllegalStateException  if the AmbientContext is frozen
      */
     public <T> Iterable<T> removeAll(Metadata.Key<T> key) {
-        return internalCurrent().removeAll(key);
+        checkFreeze();
+        return contextMetadata.removeAll(key);
     }
 
     @Override
     public String toString() {
-        Metadata ctx = DATA_KEY.get();
-        if (ctx != null) {
-            return ctx.toString();
-        } else {
-            return "[MISSING AMBIENT CONTEXT]";
-        }
+        return (isFrozen() ? "[FROZEN] " : "[THAWED] ") + contextMetadata.toString();
     }
 }

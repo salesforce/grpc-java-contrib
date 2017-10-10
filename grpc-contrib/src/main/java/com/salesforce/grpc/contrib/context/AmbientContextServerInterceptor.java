@@ -42,14 +42,26 @@ public class AmbientContextServerInterceptor implements ServerInterceptor {
                 continue;
             }
 
-            Metadata.Key<String> key = Metadata.Key.of(keyName, Metadata.ASCII_STRING_MARSHALLER);
-            Iterable<String> values = headers.getAll(key);
-            if (values == null) {
-                continue;
-            }
+            if (keyName.endsWith(Metadata.BINARY_HEADER_SUFFIX)) {
+                Metadata.Key<byte[]> key = Metadata.Key.of(keyName, Metadata.BINARY_BYTE_MARSHALLER);
+                Iterable<byte[]> values = headers.getAll(key);
+                if (values == null) {
+                    continue;
+                }
 
-            for (String value : values) {
-                ctx.put(key, value);
+                for (byte[] value : values) {
+                    ctx.put(key, value);
+                }
+            } else {
+                Metadata.Key<String> key = Metadata.Key.of(keyName, Metadata.ASCII_STRING_MARSHALLER);
+                Iterable<String> values = headers.getAll(key);
+                if (values == null) {
+                    continue;
+                }
+
+                for (String value : values) {
+                    ctx.put(key, value);
+                }
             }
         }
 

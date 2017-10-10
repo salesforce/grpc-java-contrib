@@ -47,11 +47,6 @@ public class AmbientContextTest {
     }
 
     @Test
-    public void contextAccessMethods() {
-        fail("Not implemented");
-    }
-
-    @Test
     public void contextFreezingWorks() {
         Metadata.Key<String> key = Metadata.Key.of("key", Metadata.ASCII_STRING_MARSHALLER);
         AmbientContext context = new AmbientContext();
@@ -81,9 +76,7 @@ public class AmbientContextTest {
     @Test
     public void contextThawingNotFrozenThrows() {
         AmbientContext context = new AmbientContext();
-        assertThatThrownBy(() -> context.thaw(new Object()))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("AmbientContext is not frozen.");
+        assertThatThrownBy(() -> context.thaw(new Object())).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -91,8 +84,6 @@ public class AmbientContextTest {
         AmbientContext context = new AmbientContext();
 
         Object freezeKey = context.freeze();
-        assertThatThrownBy(() -> context.thaw(new Object()))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("The provided freezeKey");
+        assertThatThrownBy(() -> context.thaw(new Object())).isInstanceOf(IllegalArgumentException.class);
     }
 }

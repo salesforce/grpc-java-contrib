@@ -30,9 +30,8 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.awaitility.Awaitility.await;
 
 public class AmbientContextTransferTest {
-    @Rule
-    public GrpcServerRule serverRule1 = new GrpcServerRule();
-    @Rule public GrpcServerRule serverRule2 = new GrpcServerRule();
+    @Rule public final GrpcServerRule serverRule1 = new GrpcServerRule();
+    @Rule public final GrpcServerRule serverRule2 = new GrpcServerRule();
 
     @Before
     public void setUp() throws Exception {

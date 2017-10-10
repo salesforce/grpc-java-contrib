@@ -63,9 +63,15 @@ public final class AmbientContext {
     }
 
     /**
-     * Marks this AmbientContext as read-only, preventing any further modification
+     * Makes the AmbientContext as read-only, preventing any further modification. A "freeze key" is returned, which
+     * can be used to {@link #thaw(Object)} the AmbientContext in the future.
      *
-     * @return
+     * <p>{@code freeze()} and {@code thaw()} are typically used to mark the ambient context read-only when the
+     * interceptor chain completes.
+     *
+     * @return  a "freeze key" that can be used passed to {@link #thaw(Object)}
+     *
+     * @throws IllegalStateException if the AmbientContext is already frozen
      */
     public Object freeze() {
         checkState(!isFrozen(), "AmbientContext already frozen. Cannot freeze() twice.");
@@ -73,13 +79,28 @@ public final class AmbientContext {
         return freezeKey;
     }
 
+    /**
+     * Makes the AmbientContext mutable again, after {@link #freeze()} has been called. A "freeze key" is needed to
+     * unfreeze the AmbientContext, ensuring only the code that froze the context can subsequently thaw it.
+     *
+     * <p>{@code freeze()} and {@code thaw()} are typically used to mark the ambient context read-only when the
+     * interceptor chain completes.
+     *
+     * @param freezeKey the "freeze key" returned by {@link #freeze()}
+     *
+     * @throws IllegalStateException if the AmbientContext has not yet been frozen
+     * @throws IllegalArgumentException if the {@code freezeKey} is incorrect
+     */
     public void thaw(Object freezeKey) {
         checkState(isFrozen(), "AmbientContext is not frozen. Cannot thaw().");
-        checkState(this.freezeKey == freezeKey,
+        checkArgument(this.freezeKey == freezeKey,
                 "The provided freezeKey is not the same object returned by freeze()");
         this.freezeKey = null;
     }
 
+    /**
+     * @return true of the AmbientContext has been frozen
+     */
     public boolean isFrozen() {
         return freezeKey != null;
     }

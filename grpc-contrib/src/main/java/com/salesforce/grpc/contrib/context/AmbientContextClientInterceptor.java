@@ -42,15 +42,19 @@ public class AmbientContextClientInterceptor implements ClientInterceptor {
                         if (keyString.startsWith(headerPrefix)) {
                             if (keyString.endsWith(Metadata.BINARY_HEADER_SUFFIX)) {
                                 Metadata.Key<byte[]> key = Metadata.Key.of(keyString, Metadata.BINARY_BYTE_MARSHALLER);
-                                byte[] value = ctx.get(key);
-                                if (value != null) {
-                                    headers.put(key, value);
+                                Iterable<byte[]> values = ctx.getAll(key);
+                                if (values != null) {
+                                    for (byte[] value : values) {
+                                        headers.put(key, value);
+                                    }
                                 }
                             } else {
                                 Metadata.Key<String> key = Metadata.Key.of(keyString, Metadata.ASCII_STRING_MARSHALLER);
-                                String value = ctx.get(key);
-                                if (value != null) {
-                                    headers.put(key, value);
+                                Iterable<String> values = ctx.getAll(key);
+                                if (values != null) {
+                                    for (String value : values) {
+                                        headers.put(key, value);
+                                    }
                                 }
                             }
                         }

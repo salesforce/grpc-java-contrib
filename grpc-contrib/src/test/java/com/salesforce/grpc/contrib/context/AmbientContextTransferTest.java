@@ -75,7 +75,39 @@ public class AmbientContextTransferTest {
 
     @Test
     public void multiValueContextTransfers() throws Exception {
-        fail("Not implemented");
+        Metadata.Key<String> ctxKey = Metadata.Key.of("ctx-context-key", Metadata.ASCII_STRING_MARSHALLER);
+        String expectedCtxValue1 = "context-value1";
+        String expectedCtxValue2 = "context-value2";
+        String expectedCtxValue3 = "context-value3";
+        AtomicReference<Iterable<String>> ctxValue = new AtomicReference<>();
+
+        // Service
+        GreeterGrpc.GreeterImplBase svc = new GreeterGrpc.GreeterImplBase() {
+            @Override
+            public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
+                ctxValue.set(AmbientContext.current().getAll(ctxKey));
+                responseObserver.onNext(HelloResponse.newBuilder().setMessage("Hello " + request.getName()).build());
+                responseObserver.onCompleted();
+            }
+        };
+
+        // Plumbing
+        serverRule1.getServiceRegistry().addService(ServerInterceptors
+                .intercept(svc, new AmbientContextServerInterceptor("ctx-")));
+
+        GreeterGrpc.GreeterBlockingStub stub = GreeterGrpc
+                .newBlockingStub(serverRule1.getChannel())
+                .withInterceptors(new AmbientContextClientInterceptor("ctx-"));
+
+        // Test
+        AmbientContext.initialize(Context.current()).run(() -> {
+            AmbientContext.current().put(ctxKey, expectedCtxValue1);
+            AmbientContext.current().put(ctxKey, expectedCtxValue2);
+            AmbientContext.current().put(ctxKey, expectedCtxValue3);
+            stub.sayHello(HelloRequest.newBuilder().setName("world").build());
+        });
+
+        assertThat(ctxValue.get()).containsExactlyInAnyOrder(expectedCtxValue1, expectedCtxValue2, expectedCtxValue3);
     }
 
     @Test

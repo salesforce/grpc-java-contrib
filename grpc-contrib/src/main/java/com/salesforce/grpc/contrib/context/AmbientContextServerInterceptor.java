@@ -43,12 +43,14 @@ public class AmbientContextServerInterceptor implements ServerInterceptor {
             }
 
             Metadata.Key<String> key = Metadata.Key.of(keyName, Metadata.ASCII_STRING_MARSHALLER);
-            String value = headers.get(key);
-            if (value == null) {
+            Iterable<String> values = headers.getAll(key);
+            if (values == null) {
                 continue;
             }
 
-            ctx.put(key, value);
+            for (String value : values) {
+                ctx.put(key, value);
+            }
         }
 
         return Contexts.interceptCall(Context.current().withValue(AmbientContext.DATA_KEY, ctx), call, headers, next);

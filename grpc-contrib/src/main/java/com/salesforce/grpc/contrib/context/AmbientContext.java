@@ -55,11 +55,26 @@ public final class AmbientContext {
         return DATA_KEY.get();
     }
 
+    /**
+     * @return true if an {@code AmbientContext} is attached to the current gRPC context.
+     */
+    public static boolean isPresent() {
+        return DATA_KEY.get() != null;
+    }
+
     private Metadata contextMetadata;
     private Object freezeKey = null;
 
     AmbientContext() {
         this.contextMetadata = new Metadata();
+    }
+
+    /**
+     * Copy constructor.
+     */
+    AmbientContext(AmbientContext other) {
+        this();
+        this.contextMetadata.merge(other.contextMetadata);
     }
 
     /**
@@ -96,6 +111,17 @@ public final class AmbientContext {
         checkArgument(this.freezeKey == freezeKey,
                 "The provided freezeKey is not the same object returned by freeze()");
         this.freezeKey = null;
+    }
+
+    /**
+     * Similar to {@link #initialize(Context)}, {@code fork()} attaches a shallow clone of this {@code AmbientContext}
+     * to a provided gRPC {@code Context}. Use {@code fork()} when you want create a temporary context scope.
+     *
+     * @param context
+     * @return
+     */
+    public Context fork(Context context) {
+        return context.withValue(DATA_KEY, new AmbientContext(this));
     }
 
     /**

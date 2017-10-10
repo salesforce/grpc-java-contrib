@@ -30,5 +30,8 @@
  * the other hand, own the business logic for each service. For these developers it can make sense for the ambient
  * context to be immutable to prevent unnecessary pollution of the ambient context. Freezing and thawing the context
  * allows it to seamlessly transition between mutable and immutable modes as needed by each audience.
+ *
+ * @see <a href="https://aabs.wordpress.com/2007/12/31/the-ambient-context-design-pattern-in-net/">
+ *      The Ambient Context Design Pattern in .NET</a>
  */
 package com.salesforce.grpc.contrib.context;

@@ -9,20 +9,14 @@ package com.salesforce.grpc.contrib.context;
 
 import io.grpc.Context;
 import io.grpc.Metadata;
-import io.grpc.testing.GrpcServerRule;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.fail;
 
 @SuppressWarnings("Duplicates")
 public class AmbientContextTest {
-    @Rule public GrpcServerRule serverRule1 = new GrpcServerRule();
-    @Rule public GrpcServerRule serverRule2 = new GrpcServerRule();
-
     @Before
     public void setUp() throws Exception {
         // Reset the gRPC context between test executions
@@ -85,5 +79,21 @@ public class AmbientContextTest {
 
         Object freezeKey = context.freeze();
         assertThatThrownBy(() -> context.thaw(new Object())).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void contextScopeStackingWorks() {
+        Metadata.Key<String> key = Metadata.Key.of("k", Metadata.ASCII_STRING_MARSHALLER);
+        AmbientContext.initialize(Context.current()).run(() -> {
+            AmbientContext.current().put(key, "outer");
+            assertThat(AmbientContext.current().get(key)).isEqualTo("outer");
+
+            AmbientContext.current().fork(Context.current()).run(() -> {
+                AmbientContext.current().put(key, "inner");
+                assertThat(AmbientContext.current().get(key)).isEqualTo("inner");
+            });
+
+            assertThat(AmbientContext.current().get(key)).isEqualTo("outer");
+        });
     }
 }

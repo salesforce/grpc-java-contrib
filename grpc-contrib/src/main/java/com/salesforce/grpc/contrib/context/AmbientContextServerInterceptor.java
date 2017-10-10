@@ -37,6 +37,8 @@ public class AmbientContextServerInterceptor implements ServerInterceptor {
         AmbientContext ctx = AmbientContext.DATA_KEY.get();
         // Only initialize ctx if not yet initialized
         ctx = ctx != null ? ctx : new AmbientContext();
+
+        boolean found = false;
         for (String keyName : headers.keys()) {
             if (!keyName.startsWith(headerPrefix)) {
                 continue;
@@ -63,8 +65,15 @@ public class AmbientContextServerInterceptor implements ServerInterceptor {
                     ctx.put(key, value);
                 }
             }
+
+            found = true;
         }
 
-        return Contexts.interceptCall(Context.current().withValue(AmbientContext.DATA_KEY, ctx), call, headers, next);
+        if (found) {
+            return Contexts.interceptCall(Context.current().withValue(AmbientContext.DATA_KEY, ctx), call, headers, next);
+        } else {
+            // Don't attach a context if there is nothing to attach
+            return next.startCall(call, headers);
+        }
     }
 }

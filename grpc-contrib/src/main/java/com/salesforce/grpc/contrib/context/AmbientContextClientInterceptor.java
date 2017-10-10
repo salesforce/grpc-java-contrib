@@ -33,35 +33,40 @@ public class AmbientContextClientInterceptor implements ClientInterceptor {
 
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
-        return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(next.newCall(method, callOptions)) {
-            @Override
-            public void start(Listener<RespT> responseListener, Metadata headers) {
-                AmbientContext ctx = AmbientContext.current();
-                if (ctx != null) {
-                    for (String keyString : ctx.keys()) {
-                        if (keyString.startsWith(headerPrefix)) {
-                            if (keyString.endsWith(Metadata.BINARY_HEADER_SUFFIX)) {
-                                Metadata.Key<byte[]> key = Metadata.Key.of(keyString, Metadata.BINARY_BYTE_MARSHALLER);
-                                Iterable<byte[]> values = ctx.getAll(key);
-                                if (values != null) {
-                                    for (byte[] value : values) {
-                                        headers.put(key, value);
+        if (AmbientContext.isPresent()) {
+            return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(next.newCall(method, callOptions)) {
+                @Override
+                public void start(Listener<RespT> responseListener, Metadata headers) {
+                    AmbientContext ctx = AmbientContext.current();
+                    if (ctx != null) {
+                        for (String keyString : ctx.keys()) {
+                            if (keyString.startsWith(headerPrefix)) {
+                                if (keyString.endsWith(Metadata.BINARY_HEADER_SUFFIX)) {
+                                    Metadata.Key<byte[]> key = Metadata.Key.of(keyString, Metadata.BINARY_BYTE_MARSHALLER);
+                                    Iterable<byte[]> values = ctx.getAll(key);
+                                    if (values != null) {
+                                        for (byte[] value : values) {
+                                            headers.put(key, value);
+                                        }
                                     }
-                                }
-                            } else {
-                                Metadata.Key<String> key = Metadata.Key.of(keyString, Metadata.ASCII_STRING_MARSHALLER);
-                                Iterable<String> values = ctx.getAll(key);
-                                if (values != null) {
-                                    for (String value : values) {
-                                        headers.put(key, value);
+                                } else {
+                                    Metadata.Key<String> key = Metadata.Key.of(keyString, Metadata.ASCII_STRING_MARSHALLER);
+                                    Iterable<String> values = ctx.getAll(key);
+                                    if (values != null) {
+                                        for (String value : values) {
+                                            headers.put(key, value);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                    super.start(responseListener, headers);
                 }
-                super.start(responseListener, headers);
-            }
-        };
+            };
+        } else {
+            // Noop if ambient context is absent
+            return next.newCall(method, callOptions);
+        }
     }
 }

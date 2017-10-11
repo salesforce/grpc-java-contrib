@@ -25,7 +25,7 @@ public class StopwatchServerInterceptor implements ServerInterceptor {
         logStart(call.getMethodDescriptor());
 
         return new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(next.startCall(call, headers)) {
-            Stopwatch stopwatch = Stopwatch.createStarted();
+            private Stopwatch stopwatch = Stopwatch.createStarted();
 
             @Override
             public void onCancel() {

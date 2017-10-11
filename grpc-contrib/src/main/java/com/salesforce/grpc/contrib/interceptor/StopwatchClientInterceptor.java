@@ -29,7 +29,7 @@ public class StopwatchClientInterceptor implements ClientInterceptor {
         logStart(method);
 
         return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(next.newCall(method, callOptions)) {
-            Stopwatch stopwatch = Stopwatch.createStarted();
+            private Stopwatch stopwatch = Stopwatch.createStarted();
 
             @Override
             public void start(Listener<RespT> responseListener, Metadata headers) {

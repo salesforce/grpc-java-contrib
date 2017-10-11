@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StopwatchInterceptorTest {
-    @Rule public final GrpcServerRule serverRule = new GrpcServerRule();
+    @Rule public final GrpcServerRule serverRule = new GrpcServerRule().directExecutor();
 
     GreeterGrpc.GreeterImplBase svc = new GreeterGrpc.GreeterImplBase() {
         @Override

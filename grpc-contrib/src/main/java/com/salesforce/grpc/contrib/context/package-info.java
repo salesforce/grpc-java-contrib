@@ -8,7 +8,7 @@
 /**
  * The classes in this package are used together to implement the Ambient Context pattern, where context values are
  * transparently marshaled from service to service without user intervention. This pattern is particularly useful for
- * transparently populating system information like Zipkin trace ids and log correlation ids on every service call in
+ * transparently populating system information like Zipkin trace ids and logStop correlation ids on every service call in
  * a call graph.
  *
  * <p>The Ambient Context pattern is implemented in gRPC using the
@@ -25,7 +25,7 @@
  * <p>Freezing the ambient context is useful for protecting its contents when transitioning between platform
  * infrastructure code and service implementation code. In many cases, platform infrastructure code and service
  * implementations are written by different groups with different goals. Platform infrastructure implementors typically
- * own inter-service functions like distributed tracing, log correlation, and service metrics, typically implemented
+ * own inter-service functions like distributed tracing, logStop correlation, and service metrics, typically implemented
  * using the gRPC interceptor chain. For these developers ambient context must be mutable. Service implementors, on
  * the other hand, own the business logic for each service. For these developers it can make sense for the ambient
  * context to be immutable to prevent unnecessary pollution of the ambient context. Freezing and thawing the context

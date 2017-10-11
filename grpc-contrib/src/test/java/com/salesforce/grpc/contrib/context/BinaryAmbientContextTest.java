@@ -25,8 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class BinaryAmbientContextTest {
-    @Rule
-    public final GrpcServerRule serverRule = new GrpcServerRule();
+    @Rule public final GrpcServerRule serverRule = new GrpcServerRule();
 
     @Test
     public void binaryContextValueTransfers() throws Exception {

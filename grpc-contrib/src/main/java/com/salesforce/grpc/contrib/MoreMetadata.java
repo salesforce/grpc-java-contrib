@@ -23,7 +23,6 @@ import java.lang.reflect.Method;
  * {@code MoreMetadata} provides additional utilities for working with gRPC {@code Metadata}.
  */
 //CHECKSTYLE:OFF: MethodName
-//CHECKSTYLE:OFF: VisibilityModifier
 public final class MoreMetadata {
     private MoreMetadata() { }
 
@@ -36,7 +35,7 @@ public final class MoreMetadata {
      * @param clazz the type to serialize
      * @param <T>
      */
-    public static <T> Metadata.AsciiMarshaller<T> JSON_MARSHALLER(Class<T> clazz) {
+    public static final <T> Metadata.AsciiMarshaller<T> JSON_MARSHALLER(Class<T> clazz) {
         return new Metadata.AsciiMarshaller<T>() {
             TypeToken<T> typeToken = TypeToken.of(clazz);
             private Gson gson = new Gson();
@@ -124,7 +123,7 @@ public final class MoreMetadata {
     /**
      * A metadata marshaller that encodes boolean values.
      */
-    public static Metadata.AsciiMarshaller<Boolean> BOOLEAN_MARSHALLER = new Metadata.AsciiMarshaller<Boolean>() {
+    public static final Metadata.AsciiMarshaller<Boolean> BOOLEAN_MARSHALLER = new Metadata.AsciiMarshaller<Boolean>() {
         @Override
         public String toAsciiString(Boolean value) {
             return value.toString();
@@ -139,7 +138,7 @@ public final class MoreMetadata {
     /**
      * A metadata marshaller that encodes integer-type values.
      */
-    public static Metadata.AsciiMarshaller<Long> LONG_MARSHALLER = new Metadata.AsciiMarshaller<Long>() {
+    public static final Metadata.AsciiMarshaller<Long> LONG_MARSHALLER = new Metadata.AsciiMarshaller<Long>() {
         @Override
         public String toAsciiString(Long value) {
             return value.toString();
@@ -154,7 +153,7 @@ public final class MoreMetadata {
     /**
      * A metadata marshaller that encodes floating-point-type values.
      */
-    public static Metadata.AsciiMarshaller<Double> DOUBLE_MARSHALLER = new Metadata.AsciiMarshaller<Double>() {
+    public static final Metadata.AsciiMarshaller<Double> DOUBLE_MARSHALLER = new Metadata.AsciiMarshaller<Double>() {
         @Override
         public String toAsciiString(Double value) {
             return value.toString();

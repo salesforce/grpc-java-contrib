@@ -1,4 +1,4 @@
-![documentation](https://javadoc.io/badge/com.salesforce.servicelibs/grpc-spring.png?color=blue)
+[![Javadocs](https://javadoc.io/badge/com.salesforce.servicelibs/grpc-spring.svg)](https://javadoc.io/doc/com.salesforce.servicelibs/grpc-spring)
 
 Using GrpcServerHost
 ====================

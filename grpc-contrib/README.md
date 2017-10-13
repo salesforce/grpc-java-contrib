@@ -1,4 +1,4 @@
-![documentation](https://javadoc.io/badge/com.salesforce.servicelibs/grpc-contrib.png?color=blue)
+[![Javadocs](https://javadoc.io/badge/com.salesforce.servicelibs/grpc-contrib.svg)](https://javadoc.io/doc/com.salesforce.servicelibs/grpc-contrib)
 
 In this module
 ==============

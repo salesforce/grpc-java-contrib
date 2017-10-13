@@ -1,3 +1,5 @@
+![documentation](https://javadoc.io/badge/com.salesforce.servicelibs/grpc-contrib.png?color=blue)
+
 In this module
 ==============
 * *FutureChain.java* - A fluent interface for chaining `ListenableFuture` operations together.

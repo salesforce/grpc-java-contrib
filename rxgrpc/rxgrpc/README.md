@@ -1,3 +1,5 @@
+[![Javadocs](https://javadoc.io/badge/com.salesforce.servicelibs/rxgrpc-stub.svg)](https://javadoc.io/doc/com.salesforce.servicelibs/rxgrpc-stub)
+
 Usage
 =====
 ```xml

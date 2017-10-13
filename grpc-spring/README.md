@@ -1,3 +1,5 @@
+[![Javadocs](https://javadoc.io/badge/com.salesforce.servicelibs/grpc-spring.svg)](https://javadoc.io/doc/com.salesforce.servicelibs/grpc-spring)
+
 Using GrpcServerHost
 ====================
 `GrpcServerHost` configures a gRPC Server with services obtained from the `ApplicationContext` and manages that server's 

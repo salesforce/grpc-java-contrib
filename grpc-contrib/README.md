@@ -1,4 +1,5 @@
 [![Javadocs](https://javadoc.io/badge/com.salesforce.servicelibs/grpc-contrib.svg)](https://javadoc.io/doc/com.salesforce.servicelibs/grpc-contrib)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.salesforce.servicelibs/grpc-contrib/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.salesforce.servicelibs/grpc-contrib)
 
 In this module
 ==============

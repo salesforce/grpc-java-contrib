@@ -1,6 +1,8 @@
 What is jprotoc?
 ================
 [![Javadocs](https://javadoc.io/badge/com.salesforce.servicelibs/jprotoc.svg)](https://javadoc.io/doc/com.salesforce.servicelibs/jprotoc)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.salesforce.servicelibs/jprotoc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.salesforce.servicelibs/jprotoc)
+
 
 jprotoc is a framework for building protoc plugins using Java. As a demo, jprotoc includes a Jdk8 generator, that
 generates `CompletableFuture`-based client bindings for gRPC.

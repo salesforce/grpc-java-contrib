@@ -1,4 +1,6 @@
 [![Javadocs](https://javadoc.io/badge/com.salesforce.servicelibs/rxgrpc-stub.svg)](https://javadoc.io/doc/com.salesforce.servicelibs/rxgrpc-stub)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.salesforce.servicelibs/rxgrpc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.salesforce.servicelibs/rxgrpc)
+
 
 Usage
 =====

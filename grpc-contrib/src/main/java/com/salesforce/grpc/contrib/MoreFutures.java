@@ -202,7 +202,7 @@ public final class MoreFutures {
             } catch (RuntimeException | Error ex) { // the ListenableFuture failed with a REALLY BAD exception
                 completableFuture.completeExceptionally(ex);
             } catch (InterruptedException ex) {
-                completableFuture.completeExceptionally(ex); // Won't happen since get() only called after completion
+                completableFuture.completeExceptionally(ex); // Won't happen since current() only called after completion
             }
         };
         listenableFuture.addListener(callbackRunnable, MoreExecutors.directExecutor());

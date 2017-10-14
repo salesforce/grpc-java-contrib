@@ -10,19 +10,20 @@ package com.salesforce.grpc.contrib.interceptor;
 import io.grpc.*;
 import org.junit.Test;
 
+import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SuppressWarnings("ALL")
+@SuppressWarnings("ConstantConditions")
 public class DefaultDeadlineInterceptorTest {
     @Test
     public void interceptorShouldAddDeadlineWhenAbsent() {
         AtomicBoolean called = new AtomicBoolean(false);
 
-        DefaultDeadlineInterceptor interceptor = new DefaultDeadlineInterceptor(1, TimeUnit.HOURS);
+        DefaultDeadlineInterceptor interceptor = new DefaultDeadlineInterceptor(Duration.ofHours(1));
 
         interceptor.interceptCall(null, CallOptions.DEFAULT, new Channel() {
             @Override
@@ -45,7 +46,7 @@ public class DefaultDeadlineInterceptorTest {
     public void interceptorShouldNotModifyExplicitDeadline() {
         AtomicBoolean called = new AtomicBoolean(false);
 
-        DefaultDeadlineInterceptor interceptor = new DefaultDeadlineInterceptor(1, TimeUnit.HOURS);
+        DefaultDeadlineInterceptor interceptor = new DefaultDeadlineInterceptor(Duration.ofHours(1));
 
         interceptor.interceptCall(null, CallOptions.DEFAULT.withDeadlineAfter(10, TimeUnit.HOURS), new Channel() {
             @Override
@@ -68,7 +69,7 @@ public class DefaultDeadlineInterceptorTest {
     public void interceptorShouldNotModifyContextDeadline() throws Exception {
         AtomicBoolean called = new AtomicBoolean(false);
 
-        DefaultDeadlineInterceptor interceptor = new DefaultDeadlineInterceptor(1, TimeUnit.HOURS);
+        DefaultDeadlineInterceptor interceptor = new DefaultDeadlineInterceptor(Duration.ofHours(1));
 
         Context.current().withDeadlineAfter(10, TimeUnit.HOURS, Executors.newSingleThreadScheduledExecutor()).run(() -> {
             interceptor.interceptCall(null, CallOptions.DEFAULT, new Channel() {

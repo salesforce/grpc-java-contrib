@@ -27,6 +27,11 @@
             <groupId>com.github.spullara.mustache.java</groupId>
             <artifactId>compiler</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>

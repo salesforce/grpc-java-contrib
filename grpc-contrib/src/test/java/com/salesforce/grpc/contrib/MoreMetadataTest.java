@@ -108,4 +108,30 @@ public class MoreMetadataTest {
         Double d = marshaller.parseAsciiString(s);
         assertThat(d).isEqualTo(42.42);
     }
+
+    @Test
+    public void changeMetadataKeyType() {
+        Metadata.Key<String> stringKey = Metadata.Key.of("key", Metadata.ASCII_STRING_MARSHALLER);
+        Metadata.Key<Long> longKey = Metadata.Key.of("key", MoreMetadata.LONG_MARSHALLER);
+
+        Metadata metadata = new Metadata();
+        metadata.put(stringKey, "12345");
+
+        Long bool = metadata.get(longKey);
+        assertThat(bool).isEqualTo(12345);
+    }
+
+    @Test
+    public void rawJsonToTypedJson() {
+        Metadata.Key<String> stringKey = Metadata.Key.of("key", Metadata.ASCII_STRING_MARSHALLER);
+        Metadata.Key<Bar> barKey = Metadata.Key.of("key", MoreMetadata.JSON_MARSHALLER(Bar.class));
+
+        Metadata metadata = new Metadata();
+        metadata.put(stringKey, "{'cheese': 'swiss', 'age': 42}");
+
+        Bar bar = metadata.get(barKey);
+        assertThat(bar).isNotNull();
+        assertThat(bar.cheese).isEqualTo("swiss");
+        assertThat(bar.age).isEqualTo(42);
+    }
 }

@@ -1,1 +1,0 @@
-This module contains integration tests for RxGrpc.

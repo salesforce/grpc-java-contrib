@@ -17,7 +17,6 @@ import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
-import io.reactivex.internal.subscribers.LambdaSubscriber;
 import io.reactivex.schedulers.Schedulers;
 import org.reactivestreams.Subscriber;
 
@@ -132,7 +131,7 @@ public final class ServerCalls {
             Subscriber<TResponse> subscriber = new RxFlowableBackpressureOnReadyHandler<>(
                     (ServerCallStreamObserver<TResponse>) responseObserver);
             // Don't try to respond if the server has already canceled the request
-            rxResponse.subscribe(new LambdaSubscriber<>(
+            rxResponse.subscribe(
                 tResponse -> {
                     if (!streamObserverPublisher.isCanceled()) {
                         subscriber.onNext(tResponse);
@@ -149,7 +148,7 @@ public final class ServerCalls {
                     }
                 },
                 subscriber::onSubscribe
-            ));
+            );
         } catch (Throwable throwable) {
             responseObserver.onError(prepareError(throwable));
         }

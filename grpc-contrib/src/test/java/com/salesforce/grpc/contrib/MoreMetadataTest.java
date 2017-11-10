@@ -69,6 +69,16 @@ public class MoreMetadataTest {
     }
 
     @Test
+    public void jsonMarshallerPrimitiveRoundtrip() {
+        Metadata.AsciiMarshaller<Integer> marshaller = MoreMetadata.JSON_MARSHALLER(Integer.class);
+        String s = marshaller.toAsciiString(42);
+        assertThat(s).isEqualTo("42");
+
+        Integer l = marshaller.parseAsciiString(s);
+        assertThat(l).isEqualTo(42);
+    }
+
+    @Test
     public void protobufMarshallerRoundtrip() {
         HelloRequest request = HelloRequest.newBuilder().setName("World").build();
 
@@ -133,5 +143,19 @@ public class MoreMetadataTest {
         assertThat(bar).isNotNull();
         assertThat(bar.cheese).isEqualTo("swiss");
         assertThat(bar.age).isEqualTo(42);
+    }
+
+    @Test
+    public void rawBytesToTypedProto() {
+        Metadata.Key<byte[]> byteKey = Metadata.Key.of("key-bin", Metadata.BINARY_BYTE_MARSHALLER);
+        Metadata.Key<HelloRequest> protoKey = Metadata.Key.of("key-bin", MoreMetadata.PROTOBUF_MARSHALLER(HelloRequest.class));
+
+        HelloRequest request = HelloRequest.newBuilder().setName("World").build();
+        Metadata metadata = new Metadata();
+        metadata.put(byteKey, request.toByteArray());
+
+        HelloRequest request2 = metadata.get(protoKey);
+        assertThat(request2).isNotNull();
+        assertThat(request2.getName()).isEqualTo("World");
     }
 }

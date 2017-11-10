@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * </ul>
  */
 public class DefaultCallOptionsClientInterceptor implements ClientInterceptor {
-    private static final Field customOptionsField = getCustomOptionsField();
+    private static final Field CUSTOM_OPTIONS_FIELD = getCustomOptionsField();
 
     private static Field getCustomOptionsField() {
         try {
@@ -121,7 +121,7 @@ public class DefaultCallOptionsClientInterceptor implements ClientInterceptor {
     @SuppressWarnings("unchecked")
     private List<CallOptions.Key<Object>> customOptionKeys(CallOptions callOptions) {
         try {
-            Object[][] customOptions = (Object[][]) customOptionsField.get(callOptions);
+            Object[][] customOptions = (Object[][]) CUSTOM_OPTIONS_FIELD.get(callOptions);
             List<CallOptions.Key<Object>> keys = new ArrayList<>(customOptions.length);
             for (Object[] arr : customOptions) {
                 keys.add((CallOptions.Key<Object>) arr[0]);

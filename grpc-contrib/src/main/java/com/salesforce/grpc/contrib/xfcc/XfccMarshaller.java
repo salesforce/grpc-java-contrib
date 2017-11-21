@@ -8,11 +8,7 @@
 package com.salesforce.grpc.contrib.xfcc;
 
 import io.grpc.Metadata;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,54 +27,6 @@ public class XfccMarshaller implements Metadata.AsciiMarshaller<List<XForwardedC
 
     @Override
     public List<XForwardedClientCert> parseAsciiString(String serialized) {
-        try {
-            List<XForwardedClientCert> clientCerts = new ArrayList<>();
-
-            XfccLexer lexer = new XfccLexer(CharStreams.fromString(serialized));
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            XfccParser parser = new XfccParser(tokens);
-
-            XfccParser.HeaderContext headerContext = parser.header();
-            ParseTreeWalker walker = new ParseTreeWalker();
-
-            XfccListener listener = new XfccBaseListener() {
-                private XForwardedClientCert clientCert;
-
-                @Override
-                public void enterElement(XfccParser.ElementContext ctx) {
-                    clientCert = new XForwardedClientCert();
-                }
-
-                @Override
-                public void enterKvp(XfccParser.KvpContext ctx) {
-                    XfccParser.KeyContext key = ctx.key();
-                    XfccParser.ValueContext value = ctx.value();
-
-                    if (key.BY() != null) {
-                        clientCert.setBy(value.getText());
-                    }
-                    if (key.HASH() != null) {
-                        clientCert.setHash(value.getText());
-                    }
-                    if (key.SAN() != null) {
-                        clientCert.setSan(value.getText());
-                    }
-                    if (key.SUBJECT() != null) {
-                        clientCert.setSubject(value.getText());
-                    }
-                }
-
-                @Override
-                public void exitElement(XfccParser.ElementContext ctx) {
-                    clientCerts.add(clientCert);
-                    clientCert = null;
-                }
-            };
-
-            walker.walk(listener, headerContext);
-            return clientCerts;
-        } catch (NoClassDefFoundError err) {
-            throw new RuntimeException("Likely missing optional dependency on org.antlr:antlr4-runtime:4.7", err);
-        }
+        return XfccParser.parse(serialized);
     }
 }

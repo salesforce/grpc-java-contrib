@@ -33,7 +33,7 @@ public class XfccServerInterceptorTest {
         GreeterGrpc.GreeterImplBase svc = new GreeterGrpc.GreeterImplBase() {
             @Override
             public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
-                certs.set(XfccServerInterceptor.XFCC_CONTEXT_KEY.get());
+                certs.set(XForwardedClientCert.XFCC_CONTEXT_KEY.get());
 
                 responseObserver.onNext(HelloResponse.newBuilder().setMessage("Hello " + request.getName()).build());
                 responseObserver.onCompleted();
@@ -65,7 +65,7 @@ public class XfccServerInterceptorTest {
         GreeterGrpc.GreeterImplBase svc = new GreeterGrpc.GreeterImplBase() {
             @Override
             public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
-                certs.set(XfccServerInterceptor.XFCC_CONTEXT_KEY.get());
+                certs.set(XForwardedClientCert.XFCC_CONTEXT_KEY.get());
 
                 responseObserver.onNext(HelloResponse.newBuilder().setMessage("Hello " + request.getName()).build());
                 responseObserver.onCompleted();

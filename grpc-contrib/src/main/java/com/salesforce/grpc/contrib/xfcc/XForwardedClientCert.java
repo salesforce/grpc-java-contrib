@@ -7,6 +7,8 @@
 
 package com.salesforce.grpc.contrib.xfcc;
 
+import io.grpc.Context;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +17,11 @@ import java.util.List;
  * clients or proxies that a request has flowed through, on its way from the client to the server.
  */
 public class XForwardedClientCert {
+    /**
+     * The metadata key used to access any present {@link XForwardedClientCert} objects.
+     */
+    public static final Context.Key<List<XForwardedClientCert>> XFCC_CONTEXT_KEY = Context.key("x-forwarded-client-cert");
+
     private String by = "";
     private String hash = "";
     private String san = "";

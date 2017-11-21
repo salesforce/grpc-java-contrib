@@ -21,11 +21,6 @@ import java.util.List;
  * @see <a href="https://github.com/linkerd/linkerd/issues/1153">Linkerd XFCC Header</a>
  */
 public class XfccServerInterceptor implements ServerInterceptor {
-    /**
-     * The metadata key used to access any present {@link XForwardedClientCert} objects.
-     */
-    public static final Context.Key<List<XForwardedClientCert>> XFCC_CONTEXT_KEY = Context.key("x-forwarded-client-cert");
-
     private static final Metadata.Key<List<XForwardedClientCert>> XFCC_METADATA_KEY = Metadata.Key.of("x-forwarded-client-cert", new XfccMarshaller());
 
     @Override
@@ -37,7 +32,7 @@ public class XfccServerInterceptor implements ServerInterceptor {
                 xfccs.addAll(value);
             }
 
-            Context xfccContext = Context.current().withValue(XFCC_CONTEXT_KEY, xfccs);
+            Context xfccContext = Context.current().withValue(XForwardedClientCert.XFCC_CONTEXT_KEY, xfccs);
             return Contexts.interceptCall(xfccContext, call, headers, next);
         } else {
             return next.startCall(call, headers);

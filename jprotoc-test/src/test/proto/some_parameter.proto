@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+//option java_outer_classname = "SomeParameterProto";
+
+package my.someparameters;
+
+message SomeParameter {
+    string id = 1;
+}

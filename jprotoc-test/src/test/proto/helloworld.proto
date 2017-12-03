@@ -4,6 +4,7 @@ package helloworld;
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "some_parameter.proto";
 
 option java_multiple_files = true;
 option java_package = "com.salesforce.jprotoc";
@@ -16,11 +17,14 @@ service Greeter {
 
     // Sends the current time
     rpc SayTime (google.protobuf.Empty) returns (TimeResponse) {}
+
+    rpc SomeParam (my.someparameters.SomeParameter) returns (my.someparameters.SomeParameter) {}
 }
 
 // The request message containing the user's name.
 message HelloRequest {
     string name = 1;
+    my.someparameters.SomeParameter sp = 2;
 }
 
 // The response message containing the greetings

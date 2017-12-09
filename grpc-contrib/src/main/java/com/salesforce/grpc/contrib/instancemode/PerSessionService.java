@@ -12,7 +12,7 @@ import io.grpc.*;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
@@ -20,15 +20,17 @@ import java.util.function.Supplier;
  * @param <T>
  */
 public class PerSessionService<T extends BindableService> implements BindableService {
+    public static Context.Key<UUID> SESSION_ID = Context.key("SESSION_ID");
+
     private ServerServiceDefinition perSessionBinding;
-    private Map<UUID, ServerCall.Listener> sessionServices = new WeakHashMap<>();
+    private Map<UUID, T> sessionServices = new ConcurrentHashMap<>();
 
     /**
      *
      * @param factory
      */
     public PerSessionService(Supplier<T> factory) {
-        PerSessionServerTransportFilter.subscribeToTerminated((o, arg) -> sessionServices.remove(arg));
+        PerSessionServerTransportFilter.subscribeToTerminated((o, arg) -> deactivate((UUID) arg));
         perSessionBinding = bindService(factory);
     }
 
@@ -75,17 +77,39 @@ public class PerSessionService<T extends BindableService> implements BindableSer
         @Override
         @SuppressWarnings("unchecked")
         public ServerCall.Listener startCall(ServerCall call, Metadata headers) {
-            UUID sessionKey = call.getAttributes().get(PerSessionServerTransportFilter.PER_SESSION_KEY);
-            if (sessionKey != null) {
-                if (!sessionServices.containsKey(sessionKey)) {
-                    ServerServiceDefinition definition = factory.get().bindService();
+            UUID sessionId = call.getAttributes().get(PerSessionServerTransportFilter.SESSION_ID);
+            if (sessionId != null) {
+                Context sessionIdContext = Context.current().withValue(SESSION_ID, sessionId);
+
+                if (!sessionServices.containsKey(sessionId)) {
+                    T instance = factory.get();
+                    sessionServices.put(sessionId, instance);
+
+                    ServerServiceDefinition definition = instance.bindService();
                     ServerMethodDefinition method = definition.getMethod(call.getMethodDescriptor().getFullMethodName());
-                    sessionServices.put(sessionKey, method.getServerCallHandler().startCall(call, headers));
+
+                    return Contexts.interceptCall(sessionIdContext, call, headers, method.getServerCallHandler());
+                } else {
+                    T instance = sessionServices.get(sessionId);
+                    ServerServiceDefinition definition = instance.bindService();
+                    ServerMethodDefinition method = definition.getMethod(call.getMethodDescriptor().getFullMethodName());
+
+                    return Contexts.interceptCall(sessionIdContext, call, headers, method.getServerCallHandler());
                 }
-                return sessionServices.get(sessionKey);
             } else {
                 throw new IllegalStateException("PerSessionServerTransportFilter was not registered with " +
-                        "ServerBuilder.addTransportFilter()");
+                        "ServerBuilder.addTransportFilter(new PerSessionServerTransportFilter())");
+            }
+        }
+    }
+
+    private void deactivate(UUID sessionKey) {
+        T instance = sessionServices.remove(sessionKey);
+        if (instance instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) instance).close();
+            } catch (Throwable t) {
+                throw new RuntimeException(t);
             }
         }
     }

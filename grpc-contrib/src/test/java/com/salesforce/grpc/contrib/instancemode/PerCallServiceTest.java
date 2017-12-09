@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class PerCallServiceTest {
-    @Rule public final GrpcServerRule serverRule = new GrpcServerRule().directExecutor();
+    @Rule public final GrpcServerRule serverRule = new GrpcServerRule();
 
     @Test
     public void perCallShouldInstantiateMultipleInstances() {
@@ -37,9 +37,7 @@ public class PerCallServiceTest {
             }
         }
 
-        Supplier<TestService> factory = () -> new TestService();
-
-        serverRule.getServiceRegistry().addService(new PerCallService<TestService>(factory));
+        serverRule.getServiceRegistry().addService(new PerCallService<TestService>(() -> new TestService()));
 
         GreeterGrpc.GreeterBlockingStub stub = GreeterGrpc.newBlockingStub(serverRule.getChannel());
 
@@ -58,12 +56,6 @@ public class PerCallServiceTest {
     public void perCallShouldFailWrongConstructor() {
         class BadTestService extends GreeterGrpc.GreeterImplBase {
             public BadTestService(int ignored) { }
-
-            @Override
-            public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
-                responseObserver.onNext(HelloResponse.newBuilder().setMessage(Integer.toString(System.identityHashCode(this))).build());
-                responseObserver.onCompleted();
-            }
         }
 
         assertThatThrownBy(() -> new PerCallService<>(BadTestService.class))

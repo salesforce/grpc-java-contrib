@@ -18,7 +18,7 @@ import java.util.UUID;
  *
  */
 public class PerSessionServerTransportFilter extends ServerTransportFilter {
-    static final Attributes.Key<UUID> PER_SESSION_KEY = Attributes.Key.of("PER_SESSION_KEY");
+    static final Attributes.Key<UUID> SESSION_ID = Attributes.Key.of("SESSION_ID");
 
     private static Observable terminated = new Observable() {
         @Override
@@ -38,12 +38,12 @@ public class PerSessionServerTransportFilter extends ServerTransportFilter {
 
     @Override
     public Attributes transportReady(Attributes transportAttrs) {
-        return Attributes.newBuilder(transportAttrs).set(PER_SESSION_KEY, UUID.randomUUID()).build();
+        return Attributes.newBuilder(transportAttrs).set(SESSION_ID, UUID.randomUUID()).build();
     }
 
     @Override
     public void transportTerminated(Attributes transportAttrs) {
-        UUID sessionKey = transportAttrs.get(PER_SESSION_KEY);
+        UUID sessionKey = transportAttrs.get(SESSION_ID);
         if (sessionKey != null) {
             terminated.notifyObservers(sessionKey);
         }

@@ -1,3 +1,10 @@
+/*
+ *  Copyright (c) 2017, salesforce.com, inc.
+ *  All rights reserved.
+ *  Licensed under the BSD 3-Clause license.
+ *  For full license text, see LICENSE.txt file in the repo root  or https://opensource.org/licenses/BSD-3-Clause
+ */
+
 package com.salesforce.grpc.contrib.instancemode;
 
 import io.grpc.*;
@@ -8,15 +15,27 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.function.Supplier;
 
-public class PerSessionService <T extends BindableService> implements BindableService {
+/**
+ *
+ * @param <T>
+ */
+public class PerSessionService<T extends BindableService> implements BindableService {
     private ServerServiceDefinition perSessionBinding;
     private Map<UUID, ServerCall.Listener> sessionServices = new WeakHashMap<>();
 
+    /**
+     *
+     * @param factory
+     */
     public PerSessionService(Supplier<T> factory) {
-        PerSessionServerTransportFilter.subscribeToTerminated((o, arg) -> sessionServices.remove((UUID) arg));
+        PerSessionServerTransportFilter.subscribeToTerminated((o, arg) -> sessionServices.remove(arg));
         perSessionBinding = bindService(factory);
     }
 
+    /**
+     *
+     * @param clazz
+     */
     public PerSessionService(Class<T> clazz) {
         this (() -> {
             try {
@@ -43,10 +62,13 @@ public class PerSessionService <T extends BindableService> implements BindableSe
         return perSessionBinding;
     }
 
+    /**
+     *
+     */
     private class PerSessionServerCallHandler implements ServerCallHandler {
         private Supplier<T> factory;
 
-        public PerSessionServerCallHandler(Supplier<T> factory) {
+        PerSessionServerCallHandler(Supplier<T> factory) {
             this.factory = factory;
         }
 

@@ -1,3 +1,10 @@
+/*
+ *  Copyright (c) 2017, salesforce.com, inc.
+ *  All rights reserved.
+ *  Licensed under the BSD 3-Clause license.
+ *  For full license text, see LICENSE.txt file in the repo root  or https://opensource.org/licenses/BSD-3-Clause
+ */
+
 package com.salesforce.grpc.contrib.instancemode;
 
 import io.grpc.Attributes;
@@ -7,8 +14,11 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.UUID;
 
+/**
+ *
+ */
 public class PerSessionServerTransportFilter extends ServerTransportFilter {
-    static Attributes.Key<UUID> PER_SESSION_KEY = Attributes.Key.of("PER_SESSION_KEY");
+    static final Attributes.Key<UUID> PER_SESSION_KEY = Attributes.Key.of("PER_SESSION_KEY");
 
     private static Observable terminated = new Observable() {
         @Override
@@ -18,6 +28,10 @@ public class PerSessionServerTransportFilter extends ServerTransportFilter {
         }
     };
 
+    /**
+     *
+     * @param term
+     */
     static void subscribeToTerminated(Observer term) {
         terminated.addObserver(term);
     }

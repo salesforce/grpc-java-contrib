@@ -4,7 +4,7 @@ import org.junit.Test;
 
 public class PerSessionServiceTest {
     @Test
-    public void perSessionShouldInstantiateOneInstancePerSessio() {
+    public void perSessionShouldInstantiateOneInstancePerSession() {
 
     }
 }

@@ -9,33 +9,37 @@ import io.grpc.testing.GrpcServerRule;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class PerCallServiceTest {
     @Rule public final GrpcServerRule serverRule = new GrpcServerRule().directExecutor();
 
-    public static class TestService extends GreeterGrpc.GreeterImplBase {
-        @Override
-        public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
-            responseObserver.onNext(HelloResponse.newBuilder().setMessage(Integer.toString(System.identityHashCode(this))).build());
-            responseObserver.onCompleted();
-        }
-    }
-
-    public static class BadTestService extends GreeterGrpc.GreeterImplBase {
-        public BadTestService(int ignored) { }
-
-        @Override
-        public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
-            responseObserver.onNext(HelloResponse.newBuilder().setMessage(Integer.toString(System.identityHashCode(this))).build());
-            responseObserver.onCompleted();
-        }
-    }
-
     @Test
     public void perCallShouldInstantiateMultipleInstances() {
-        serverRule.getServiceRegistry().addService(new PerCallService<>(TestService.class));
+        AtomicInteger closeCount = new AtomicInteger(0);
+
+        class TestService extends GreeterGrpc.GreeterImplBase implements AutoCloseable {
+            public TestService() {}
+
+            @Override
+            public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
+                responseObserver.onNext(HelloResponse.newBuilder().setMessage(Integer.toString(System.identityHashCode(this))).build());
+                responseObserver.onCompleted();
+            }
+
+            @Override
+            public void close() throws Exception {
+                closeCount.incrementAndGet();
+            }
+        }
+
+        Supplier<TestService> factory = () -> new TestService();
+
+        serverRule.getServiceRegistry().addService(new PerCallService<TestService>(factory));
 
         GreeterGrpc.GreeterBlockingStub stub = GreeterGrpc.newBlockingStub(serverRule.getChannel());
 
@@ -46,10 +50,22 @@ public class PerCallServiceTest {
         assertThat(oid1).isNotEqualTo(oid2);
         assertThat(oid1).isNotEqualTo(oid3);
         assertThat(oid2).isNotEqualTo(oid3);
+
+        assertThat(closeCount.get()).isEqualTo(3);
     }
 
     @Test
     public void perCallShouldFailWrongConstructor() {
+        class BadTestService extends GreeterGrpc.GreeterImplBase {
+            public BadTestService(int ignored) { }
+
+            @Override
+            public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
+                responseObserver.onNext(HelloResponse.newBuilder().setMessage(Integer.toString(System.identityHashCode(this))).build());
+                responseObserver.onCompleted();
+            }
+        }
+
         assertThatThrownBy(() -> new PerCallService<>(BadTestService.class))
                 .isInstanceOf(IllegalArgumentException.class);
     }

@@ -26,7 +26,7 @@ public class PerSessionServiceTest {
 
             @Override
             public void sayHello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
-                if (PerSessionService.SESSION_ID.get() == null) {
+                if (SessionIdServerInterceptor.SESSION_ID.get() == null) {
                     responseObserver.onError(new Exception("Missing SESSION_ID"));
                 } else {
                     responseObserver.onNext(HelloResponse.newBuilder().setMessage(Integer.toString(System.identityHashCode(this))).build());
@@ -41,7 +41,8 @@ public class PerSessionServiceTest {
         }
 
         Server server = InProcessServerBuilder.forName("perSessionShouldInstantiateOneInstancePerSession")
-                .addTransportFilter(new PerSessionServerTransportFilter())
+                .addTransportFilter(new SessionIdTransportFilter())
+                .intercept(new SessionIdServerInterceptor())
                 .addService(new PerSessionService<>(() -> new TestService()))
                 .build()
                 .start();

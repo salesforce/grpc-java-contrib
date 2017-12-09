@@ -21,8 +21,15 @@ import java.util.function.Supplier;
  * isolation comes at a cost to performance. Service implementation initialization time is added to every request. If
  * initialization is costly or time consuming, gRPC throughput will noticeably degrade.
  *
+ * <p>{@code PerCallService} is also useful when you only want to hold references to expensive resources for the
+ * duration of a single operation -- for example, database connections or file handles. With a traditional singleton
+ * gRPC service implementation, you would be responsible for acquiring and freeing resources manually with every
+ * request. Using a {@code PerCallService}, you can use more traditional Object Oriented patterns for resource
+ * management, like constructors and {@link AutoCloseable}.
+ *
  * <p>If the decorated service instance implements {@link AutoCloseable}, the instance's {@link AutoCloseable#close()}
- * method will be called upon completion or cancellation of each gRPC request.
+ * method will be called upon completion or cancellation of each gRPC request. Use this opportunity to free any
+ * shared resources.
  *
  * @param <T> a {@code BindableService} implementation to decorate
  */
@@ -71,7 +78,7 @@ public class PerCallService<T extends BindableService> implements BindableServic
     }
 
     /**
-     *
+     * Internal class implementing the per-call service pattern.
      */
     private class PerCallServerCallHandler implements ServerCallHandler {
         private Supplier<T> factory;

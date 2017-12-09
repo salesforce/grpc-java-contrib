@@ -17,7 +17,7 @@ import java.util.UUID;
 /**
  *
  */
-public class PerSessionServerTransportFilter extends ServerTransportFilter {
+public class SessionIdTransportFilter extends ServerTransportFilter {
     static final Attributes.Key<UUID> SESSION_ID = Attributes.Key.of("SESSION_ID");
 
     private static Observable terminated = new Observable() {

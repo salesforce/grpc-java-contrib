@@ -3,8 +3,8 @@ package com.salesforce.grpc.contrib.instancemode;
 import com.salesforce.grpc.contrib.GreeterGrpc;
 import com.salesforce.grpc.contrib.HelloRequest;
 import com.salesforce.grpc.contrib.HelloResponse;
-import com.salesforce.grpc.contrib.sessionid.SessionIdServerInterceptor;
-import com.salesforce.grpc.contrib.sessionid.SessionIdTransportFilter;
+import com.salesforce.grpc.contrib.interceptor.SessionIdServerInterceptor;
+import com.salesforce.grpc.contrib.sessionid.ClientSessionTransportFilter;
 import io.grpc.ManagedChannel;
 import io.grpc.Server;
 import io.grpc.StatusRuntimeException;
@@ -42,7 +42,7 @@ public class PerSessionServiceTest {
             }
         }
 
-        SessionIdTransportFilter tf = new SessionIdTransportFilter();
+        ClientSessionTransportFilter tf = new ClientSessionTransportFilter();
         Server server = InProcessServerBuilder.forName("perSessionShouldInstantiateOneInstancePerSession")
                 .addTransportFilter(tf)
                 .intercept(new SessionIdServerInterceptor())
@@ -97,7 +97,7 @@ public class PerSessionServiceTest {
             public BadTestService(int ignored) { }
         }
 
-        SessionIdTransportFilter tf = new SessionIdTransportFilter();
+        ClientSessionTransportFilter tf = new ClientSessionTransportFilter();
         assertThatThrownBy(() -> new PerSessionService<>(BadTestService.class, tf))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -112,7 +112,7 @@ public class PerSessionServiceTest {
             }
         }
 
-        SessionIdTransportFilter tf = new SessionIdTransportFilter();
+        ClientSessionTransportFilter tf = new ClientSessionTransportFilter();
         Server server = InProcessServerBuilder.forName("perSessionShouldInstantiateOneInstancePerSession")
                 .addService(new PerSessionService<>(() -> new TestService(), tf))
                 .build()

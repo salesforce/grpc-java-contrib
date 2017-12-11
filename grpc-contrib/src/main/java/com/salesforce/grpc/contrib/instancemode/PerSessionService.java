@@ -7,7 +7,7 @@
 
 package com.salesforce.grpc.contrib.instancemode;
 
-import com.salesforce.grpc.contrib.sessionid.SessionIdTransportFilter;
+import com.salesforce.grpc.contrib.sessionid.ClientSessionTransportFilter;
 import com.salesforce.grpc.contrib.sessionid.SessionLifecycleEvent;
 import com.salesforce.grpc.contrib.sessionid.SessionLifecycleEventListener;
 import com.salesforce.grpc.contrib.sessionid.SessionLifecycleEventSource;
@@ -120,7 +120,7 @@ public class PerSessionService<T extends BindableService> implements BindableSer
         @Override
         @SuppressWarnings("unchecked")
         public ServerCall.Listener startCall(ServerCall call, Metadata headers) {
-            UUID sessionId = call.getAttributes().get(SessionIdTransportFilter.TRANSPORT_ATTRIBUTES_SESSION_ID);
+            UUID sessionId = call.getAttributes().get(ClientSessionTransportFilter.TRANSPORT_ATTRIBUTES_SESSION_ID);
             if (sessionId != null) {
                 if (!sessionServices.containsKey(sessionId)) {
                     T instance = factory.get();
@@ -138,8 +138,8 @@ public class PerSessionService<T extends BindableService> implements BindableSer
                     return method.getServerCallHandler().startCall(call, headers);
                 }
             } else {
-                throw new IllegalStateException("SessionIdTransportFilter was not registered with " +
-                        "ServerBuilder.addTransportFilter(new SessionIdTransportFilter())");
+                throw new IllegalStateException("ClientSessionTransportFilter was not registered with " +
+                        "ServerBuilder.addTransportFilter(new ClientSessionTransportFilter())");
             }
         }
     }

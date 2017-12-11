@@ -10,8 +10,7 @@ package com.salesforce.grpc.contrib.sessionid;
 import com.salesforce.grpc.contrib.GreeterGrpc;
 import com.salesforce.grpc.contrib.HelloRequest;
 import com.salesforce.grpc.contrib.HelloResponse;
-import com.salesforce.grpc.contrib.sessionid.SessionIdServerInterceptor;
-import com.salesforce.grpc.contrib.sessionid.SessionIdTransportFilter;
+import com.salesforce.grpc.contrib.interceptor.SessionIdServerInterceptor;
 import io.grpc.ManagedChannel;
 import io.grpc.Server;
 import io.grpc.StatusRuntimeException;
@@ -35,7 +34,7 @@ public class SessionIdTest {
         };
 
         Server server = InProcessServerBuilder.forName("uniqueSessionIdPerChannel")
-                .addTransportFilter(new SessionIdTransportFilter())
+                .addTransportFilter(new ClientSessionTransportFilter())
                 .intercept(new SessionIdServerInterceptor())
                 .addService(svc)
                 .build()

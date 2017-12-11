@@ -17,20 +17,21 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * {@code SessionIdTransportFilter} is a gRPC {@code TransportFilter} that attaches a unique SessionID to all requests
+ * {@code ClientSessionTransportFilter} is a gRPC {@code TransportFilter} that attaches a unique SessionID to all requests
  * from a common client session. A client session is created each time a client-side {@code ManagedChannel} connects
- * to the server. For easy access to the SessionID from service implementations, add a {@link SessionIdServerInterceptor}
- * to the request chain.
+ * to the server. For easy access to the SessionID from service implementations, add a
+ * {@link com.salesforce.grpc.contrib.interceptor.SessionIdServerInterceptor} to the request chain.
  *
- * <p>The {@code SessionIdTransportFilter} is installed using {@code "ServerBuilder.addTransportFilter(new SessionIdTransportFilter())}.
- * When installed, {@code SessionIdTransportFilter} attaches the SessionID to gRPC's {@code ServerCall} transport
+ * <p>The {@code ClientSessionTransportFilter} is installed using {@code "ServerBuilder.addTransportFilter(new ClientSessionTransportFilter())}.
+ * When installed, {@code ClientSessionTransportFilter} attaches the SessionID to gRPC's {@code ServerCall} transport
  * attributes.
  */
-public class SessionIdTransportFilter extends ServerTransportFilter implements SessionLifecycleEventSource {
+public class ClientSessionTransportFilter extends ServerTransportFilter implements SessionLifecycleEventSource {
     /**
      * The key used to retrieve a SessionID from gRPC's {@code ServerCall} transport attributes.
      */
-    public static final Attributes.Key<UUID> TRANSPORT_ATTRIBUTES_SESSION_ID = Attributes.Key.of("SESSION_ID");
+    public static final Attributes.Key<UUID> TRANSPORT_ATTRIBUTES_SESSION_ID =
+            Attributes.Key.of("TRANSPORT_ATTRIBUTES_SESSION_ID");
 
     private final Set<SessionLifecycleEventListener> sessionLifecycleEventListeners = new CopyOnWriteArraySet<>();
 

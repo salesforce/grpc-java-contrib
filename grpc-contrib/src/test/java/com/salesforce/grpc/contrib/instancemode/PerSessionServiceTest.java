@@ -86,6 +86,8 @@ public class PerSessionServiceTest {
             server.shutdown();
             channel2.shutdown();
             channel3.shutdown();
+
+            server.awaitTermination();
         }
 
         assertThat(closeCount.get()).isEqualTo(3);

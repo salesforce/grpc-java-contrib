@@ -5,11 +5,13 @@
  *  For full license text, see LICENSE.txt file in the repo root  or https://opensource.org/licenses/BSD-3-Clause
  */
 
-package com.salesforce.grpc.contrib.instancemode;
+package com.salesforce.grpc.contrib.sessionid;
 
 import com.salesforce.grpc.contrib.GreeterGrpc;
 import com.salesforce.grpc.contrib.HelloRequest;
 import com.salesforce.grpc.contrib.HelloResponse;
+import com.salesforce.grpc.contrib.sessionid.SessionIdServerInterceptor;
+import com.salesforce.grpc.contrib.sessionid.SessionIdTransportFilter;
 import io.grpc.ManagedChannel;
 import io.grpc.Server;
 import io.grpc.StatusRuntimeException;

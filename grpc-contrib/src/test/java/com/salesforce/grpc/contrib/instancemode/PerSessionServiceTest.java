@@ -4,7 +4,7 @@ import com.salesforce.grpc.contrib.GreeterGrpc;
 import com.salesforce.grpc.contrib.HelloRequest;
 import com.salesforce.grpc.contrib.HelloResponse;
 import com.salesforce.grpc.contrib.interceptor.SessionIdServerInterceptor;
-import com.salesforce.grpc.contrib.sessionid.ClientSessionTransportFilter;
+import com.salesforce.grpc.contrib.session.ClientSessionTransportFilter;
 import io.grpc.ManagedChannel;
 import io.grpc.Server;
 import io.grpc.StatusRuntimeException;

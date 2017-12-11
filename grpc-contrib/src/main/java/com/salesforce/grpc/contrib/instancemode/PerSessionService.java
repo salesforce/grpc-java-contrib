@@ -7,10 +7,10 @@
 
 package com.salesforce.grpc.contrib.instancemode;
 
-import com.salesforce.grpc.contrib.sessionid.ClientSessionTransportFilter;
-import com.salesforce.grpc.contrib.sessionid.SessionLifecycleEvent;
-import com.salesforce.grpc.contrib.sessionid.SessionLifecycleEventListener;
-import com.salesforce.grpc.contrib.sessionid.SessionLifecycleEventSource;
+import com.salesforce.grpc.contrib.session.ClientSessionTransportFilter;
+import com.salesforce.grpc.contrib.session.SessionLifecycleEvent;
+import com.salesforce.grpc.contrib.session.SessionLifecycleEventListener;
+import com.salesforce.grpc.contrib.session.SessionLifecycleEventSource;
 import io.grpc.*;
 
 import java.util.Collection;

@@ -7,7 +7,7 @@
 
 package com.salesforce.grpc.contrib.interceptor;
 
-import com.salesforce.grpc.contrib.sessionid.ClientSessionTransportFilter;
+import com.salesforce.grpc.contrib.session.ClientSessionTransportFilter;
 import io.grpc.*;
 
 import java.util.UUID;

@@ -15,7 +15,6 @@
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
-        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
         <spring.boot.version>1.4.2.RELEASE</spring.boot.version>
     </properties>
 

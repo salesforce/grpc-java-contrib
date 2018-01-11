@@ -34,7 +34,7 @@ public class ServersTest {
 
         assertThatThrownBy(() -> Servers.shutdownGracefully(server, 0))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("maxWaitTimeInMillis");
+                .hasMessageContaining("timeout must be greater than 0");
     }
 
     @Test
@@ -44,7 +44,7 @@ public class ServersTest {
 
         assertThatThrownBy(() -> Servers.shutdownGracefully(server, maxWaitTimeInMillis))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("maxWaitTimeInMillis");
+                .hasMessageContaining("timeout must be greater than 0");
     }
 
     @Test

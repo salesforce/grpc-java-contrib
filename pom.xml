@@ -52,6 +52,7 @@
         <module>grpc-spring</module>
         <module>jprotoc-test</module>
         <module>demos/grpc-java-contrib-demo</module>
+        <module>grpc-testing-contrib</module>
     </modules>
 
     <properties>
@@ -105,16 +106,6 @@
             <dependency>
                 <groupId>com.salesforce.servicelibs</groupId>
                 <artifactId>grpc-spring</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.salesforce.servicelibs</groupId>
-                <artifactId>rxgrpc</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.salesforce.servicelibs</groupId>
-                <artifactId>rxgrpc-stub</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -179,6 +170,12 @@
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-testing</artifactId>
+                <version>${grpc.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-testing-proto</artifactId>
                 <version>${grpc.version}</version>
                 <scope>test</scope>
             </dependency>

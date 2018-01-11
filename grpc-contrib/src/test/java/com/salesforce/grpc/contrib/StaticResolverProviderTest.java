@@ -47,12 +47,6 @@ public class StaticResolverProviderTest {
 
         resolver.start(new NameResolver.Listener() {
             @Override
-            @Deprecated
-            public void onUpdate(List<ResolvedServerInfoGroup> servers, Attributes attributes) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
             public void onAddresses(List<EquivalentAddressGroup> servers, Attributes attributes) {
                 isResolved.set(true);
                 assertThat(attributes).isEqualTo(Attributes.EMPTY);

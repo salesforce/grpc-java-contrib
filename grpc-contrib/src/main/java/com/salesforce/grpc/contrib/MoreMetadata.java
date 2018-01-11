@@ -106,6 +106,7 @@ public final class MoreMetadata {
                     return value.toByteArray();
                 }
 
+                @SuppressWarnings("unchecked")
                 @Override
                 public T parseBytes(byte[] serialized) {
                     try {

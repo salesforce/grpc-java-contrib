@@ -13,8 +13,6 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import java.util.logging.Logger;
-
 /**
  * {@code GrpcContextRule} is a JUnit {@link TestRule} that forcibly resets the gRPC
  * {@link Context} to {@link Context#ROOT} between every unit test.

@@ -19,7 +19,7 @@ public class PerCallServiceTest {
     @Rule public final GrpcServerRule serverRule = new GrpcServerRule();
 
     @Test
-    public void perCallShouldInstantiateMultipleInstances() {
+    public void perCallShouldInstantiateMultipleInstances() throws Exception {
         AtomicInteger closeCount = new AtomicInteger(0);
 
         class TestService extends GreeterGrpc.GreeterImplBase implements AutoCloseable {
@@ -32,12 +32,12 @@ public class PerCallServiceTest {
             }
 
             @Override
-            public void close() throws Exception {
+            public void close() {
                 closeCount.incrementAndGet();
             }
         }
 
-        serverRule.getServiceRegistry().addService(new PerCallService<TestService>(() -> new TestService()));
+        serverRule.getServiceRegistry().addService(new PerCallService<>(TestService::new));
 
         GreeterGrpc.GreeterBlockingStub stub = GreeterGrpc.newBlockingStub(serverRule.getChannel());
 
@@ -48,6 +48,9 @@ public class PerCallServiceTest {
         assertThat(oid1).isNotEqualTo(oid2);
         assertThat(oid1).isNotEqualTo(oid3);
         assertThat(oid2).isNotEqualTo(oid3);
+
+        // let the threads catch up :(
+        Thread.sleep(100);
 
         assertThat(closeCount.get()).isEqualTo(3);
     }

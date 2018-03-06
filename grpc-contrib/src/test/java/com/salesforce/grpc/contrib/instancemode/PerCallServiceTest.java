@@ -37,7 +37,7 @@ public class PerCallServiceTest {
             }
         }
 
-        serverRule.getServiceRegistry().addService(new PerCallService<>(TestService::new));
+        serverRule.getServiceRegistry().addService(new PerCallService<TestService>(() -> new TestService()));
 
         GreeterGrpc.GreeterBlockingStub stub = GreeterGrpc.newBlockingStub(serverRule.getChannel());
 

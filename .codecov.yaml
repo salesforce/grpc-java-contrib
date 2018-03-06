@@ -8,3 +8,8 @@ ignore:
   - "demos"
   - "jprotoc/src/main/java/com/salesforce/jprotoc/jdk8/Jdk8Generator.java"
   - "rxgrpc/rxgrpc/src/main/java/com/salesforce/rxgrpc/RxGrpcGenerator.java"
+
+coverage:
+  range: 50...75
+  round: down
+  precision: 2

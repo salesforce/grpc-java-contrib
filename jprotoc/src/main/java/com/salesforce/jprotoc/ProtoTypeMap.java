@@ -111,8 +111,16 @@ public final class ProtoTypeMap {
         // If the outer class name is not explicitly defined, then we take the proto filename, strip its extension,
         // and convert it from snake case to camel case.
         String filename = fileDescriptor.getName().substring(0, fileDescriptor.getName().length() - ".proto".length());
+
+        // Protos in subdirectories without java_outer_classname have their path prepended to the filename. Remove
+        // if present.
+        if (filename.contains("/")) {
+            filename = filename.substring(filename.lastIndexOf('/') + 1);
+        }
+
         filename = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, filename);
-        return appendOuterClassSuffix(filename, fileDescriptor);
+        filename = appendOuterClassSuffix(filename, fileDescriptor);
+        return filename;
     }
 
     /**
@@ -121,7 +129,8 @@ public final class ProtoTypeMap {
      */
     private static String appendOuterClassSuffix(final String enclosingClassName, DescriptorProtos.FileDescriptorProto fd) {
         if (fd.getEnumTypeList().stream().anyMatch(enumProto -> enumProto.getName().equals(enclosingClassName)) ||
-            fd.getMessageTypeList().stream().anyMatch(messageProto -> messageProto.getName().equals(enclosingClassName))) {
+            fd.getMessageTypeList().stream().anyMatch(messageProto -> messageProto.getName().equals(enclosingClassName)) ||
+            fd.getServiceList().stream().anyMatch(serviceProto -> serviceProto.getName().equals(enclosingClassName))) {
             return enclosingClassName + "OuterClass";
         } else {
             return enclosingClassName;

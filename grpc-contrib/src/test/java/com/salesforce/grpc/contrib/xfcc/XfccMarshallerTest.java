@@ -19,7 +19,7 @@ public class XfccMarshallerTest {
         XfccMarshaller marshaller = new XfccMarshaller();
 
         String header = "By=http://frontend.lyft.com;Hash=468ed33be74eee6556d90c0149c1309e9ba61d6425303443c0748a02dd8de688;" +
-                "SAN=http://testclient.lyft.com";
+                "URI=http://testclient.lyft.com";
         List<XForwardedClientCert> certs = marshaller.parseAsciiString(header);
 
         assertThat(certs.size()).isEqualTo(1);
@@ -32,8 +32,8 @@ public class XfccMarshallerTest {
     public void parseCompoundHeaderWorks() {
         XfccMarshaller marshaller = new XfccMarshaller();
 
-        String header = "By=http://frontend.lyft.com;Hash=468ed33be74eee6556d90c0149c1309e9ba61d6425303443c0748a02dd8de688;SAN=http://testclient.lyft.com," +
-                "By=http://backend.lyft.com;Hash=9ba61d6425303443c0748a02dd8de688468ed33be74eee6556d90c0149c1309e;SAN=http://frontend.lyft.com";
+        String header = "By=http://frontend.lyft.com;Hash=468ed33be74eee6556d90c0149c1309e9ba61d6425303443c0748a02dd8de688;URI=http://testclient.lyft.com," +
+                "By=http://backend.lyft.com;Hash=9ba61d6425303443c0748a02dd8de688468ed33be74eee6556d90c0149c1309e;URI=http://frontend.lyft.com";
         List<XForwardedClientCert> certs = marshaller.parseAsciiString(header);
 
         assertThat(certs.size()).isEqualTo(2);
@@ -46,7 +46,7 @@ public class XfccMarshallerTest {
         XfccMarshaller marshaller = new XfccMarshaller();
 
         String header = "By=http://frontend.lyft.com;Hash=468ed33be74eee6556d90c0149c1309e9ba61d6425303443c0748a02dd8de688;" +
-                "Subject=\"/C=US/ST=CA/L=San Francisco/OU=Lyft/CN=Test Client\";SAN=http://testclient.lyft.com";
+                "Subject=\"/C=US/ST=CA/L=San Francisco/OU=Lyft/CN=Test Client\";URI=http://testclient.lyft.com";
         List<XForwardedClientCert> certs = marshaller.parseAsciiString(header);
 
         assertThat(certs.size()).isEqualTo(1);
@@ -58,7 +58,7 @@ public class XfccMarshallerTest {
         XfccMarshaller marshaller = new XfccMarshaller();
 
         String header = "By=http://frontend.lyft.com;Hash=468ed33be74eee6556d90c0149c1309e9ba61d6425303443c0748a02dd8de688;" +
-                "Subject=\"/C=US/ST=CA/L=\\\"San Francisco\\\"/OU=Lyft/CN=Test Client\";SAN=http://testclient.lyft.com";
+                "Subject=\"/C=US/ST=CA/L=\\\"San Francisco\\\"/OU=Lyft/CN=Test Client\";URI=http://testclient.lyft.com";
         List<XForwardedClientCert> certs = marshaller.parseAsciiString(header);
 
         assertThat(certs.size()).isEqualTo(1);
@@ -70,7 +70,7 @@ public class XfccMarshallerTest {
         XfccMarshaller marshaller = new XfccMarshaller();
 
         String header = "By=http://frontend.lyft.com;Hash=468ed33be74eee6556d90c0149c1309e9ba61d6425303443c0748a02dd8de688;" +
-                "SAN=http://testclient.lyft.com";
+                "URI=http://testclient.lyft.com";
 
         List<XForwardedClientCert> certs = marshaller.parseAsciiString(header);
         String serialized = marshaller.toAsciiString(certs);
@@ -79,11 +79,16 @@ public class XfccMarshallerTest {
     }
 
     @Test
+    public void roundTripUriAndDnsTest() {
+
+    }
+
+    @Test
     public void roundTripCompoundTest() {
         XfccMarshaller marshaller = new XfccMarshaller();
 
-        String header = "By=http://frontend.lyft.com;Hash=468ed33be74eee6556d90c0149c1309e9ba61d6425303443c0748a02dd8de688;SAN=http://testclient.lyft.com," +
-                "By=http://backend.lyft.com;Hash=9ba61d6425303443c0748a02dd8de688468ed33be74eee6556d90c0149c1309e;SAN=http://frontend.lyft.com";
+        String header = "By=http://frontend.lyft.com;Hash=468ed33be74eee6556d90c0149c1309e9ba61d6425303443c0748a02dd8de688;URI=http://testclient.lyft.com," +
+                "By=http://backend.lyft.com;Hash=9ba61d6425303443c0748a02dd8de688468ed33be74eee6556d90c0149c1309e;URI=http://frontend.lyft.com";
 
         List<XForwardedClientCert> certs = marshaller.parseAsciiString(header);
         String serialized = marshaller.toAsciiString(certs);
@@ -96,7 +101,7 @@ public class XfccMarshallerTest {
         XfccMarshaller marshaller = new XfccMarshaller();
 
         String header = "By=http://frontend.lyft.com;Hash=468ed33be74eee6556d90c0149c1309e9ba61d6425303443c0748a02dd8de688;" +
-                "SAN=http://testclient.lyft.com;Subject=\"/C=US/ST=CA/L=San Francisco/OU=Lyft/CN=Test Client\"";
+                "URI=http://testclient.lyft.com;Subject=\"/C=US/ST=CA/L=San Francisco/OU=Lyft/CN=Test Client\"";
 
         List<XForwardedClientCert> certs = marshaller.parseAsciiString(header);
         String serialized = marshaller.toAsciiString(certs);
@@ -109,7 +114,7 @@ public class XfccMarshallerTest {
         XfccMarshaller marshaller = new XfccMarshaller();
 
         String header = "By=http://frontend.lyft.com;Hash=468ed33be74eee6556d90c0149c1309e9ba61d6425303443c0748a02dd8de688;" +
-                "SAN=http://testclient.lyft.com;Subject=\"/C=US/ST=CA/L=\\\"San Francisco\\\"/OU=Lyft/CN=Test Client\"";
+                "URI=http://testclient.lyft.com;Subject=\"/C=US/ST=CA/L=\\\"San Francisco\\\"/OU=Lyft/CN=Test Client\"";
 
         List<XForwardedClientCert> certs = marshaller.parseAsciiString(header);
         String serialized = marshaller.toAsciiString(certs);

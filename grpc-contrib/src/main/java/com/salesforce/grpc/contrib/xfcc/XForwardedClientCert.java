@@ -97,6 +97,9 @@ public class XForwardedClientCert {
         if (!sanUri.isEmpty()) {
             kvp.add("URI=" + enquote(sanUri));
         }
+        for (String dns : sanDns) {
+            kvp.add("DNS=" + enquote(dns));
+        }
         if (!subject.isEmpty()) {
             kvp.add("Subject=" + enquote(subject));
         }

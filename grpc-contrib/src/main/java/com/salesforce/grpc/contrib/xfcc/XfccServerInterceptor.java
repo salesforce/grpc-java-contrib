@@ -20,7 +20,7 @@ import java.util.List;
  * @see <a href="https://www.envoyproxy.io/docs/envoy/latest/configuration/http_conn_man/headers.html#config-http-conn-man-headers-x-forwarded-client-cert">Envoy XFCC Header</a>
  * @see <a href="https://github.com/linkerd/linkerd/issues/1153">Linkerd XFCC Header</a>
  */
-public class XfccServerInterceptor implements ServerInterceptor {
+public final class XfccServerInterceptor implements ServerInterceptor {
     private static final Metadata.Key<List<XForwardedClientCert>> XFCC_METADATA_KEY = Metadata.Key.of("x-forwarded-client-cert", new XfccMarshaller());
 
     @Override

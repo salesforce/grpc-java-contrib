@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * @see <a href="https://www.envoyproxy.io/docs/envoy/latest/configuration/http_conn_man/headers.html#config-http-conn-man-headers-x-forwarded-client-cert">Envoy XFCC Header</a>
  * @see <a href="https://github.com/linkerd/linkerd/issues/1153">Linkerd XFCC Header</a>
  */
-public class XfccMarshaller implements Metadata.AsciiMarshaller<List<XForwardedClientCert>> {
+public final class XfccMarshaller implements Metadata.AsciiMarshaller<List<XForwardedClientCert>> {
     @Override
     public String toAsciiString(List<XForwardedClientCert> value) {
         return value.stream().map(XForwardedClientCert::toString).collect(Collectors.joining(","));

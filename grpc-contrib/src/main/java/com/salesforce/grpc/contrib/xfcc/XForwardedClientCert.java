@@ -18,7 +18,7 @@ import java.util.List;
  * x-forwarded-client-cert (XFCC) is a proxy header which indicates certificate information of part or all of the
  * clients or proxies that a request has flowed through, on its way from the client to the server.
  */
-public class XForwardedClientCert {
+public final class XForwardedClientCert {
     /**
      * The metadata key used to access any present {@link XForwardedClientCert} objects.
      */

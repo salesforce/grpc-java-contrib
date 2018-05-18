@@ -25,7 +25,7 @@ public class XfccMarshallerTest {
         assertThat(certs.size()).isEqualTo(1);
         assertThat(certs.get(0).getBy()).isEqualTo("http://frontend.lyft.com");
         assertThat(certs.get(0).getHash()).isEqualTo("468ed33be74eee6556d90c0149c1309e9ba61d6425303443c0748a02dd8de688");
-        assertThat(certs.get(0).getSan()).isEqualTo("http://testclient.lyft.com");
+        assertThat(certs.get(0).getSanUri()).isEqualTo("http://testclient.lyft.com");
         assertThat(certs.get(0).getSubject()).isEmpty();
     }
     @Test

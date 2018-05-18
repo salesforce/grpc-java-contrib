@@ -10,6 +10,8 @@ package com.salesforce.grpc.contrib.xfcc;
 import io.grpc.Context;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,7 +26,8 @@ public class XForwardedClientCert {
 
     private String by = "";
     private String hash = "";
-    private String san = "";
+    private String sanUri = "";
+    private List<String> sanDns = new ArrayList<>();
     private String subject = "";
 
     void setBy(String by) {
@@ -35,12 +38,16 @@ public class XForwardedClientCert {
         this.hash = hash;
     }
 
-    void setSan(String san) {
-        this.san = san;
+    void setSanUri(String sanUri) {
+        this.sanUri = sanUri;
     }
 
     void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    void addSanDns(String sanDns) {
+        this.sanDns.add(sanDns);
     }
 
     /**
@@ -51,17 +58,24 @@ public class XForwardedClientCert {
     }
 
     /**
-     * @return The SHA 256 diguest of the current client certificate.
+     * @return The SHA 256 digest of the current client certificate.
      */
     public String getHash() {
         return hash;
     }
 
     /**
-     * @return The SAN field (URI type) of the current client certificate.
+     * @return The URI type Subject Alternative Name field of the current client certificate.
      */
-    public String getSan() {
-        return san;
+    public String getSanUri() {
+        return sanUri;
+    }
+
+    /**
+     * @return The DNS type Subject Alternative Name field(s) of the current client certificate.
+     */
+    public Collection<String> getSanDns() {
+        return Collections.unmodifiableCollection(sanDns);
     }
 
     /**
@@ -80,8 +94,8 @@ public class XForwardedClientCert {
         if (!hash.isEmpty()) {
             kvp.add("Hash=" + enquote(hash));
         }
-        if (!san.isEmpty()) {
-            kvp.add("SAN=" + enquote(san));
+        if (!sanUri.isEmpty()) {
+            kvp.add("URI=" + enquote(sanUri));
         }
         if (!subject.isEmpty()) {
             kvp.add("Subject=" + enquote(subject));

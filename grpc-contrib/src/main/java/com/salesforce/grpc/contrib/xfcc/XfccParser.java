@@ -37,8 +37,12 @@ final class XfccParser {
                 if (l.get(0).toLowerCase().equals("hash")) {
                     cert.setHash(dequote(l.get(1)));
                 }
-                if (l.get(0).toLowerCase().equals("san")) {
-                    cert.setSan(dequote(l.get(1)));
+                // Use "SAN:" instead of "URI:" for backward compatibility with previous mesh proxy releases.
+                if (l.get(0).toLowerCase().equals("san") || l.get(0).toLowerCase().equals("uri")) {
+                    cert.setSanUri(dequote(l.get(1)));
+                }
+                if (l.get(0).toLowerCase().equals("dns")) {
+                    cert.addSanDns(dequote(l.get(1)));
                 }
                 if (l.get(0).toLowerCase().equals("subject")) {
                     cert.setSubject(dequote(l.get(1)));

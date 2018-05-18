@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * {@code XfccServerInterceptor} parses the {@code x-forwarded-client-cert} (XFCC) header populated by TLS-terminating
- * reverse proxies. For example, Istio and Linkerd. If present, the parsed XFCC header is appended to the
+ * reverse proxies. For example: Envoy, Istio, and Linkerd. If present, the parsed XFCC header is appended to the
  * gRPC {@code Context}.
  *
  * @see <a href="https://www.envoyproxy.io/docs/envoy/latest/configuration/http_conn_man/headers.html#config-http-conn-man-headers-x-forwarded-client-cert">Envoy XFCC Header</a>

@@ -1,13 +1,22 @@
+/*
+ *  Copyright (c) 2017, salesforce.com, inc.
+ *  All rights reserved.
+ *  Licensed under the BSD 3-Clause license.
+ *  For full license text, see LICENSE.txt file in the repo root  or https://opensource.org/licenses/BSD-3-Clause
+ */
 package com.salesforce.grpc.contrib.xfcc;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility methods for quote escaping in XFCC headers.
+ */
 final class XfccQuoteUtil {
     private XfccQuoteUtil() { }
 
     /**
-     * Break str into individual elements, splitting on delim (not in quotes)
+     * Break str into individual elements, splitting on delim (not in quotes).
      */
     static List<String> quoteAwareSplit(String str, char delim) {
         boolean inQuotes = false;
@@ -60,7 +69,7 @@ final class XfccQuoteUtil {
     }
 
     /**
-     * Add escaping around double quote characters; wrap with quotes if special characters are present
+     * Add escaping around double quote characters; wrap with quotes if special characters are present.
      */
     static String enquote(String value) {
         // Escape inner quotes with \"
@@ -75,7 +84,7 @@ final class XfccQuoteUtil {
     }
 
     /**
-     * Remove leading and tailing unescaped quotes; remove escaping from escaped internal quotes
+     * Remove leading and tailing unescaped quotes; remove escaping from escaped internal quotes.
      */
     static String dequote(String str) {
         str = str.replace("\\\"", "\"");

@@ -111,11 +111,13 @@ public final class MoreFutures {
      * <p>If you are looking for a method to determine whether a given {@code Future} is done, use the
      * instance method {@link Future#isDone()}.
      *
+     * @deprecated Use Guava {@code Futures.getDone()}
      * @throws ExecutionException if the {@code Future} failed with an exception
      * @throws CancellationException if the {@code Future} was cancelled
      * @throws IllegalStateException if the {@code Future} is not done
      * @since Guava 20.0
      */
+    @Deprecated
     public static <V> V getDone(Future<V> future) throws ExecutionException {
     /*
      * We throw IllegalStateException, since the call could succeed later. Perhaps we "should" throw
@@ -142,9 +144,11 @@ public final class MoreFutures {
      * <p>If you are looking for a method to determine whether a given {@code Future} is done, use the instance method
      * {@link Future#isDone()}.
      *
+     * @deprecated Use Guava {@code Futures.getDoneUnchecked()}
      * @throws UncheckedExecutionException if the {@code Future} failed with an exception
      * @throws IllegalStateException if the {@code Future} is not done
      */
+    @Deprecated
     public static <V> V getDoneUnchecked(Future<V> future) {
     /*
      * We throw IllegalStateException, since the call could succeed later. Perhaps we "should" throw

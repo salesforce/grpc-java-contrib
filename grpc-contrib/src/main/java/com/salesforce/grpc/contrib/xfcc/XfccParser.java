@@ -10,6 +10,9 @@ package com.salesforce.grpc.contrib.xfcc;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.salesforce.grpc.contrib.xfcc.XfccQuoteUtil.*;
+import static com.salesforce.grpc.contrib.xfcc.XForwardedClientCert.*;
+
 /**
  * {@code XfccParser} parses the {@code x-forwarded-client-cert} (XFCC) header populated by TLS-terminating
  * reverse proxies.
@@ -27,93 +30,32 @@ final class XfccParser {
 
         for (String element : quoteAwareSplit(header, ',')) {
             XForwardedClientCert cert = new XForwardedClientCert();
-            List<String> kvps = quoteAwareSplit(element, ';');
-            for (String kvp : kvps) {
-                List<String> l = quoteAwareSplit(kvp, '=');
+            List<String> substrings = quoteAwareSplit(element, ';');
+            for (String substring : substrings) {
+                List<String> kvp = quoteAwareSplit(substring, '=');
+                String key = kvp.get(0).toLowerCase();
+                String value = kvp.get(1);
 
-                if (l.get(0).toLowerCase().equals("by")) {
-                    cert.setBy(dequote(l.get(1)));
+                if (key.equalsIgnoreCase(XFCC_BY)) {
+                    cert.setBy(dequote(value));
                 }
-                if (l.get(0).toLowerCase().equals("hash")) {
-                    cert.setHash(dequote(l.get(1)));
+                if (key.equalsIgnoreCase(XFCC_HASH)) {
+                    cert.setHash(dequote(value));
                 }
                 // Use "SAN:" instead of "URI:" for backward compatibility with previous mesh proxy releases.
-                if (l.get(0).toLowerCase().equals("san") || l.get(0).toLowerCase().equals("uri")) {
-                    cert.setSanUri(dequote(l.get(1)));
+                if (key.equalsIgnoreCase(XFCC_SAN) || key.equalsIgnoreCase(XFCC_URI)) {
+                    cert.setSanUri(dequote(value));
                 }
-                if (l.get(0).toLowerCase().equals("dns")) {
-                    cert.addSanDns(dequote(l.get(1)));
+                if (key.equalsIgnoreCase(XFCC_DNS)) {
+                    cert.addSanDns(dequote(value));
                 }
-                if (l.get(0).toLowerCase().equals("subject")) {
-                    cert.setSubject(dequote(l.get(1)));
+                if (key.equalsIgnoreCase(XFCC_SUBJECT)) {
+                    cert.setSubject(dequote(value));
                 }
             }
             certs.add(cert);
         }
 
         return certs;
-    }
-
-    // Break str into individual elements, splitting on delim (not in quotes)
-    private static List<String> quoteAwareSplit(String str, char delim) {
-        boolean inQuotes = false;
-        boolean inEscape = false;
-
-        List<String> elements = new ArrayList<>();
-        StringBuilder buffer = new StringBuilder();
-        for (char c : str.toCharArray()) {
-            if (c == delim && !inQuotes) {
-                elements.add(buffer.toString());
-                buffer = new StringBuilder();
-                inEscape = false;
-                continue;
-            }
-
-            if (c == '"') {
-                if (inQuotes) {
-                    if (!inEscape) {
-                        inQuotes = false;
-                    }
-                } else {
-                    inQuotes = true;
-
-                }
-                inEscape = false;
-                buffer.append(c);
-                continue;
-            }
-
-            if (c == '\\') {
-                if (!inEscape) {
-                    inEscape = true;
-                    buffer.append(c);
-                    continue;
-                }
-            }
-
-            // all other characters
-            inEscape = false;
-            buffer.append(c);
-        }
-
-        if (inQuotes) {
-            throw new RuntimeException("Quoted string not closed");
-        }
-
-        elements.add(buffer.toString());
-
-        return elements;
-    }
-
-    // Remove leading and tailing unescaped quotes, remove escaping from escaped internal quotes
-    private static String dequote(String str) {
-        str = str.replace("\\\"", "\"");
-        if (str.startsWith("\"")) {
-            str = str.substring(1);
-        }
-        if (str.endsWith("\"")) {
-            str = str.substring(0, str.length() - 1);
-        }
-        return str;
     }
 }

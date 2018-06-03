@@ -14,11 +14,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static com.salesforce.grpc.contrib.xfcc.XfccQuoteUtil.*;
+
 /**
  * x-forwarded-client-cert (XFCC) is a proxy header which indicates certificate information of part or all of the
  * clients or proxies that a request has flowed through, on its way from the client to the server.
  */
 public final class XForwardedClientCert {
+    static final String XFCC_BY = "By";
+    static final String XFCC_HASH = "Hash";
+    static final String XFCC_SAN = "SAN";
+    static final String XFCC_URI = "URI";
+    static final String XFCC_DNS = "DNS";
+    static final String XFCC_SUBJECT = "Subject";
+
     /**
      * The metadata key used to access any present {@link XForwardedClientCert} objects.
      */
@@ -89,33 +98,27 @@ public final class XForwardedClientCert {
     public String toString() {
         List<String> kvp = new ArrayList<>();
         if (!by.isEmpty()) {
-            kvp.add("By=" + enquote(by));
+            kvp.add(toKvp(XFCC_BY, enquote(by)));
         }
         if (!hash.isEmpty()) {
-            kvp.add("Hash=" + enquote(hash));
+            kvp.add(toKvp(XFCC_HASH, enquote(hash)));
         }
         if (!sanUri.isEmpty()) {
-            kvp.add("URI=" + enquote(sanUri));
+            kvp.add(toKvp(XFCC_URI, enquote(sanUri)));
         }
-        for (String dns : sanDns) {
-            kvp.add("DNS=" + enquote(dns));
+        if (!sanDns.isEmpty()) {
+            for (String dns : sanDns) {
+                kvp.add(toKvp(XFCC_DNS, enquote(dns)));
+            }
         }
         if (!subject.isEmpty()) {
-            kvp.add("Subject=" + enquote(subject));
+            kvp.add(toKvp(XFCC_SUBJECT, enquote(subject)));
         }
 
         return String.join(";", kvp);
     }
 
-    private String enquote(String value) {
-        // Escape inner quotes with \"
-        value = value.replace("\"", "\\\"");
-
-        // Wrap in quotes if ,;= is present
-        if (value.contains(",") || value.contains(";") || value.contains("=")) {
-            value = "\"" + value + "\"";
-        }
-
-        return value;
+    private String toKvp(String key, String value) {
+        return key + "=" + value;
     }
 }

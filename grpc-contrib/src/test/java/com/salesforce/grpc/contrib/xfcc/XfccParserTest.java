@@ -107,4 +107,12 @@ public class XfccParserTest {
 
         assertThatThrownBy(() -> XfccParser.parse(header)).isInstanceOf(RuntimeException.class);
     }
+
+    @Test
+    public void quotedKeyThrows() {
+        String header = "\"By\"=http://frontend.lyft.com;Hash=468ed33be74eee6556d90c0149c1309e9ba61d6425303443c0748a02dd8de688;" +
+                "Subject=\"/C=US/ST=CA/L=\\\"San Francisco\"/OU=Lyft/CN=Test Client\";SAN=http://testclient.lyft.com";
+
+        assertThatThrownBy(() -> XfccParser.parse(header)).isInstanceOf(RuntimeException.class);
+    }
 }

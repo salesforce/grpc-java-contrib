@@ -12,6 +12,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class XfccMarshallerTest {
     @Test
@@ -80,7 +81,14 @@ public class XfccMarshallerTest {
 
     @Test
     public void roundTripUriAndDnsTest() {
+        XfccMarshaller marshaller = new XfccMarshaller();
 
+        String header = "By=http://frontend.lyft.com;Hash=468ed33be74eee6556d90c0149c1309e9ba61d6425303443c0748a02dd8de688;URI=http://testclient.lyft.com;DNS=lyft.com;DNS=www.lyft.com;Subject=\"/C=US/ST=CA/L=San Francisco/OU=Lyft/CN=Test Client\"";
+
+        List<XForwardedClientCert> certs = marshaller.parseAsciiString(header);
+        String serialized = marshaller.toAsciiString(certs);
+
+        assertThat(serialized).isEqualTo(header);
     }
 
     @Test
@@ -120,5 +128,12 @@ public class XfccMarshallerTest {
         String serialized = marshaller.toAsciiString(certs);
 
         assertThat(serialized).isEqualTo(header);
+    }
+
+    @Test
+    public void malformedHeaderThrows() {
+        XfccMarshaller marshaller = new XfccMarshaller();
+        String header = "KABOOM!";
+        assertThatThrownBy(() -> marshaller.parseAsciiString(header)).isInstanceOf(RuntimeException.class);
     }
 }

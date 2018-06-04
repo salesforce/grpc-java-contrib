@@ -25,7 +25,7 @@ import java.util.function.BiFunction;
  *
  * <p>For example:
  * <pre>
- *     import static com.salesforce.grpc.contrib.Statuses;
+ *     import static com.salesforce.grpc.contrib.Statuses.*;
  *
  *     try {
  *         stub.someServiceOperation(...);

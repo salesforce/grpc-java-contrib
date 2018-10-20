@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -71,15 +72,18 @@ public final class ProtocPlugin {
                     generatorRequestBytes, extensionRegistry);
 
             // Run each file generator, collecting the output
-            List<PluginProtos.CodeGeneratorResponse.File> outputFiles = generators
+            Stream<PluginProtos.CodeGeneratorResponse.File> oldWay = generators
                     .stream()
-                    .flatMap(gen -> gen.generate(request))
-                    .collect(Collectors.toList());
+                    .flatMap(gen -> gen.generate(request));
+
+            Stream<PluginProtos.CodeGeneratorResponse.File> newWay = generators
+                    .stream()
+                    .flatMap(gen -> gen.generateFiles(request).stream());
 
             // Send the files back to protoc
             PluginProtos.CodeGeneratorResponse response = PluginProtos.CodeGeneratorResponse
                     .newBuilder()
-                    .addAllFile(outputFiles)
+                    .addAllFile(Stream.concat(oldWay, newWay).collect(Collectors.toList()))
                     .build();
             response.writeTo(System.out);
 

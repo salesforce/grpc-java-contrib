@@ -18,6 +18,8 @@ import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -28,10 +30,19 @@ public abstract class Generator {
 
     /**
      * Processes a generator request into a set of files to output.
+     *
+     * @deprecated use {@link #generateFiles(PluginProtos.CodeGeneratorRequest)} and return a List instead of a Stream.
      * @param request The raw generator request from protoc.
      * @return The completed files to write out.
      */
-    public abstract Stream<PluginProtos.CodeGeneratorResponse.File> generate(PluginProtos.CodeGeneratorRequest request) throws GeneratorException;
+    @Deprecated()
+    public Stream<PluginProtos.CodeGeneratorResponse.File> generate(PluginProtos.CodeGeneratorRequest request) throws GeneratorException {
+        return Stream.empty();
+    }
+
+    public List<PluginProtos.CodeGeneratorResponse.File> generateFiles(PluginProtos.CodeGeneratorRequest request) throws GeneratorException {
+        return Collections.emptyList();
+    }
 
     /**
      * Executes a mustache template against a generatorContext object to generate an output string.

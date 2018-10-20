@@ -17,7 +17,6 @@ import com.salesforce.jprotoc.ProtocPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Generates a set of gRPC stubs that support JDK8 {@link java.util.concurrent.CompletableFuture}.
@@ -30,24 +29,32 @@ public class Jdk8Generator extends Generator {
     private static final String CLASS_SUFFIX = "Grpc8";
 
     @Override
-    public Stream<PluginProtos.CodeGeneratorResponse.File> generate(PluginProtos.CodeGeneratorRequest request) throws GeneratorException {
+    public List<PluginProtos.CodeGeneratorResponse.File> generateFiles(PluginProtos.CodeGeneratorRequest request) throws GeneratorException {
         final ProtoTypeMap protoTypeMap = ProtoTypeMap.of(request.getProtoFileList());
+        List<PluginProtos.CodeGeneratorResponse.File> files = new ArrayList<>();
 
-        return request.getProtoFileList().stream()
-                .filter(protoFile -> request.getFileToGenerateList().contains(protoFile.getName()))
-                .flatMap(f -> extractContext(protoTypeMap, f))
-                .map(this::buildFile);
+        for (DescriptorProtos.FileDescriptorProto protoFile : request.getProtoFileList()) {
+            if (request.getFileToGenerateList().contains(protoFile.getName())) {
+                for (Context ctx : extractContext(protoTypeMap, protoFile)) {
+                    files.add(buildFile(ctx));
+                }
+            }
+        }
+
+        return files;
     }
 
-    private Stream<Context> extractContext(ProtoTypeMap protoTypeMap, DescriptorProtos.FileDescriptorProto proto) {
-        return proto.getServiceList().stream()
-                .map(s -> extractServiceContext(protoTypeMap, s))
-                .map(ctx -> {
-                    ctx.packageName = extractPackageName(proto); return ctx;
-                })
-                .map(ctx -> {
-                    ctx.protoName = proto.getName(); return ctx;
-                });
+    private List<Context> extractContext(ProtoTypeMap protoTypeMap, DescriptorProtos.FileDescriptorProto proto) {
+        List<Context> contexts = new ArrayList<>();
+
+        for (DescriptorProtos.ServiceDescriptorProto service : proto.getServiceList()) {
+            Context ctx = extractServiceContext(protoTypeMap, service);
+            ctx.packageName = extractPackageName(proto);
+            ctx.protoName = proto.getName();
+            contexts.add(ctx);
+        }
+
+        return contexts;
     }
 
     private String extractPackageName(DescriptorProtos.FileDescriptorProto proto) {

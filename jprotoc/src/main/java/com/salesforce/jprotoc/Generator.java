@@ -40,6 +40,12 @@ public abstract class Generator {
         return Stream.empty();
     }
 
+    /**
+     * Processes a generator request into a set of files to output.
+     *
+     * @param request The raw generator request from protoc.
+     * @return The completed files to write out.
+     */
     public List<PluginProtos.CodeGeneratorResponse.File> generateFiles(PluginProtos.CodeGeneratorRequest request) throws GeneratorException {
         return Collections.emptyList();
     }

@@ -57,19 +57,43 @@ public final class ProtoTypeMap {
                             getJavaOuterClassname(fileDescriptor, fileOptions);
 
 
-
+            // Identify top-level enums
             fileDescriptor.getEnumTypeList().forEach(
                 e -> types.put(
                         protoPackage + "." + e.getName(),
                         toJavaTypeName(e.getName(), enclosingClassName, javaPackage)));
 
+            // Identify top-level messages, and nested types
             fileDescriptor.getMessageTypeList().forEach(
-                m -> types.put(
-                        protoPackage + "." + m.getName(),
-                        toJavaTypeName(m.getName(), enclosingClassName, javaPackage)));
+                m -> recursivelyAddTypes(types, m, protoPackage, enclosingClassName, javaPackage)
+            );
         }
 
         return new ProtoTypeMap(types.build());
+    }
+
+    private static void recursivelyAddTypes(ImmutableMap.Builder<String, String> types, DescriptorProtos.DescriptorProto m, String protoPackage, String enclosingClassName, String javaPackage) {
+        // Identify current type
+        types.put(
+            protoPackage + "." + m.getName(),
+            toJavaTypeName(m.getName(), enclosingClassName, javaPackage));
+
+        // Identify any nested Enums
+        m.getEnumTypeList().forEach(
+            e -> types.put(
+                protoPackage + "." + e.getName(),
+                toJavaTypeName(e.getName(),
+                enclosingClassName,
+                javaPackage)));
+
+        // Recursively identify any nested types
+        m.getNestedTypeList().forEach(
+            n -> recursivelyAddTypes(
+                types,
+                n,
+                protoPackage + "." + m.getName(),
+                enclosingClassName + "." + m.getName(),
+                javaPackage));
     }
 
     /**

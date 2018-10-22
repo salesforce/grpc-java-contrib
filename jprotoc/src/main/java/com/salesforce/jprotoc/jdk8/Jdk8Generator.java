@@ -8,6 +8,7 @@
 package com.salesforce.jprotoc.jdk8;
 
 import com.google.common.base.Strings;
+import com.google.common.html.HtmlEscapers;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.compiler.PluginProtos;
 import com.salesforce.jprotoc.Generator;
@@ -16,6 +17,7 @@ import com.salesforce.jprotoc.ProtoTypeMap;
 import com.salesforce.jprotoc.ProtocPlugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,6 +30,9 @@ public class Jdk8Generator extends Generator {
 
     private static final String CLASS_SUFFIX = "Grpc8";
 
+    private static final String SERVICE_JAVADOC_PREFIX = "    ";
+    private static final String METHOD_JAVADOC_PREFIX  = "        ";
+
     @Override
     public List<PluginProtos.CodeGeneratorResponse.File> generateFiles(PluginProtos.CodeGeneratorRequest request) throws GeneratorException {
         final ProtoTypeMap protoTypeMap = ProtoTypeMap.of(request.getProtoFileList());
@@ -35,7 +40,7 @@ public class Jdk8Generator extends Generator {
 
         for (DescriptorProtos.FileDescriptorProto protoFile : request.getProtoFileList()) {
             if (request.getFileToGenerateList().contains(protoFile.getName())) {
-                for (Context ctx : extractContext(protoTypeMap, protoFile)) {
+                for (ServiceContext ctx : extractContext(protoTypeMap, protoFile)) {
                     files.add(buildFile(ctx));
                 }
             }
@@ -44,17 +49,23 @@ public class Jdk8Generator extends Generator {
         return files;
     }
 
-    private List<Context> extractContext(ProtoTypeMap protoTypeMap, DescriptorProtos.FileDescriptorProto proto) {
-        List<Context> contexts = new ArrayList<>();
+    private List<ServiceContext> extractContext(ProtoTypeMap protoTypeMap, DescriptorProtos.FileDescriptorProto fileProto) {
+        List<ServiceContext> serviceContexts = new ArrayList<>();
 
-        for (DescriptorProtos.ServiceDescriptorProto service : proto.getServiceList()) {
-            Context ctx = extractServiceContext(protoTypeMap, service);
-            ctx.packageName = extractPackageName(proto);
-            ctx.protoName = proto.getName();
-            contexts.add(ctx);
-        }
+        List<DescriptorProtos.SourceCodeInfo.Location> locations = fileProto.getSourceCodeInfo().getLocationList();
+        locations.stream()
+                .filter(location -> location.getPathCount() == 2 && location.getPath(0) == DescriptorProtos.FileDescriptorProto.SERVICE_FIELD_NUMBER)
+                .forEach(location -> {
+                    int serviceNumber = location.getPath(1);
+                    DescriptorProtos.ServiceDescriptorProto serviceProto = fileProto.getService(serviceNumber);
+                    ServiceContext ctx = extractServiceContext(protoTypeMap, serviceProto, locations, serviceNumber);
+                    ctx.packageName = extractPackageName(fileProto);
+                    ctx.protoName = fileProto.getName();
+                    ctx.javaDoc = getJavaDoc(getComments(location), SERVICE_JAVADOC_PREFIX);
+                    serviceContexts.add(ctx);
+                });
 
-        return contexts;
+        return serviceContexts;
     }
 
     private String extractPackageName(DescriptorProtos.FileDescriptorProto proto) {
@@ -69,26 +80,38 @@ public class Jdk8Generator extends Generator {
         return Strings.nullToEmpty(proto.getPackage());
     }
 
-    private Context extractServiceContext(
+    private static final int METHOD_NUMBER_OF_PATHS = 4;
+    private ServiceContext extractServiceContext(
             ProtoTypeMap protoTypeMap,
-            DescriptorProtos.ServiceDescriptorProto serviceProto) {
-        Context ctx = new Context();
+            DescriptorProtos.ServiceDescriptorProto serviceProto,
+            List<DescriptorProtos.SourceCodeInfo.Location> locations,
+            int serviceNumber) {
+        ServiceContext ctx = new ServiceContext();
         ctx.fileName = serviceProto.getName() + CLASS_SUFFIX + ".java";
         ctx.className = serviceProto.getName() + CLASS_SUFFIX;
         ctx.serviceName = serviceProto.getName();
         ctx.deprecated = serviceProto.getOptions() != null && serviceProto.getOptions().getDeprecated();
 
-        // Identify methods to generate a CompletableFuture-based client for.
-        // Only unary methods are supported.
-        serviceProto.getMethodList().stream()
-                .filter(method -> !method.getClientStreaming() && !method.getServerStreaming())
-                .forEach(method -> {
-                    ContextMethod ctxMethod = new ContextMethod();
-                    ctxMethod.methodName = lowerCaseFirst(method.getName());
-                    ctxMethod.inputType = protoTypeMap.toJavaTypeName(method.getInputType());
-                    ctxMethod.outputType = protoTypeMap.toJavaTypeName(method.getOutputType());
-                    ctxMethod.deprecated = method.getOptions() != null && method.getOptions().getDeprecated();
-                    ctx.methods.add(ctxMethod);
+        locations.stream()
+                .filter(location -> location.getPathCount() == METHOD_NUMBER_OF_PATHS &&
+                        location.getPath(0) == DescriptorProtos.FileDescriptorProto.SERVICE_FIELD_NUMBER &&
+                        location.getPath(1) == serviceNumber &&
+                        location.getPath(2) == DescriptorProtos.ServiceDescriptorProto.METHOD_FIELD_NUMBER)
+                .forEach(location -> {
+                    int methodNumber = location.getPath(METHOD_NUMBER_OF_PATHS - 1);
+                    DescriptorProtos.MethodDescriptorProto methodProto = serviceProto.getMethod(methodNumber);
+
+                    // Identify methods to generate a CompletableFuture-based client for.
+                    // Only unary methods are supported.
+                    if (!methodProto.getClientStreaming() && !methodProto.getServerStreaming()) {
+                        MethodContext ctxMethod = new MethodContext();
+                        ctxMethod.methodName = lowerCaseFirst(methodProto.getName());
+                        ctxMethod.inputType = protoTypeMap.toJavaTypeName(methodProto.getInputType());
+                        ctxMethod.outputType = protoTypeMap.toJavaTypeName(methodProto.getOutputType());
+                        ctxMethod.deprecated = methodProto.getOptions() != null && methodProto.getOptions().getDeprecated();
+                        ctxMethod.javaDoc = getJavaDoc(getComments(location), METHOD_JAVADOC_PREFIX);
+                        ctx.methods.add(ctxMethod);
+                    }
                 });
         return ctx;
     }
@@ -97,7 +120,7 @@ public class Jdk8Generator extends Generator {
         return Character.toLowerCase(s.charAt(0)) + s.substring(1);
     }
 
-    private String absoluteFileName(Context ctx) {
+    private String absoluteFileName(ServiceContext ctx) {
         String dir = ctx.packageName.replace('.', '/');
         if (Strings.isNullOrEmpty(dir)) {
             return ctx.fileName;
@@ -106,7 +129,7 @@ public class Jdk8Generator extends Generator {
         }
     }
 
-    private PluginProtos.CodeGeneratorResponse.File buildFile(Context context) {
+    private PluginProtos.CodeGeneratorResponse.File buildFile(ServiceContext context) {
         String content = applyTemplate("Jdk8Stub.mustache", context);
         return PluginProtos.CodeGeneratorResponse.File
                 .newBuilder()
@@ -115,28 +138,48 @@ public class Jdk8Generator extends Generator {
                 .build();
     }
 
+    private String getComments(DescriptorProtos.SourceCodeInfo.Location location) {
+        return location.getLeadingComments().isEmpty() ? location.getTrailingComments() : location.getLeadingComments();
+    }
+
+    private String getJavaDoc(String comments, String prefix) {
+        if (!comments.isEmpty()) {
+            StringBuilder builder = new StringBuilder("/**\n")
+                    .append(prefix).append(" * <pre>\n");
+            Arrays.stream(HtmlEscapers.htmlEscaper().escape(comments).split("\n"))
+                    .forEach(line -> builder.append(prefix).append(" * ").append(line).append("\n"));
+            builder
+                    .append(prefix).append(" * <pre>\n")
+                    .append(prefix).append(" */");
+            return builder.toString();
+        }
+        return null;
+    }
+
     /**
      * Backing class for mustache template.
      */
-    private class Context {
-        // CHECKSTYLE DISABLE VisibilityModifier FOR 7 LINES
+    private class ServiceContext {
+        // CHECKSTYLE DISABLE VisibilityModifier FOR 8 LINES
         public String fileName;
         public String protoName;
         public String packageName;
         public String className;
         public String serviceName;
         public boolean deprecated;
-        public final List<ContextMethod> methods = new ArrayList<>();
+        public String javaDoc;
+        public final List<MethodContext> methods = new ArrayList<>();
     }
 
     /**
      * Backing class for mustache template.
      */
-    private class ContextMethod {
-        // CHECKSTYLE DISABLE VisibilityModifier FOR 4 LINES
+    private class MethodContext {
+        // CHECKSTYLE DISABLE VisibilityModifier FOR 5 LINES
         public String methodName;
         public String inputType;
         public String outputType;
         public boolean deprecated;
+        public String javaDoc;
     }
 }

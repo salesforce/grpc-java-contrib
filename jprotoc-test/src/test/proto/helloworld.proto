@@ -16,7 +16,7 @@ service Greeter {
     rpc SayHello (HelloRequest) returns (HelloResponse) {}
 
     // Sends the current time
-    rpc SayTime (google.protobuf.Empty) returns (TimeResponse) {}
+    rpc SayTime (google.protobuf.Empty) returns (TimeResponse) {option deprecated=true;}
 
     rpc SomeParam (my.someparameters.SomeParameter) returns (my.someparameters.SomeParameter) {}
 }

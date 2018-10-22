@@ -24,6 +24,7 @@ public class {{className}} {
     /**
     * Creates a new CompletableFuture-style stub that supports unary calls on the service
     */
+    @SuppressWarnings("unchecked")
     public static {{serviceName}}CompletableFutureStub newCompletableFutureStub(Channel channel) {
         return newCompletableFutureStub(channel, MoreFutures::toCompletableFuture);
     }
@@ -31,10 +32,12 @@ public class {{className}} {
     /**
     * Creates a new CompletableFuture-style stub that supports unary calls on the service
     */
+    @SuppressWarnings("unchecked")
     public static {{serviceName}}CompletableFutureStub newCompletableFutureStub(Channel channel, Function<ListenableFuture, CompletableFuture> futureAdapter) {
         return new {{serviceName}}CompletableFutureStub(channel, futureAdapter);
     }
 
+    {{#javaDoc}}{{{javaDoc}}}{{/javaDoc}}
     public static final class {{serviceName}}CompletableFutureStub extends AbstractStub<{{serviceName}}CompletableFutureStub> {
         private {{serviceName}}Grpc.{{serviceName}}FutureStub innerStub;
         private Function<ListenableFuture, CompletableFuture> futureAdapter;
@@ -56,7 +59,15 @@ public class {{className}} {
             {{serviceName}}CompletableFutureStub stub = new {{serviceName}}CompletableFutureStub(channel, callOptions, futureAdapter);
             return stub;
         }
-        {{#methods}}{{#deprecated}}@Deprecated{{/deprecated}}
+        {{#methods}}
+
+            {{#javaDoc}}
+        {{{javaDoc}}}
+            {{/javaDoc}}
+            {{#deprecated}}
+        @java.lang.Deprecated
+            {{/deprecated}}
+        @SuppressWarnings("unchecked")
         public CompletableFuture<{{outputType}}> {{methodName}}({{inputType}} request) {
             return futureAdapter.apply(innerStub.{{methodName}}(request));
         }

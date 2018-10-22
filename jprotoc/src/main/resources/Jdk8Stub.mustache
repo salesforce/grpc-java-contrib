@@ -24,6 +24,7 @@ public class {{className}} {
     /**
     * Creates a new CompletableFuture-style stub that supports unary calls on the service
     */
+    @SuppressWarnings("unchecked")
     public static {{serviceName}}CompletableFutureStub newCompletableFutureStub(Channel channel) {
         return newCompletableFutureStub(channel, MoreFutures::toCompletableFuture);
     }
@@ -31,10 +32,12 @@ public class {{className}} {
     /**
     * Creates a new CompletableFuture-style stub that supports unary calls on the service
     */
+    @SuppressWarnings("unchecked")
     public static {{serviceName}}CompletableFutureStub newCompletableFutureStub(Channel channel, Function<ListenableFuture, CompletableFuture> futureAdapter) {
         return new {{serviceName}}CompletableFutureStub(channel, futureAdapter);
     }
 
+    {{#javaDoc}}{{{javaDoc}}}{{/javaDoc}}
     public static final class {{serviceName}}CompletableFutureStub extends AbstractStub<{{serviceName}}CompletableFutureStub> {
         private {{serviceName}}Grpc.{{serviceName}}FutureStub innerStub;
         private Function<ListenableFuture, CompletableFuture> futureAdapter;
@@ -48,39 +51,26 @@ public class {{className}} {
         private {{serviceName}}CompletableFutureStub(Channel channel, CallOptions callOptions, Function<ListenableFuture, CompletableFuture> futureAdapter) {
             super(channel, callOptions);
             this.futureAdapter = futureAdapter;
-            innerStub = {{serviceName}}Grpc.newFutureStub(channel);
+            innerStub = {{serviceName}}Grpc.newFutureStub(channel).build(channel, callOptions);
         }
 
         @Override
         protected {{serviceName}}CompletableFutureStub build(Channel channel, CallOptions callOptions) {
             {{serviceName}}CompletableFutureStub stub = new {{serviceName}}CompletableFutureStub(channel, callOptions, futureAdapter);
-            forceCallOptions(stub.innerStub, callOptions);
             return stub;
         }
-        {{#methods}}{{#deprecated}}@Deprecated{{/deprecated}}
+        {{#methods}}
+
+            {{#javaDoc}}
+        {{{javaDoc}}}
+            {{/javaDoc}}
+            {{#deprecated}}
+        @java.lang.Deprecated
+            {{/deprecated}}
+        @SuppressWarnings("unchecked")
         public CompletableFuture<{{outputType}}> {{methodName}}({{inputType}} request) {
             return futureAdapter.apply(innerStub.{{methodName}}(request));
         }
         {{/methods}}
-
-        private void forceCallOptions({{serviceName}}Grpc.{{serviceName}}FutureStub stub, CallOptions options) {
-            try {
-                callOptionsField.set(stub, options);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    private static final Field callOptionsField = getWritableCallOptonsField();
-
-    private static Field getWritableCallOptonsField() {
-        try {
-            Field callOptionsField = AbstractStub.class.getDeclaredField("callOptions");
-            callOptionsField.setAccessible(true);
-            return callOptionsField;
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

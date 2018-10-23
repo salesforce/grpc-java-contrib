@@ -37,6 +37,12 @@ public class ProtoGenerationPresenceTest {
 
     @Test
     public void currentTimeGrpc8Exists() {
-        assertThat(CurrentTimeGrpc8.class).isNotNull();
+        assertThat(com.salesforce.invalid.dollar.CurrentTimeGrpc8.class).isNotNull();
+        assertThat(com.salesforce.invalid.plus.CurrentTimeGrpc8.class).isNotNull();
+        assertThat(com.salesforce.invalid.dot.CurrentTimeGrpc8.class).isNotNull();
+        assertThat(com.salesforce.invalid.number.CurrentTimeGrpc8.class).isNotNull();
+        assertThat(com.salesforce.invalid.dash.CurrentTimeGrpc8.class).isNotNull();
+        assertThat(com.salesforce.invalid.underscore.CurrentTimeGrpc8.class).isNotNull();
+        assertThat(com.salesforce.invalid.enye.CurrentTimeGrpc8.class).isNotNull();
     }
 }

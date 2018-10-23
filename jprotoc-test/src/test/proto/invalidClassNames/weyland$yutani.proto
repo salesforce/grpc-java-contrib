@@ -1,9 +1,9 @@
 syntax = "proto3";
 
+package com.salesforce.invalid.dollar;
+
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
-
-option java_package = "com.salesforce.jprotoc";
 
 // The time - as a service.
 service CurrentTime {

@@ -34,4 +34,9 @@ public class ProtoGenerationPresenceTest {
         assertThat(NestedOuterClass.Outer.MiddleAA.Inner.class).isNotNull();
         assertThat(NestedOuterClass.Outer.MiddleBB.Inner.class).isNotNull();
     }
+
+    @Test
+    public void currentTimeGrpc8Exists() {
+        assertThat(CurrentTimeGrpc8.class).isNotNull();
+    }
 }

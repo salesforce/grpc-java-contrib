@@ -7,10 +7,7 @@
 
 package com.salesforce.jprotoc;
 
-import com.google.common.base.CaseFormat;
-import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import com.google.common.base.*;
 import com.google.common.collect.ImmutableMap;
 import com.google.protobuf.DescriptorProtos;
 
@@ -142,7 +139,9 @@ public final class ProtoTypeMap {
             filename = filename.substring(filename.lastIndexOf('/') + 1);
         }
 
+        filename = makeInvalidCharactersUnderscores(filename);
         filename = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, filename);
+        filename = upcaseAfterNumber(filename);
         filename = appendOuterClassSuffix(filename, fileDescriptor);
         return filename;
     }
@@ -159,5 +158,33 @@ public final class ProtoTypeMap {
         } else {
             return enclosingClassName;
         }
+    }
+
+    /**
+     * Replace invalid proto identifier characters with an underscore, so they will be dropped and camel cases below.
+     * https://developers.google.com/protocol-buffers/docs/reference/proto3-spec
+     */
+    private static String makeInvalidCharactersUnderscores(String filename) {
+        char[] filechars = filename.toCharArray();
+        for (int i = 0; i < filechars.length; i++) {
+            char c = filechars[i];
+            if (!CharMatcher.inRange('0', '9').or(CharMatcher.inRange('A', 'Z')).or(CharMatcher.inRange('a', 'z')).matches(c)) {
+                filechars[i] = '_';
+            }
+        }
+        return new String(filechars);
+    }
+
+    /**
+     * Upper case characters after numbers, like {@code Weyland9Yutani}.
+     */
+    private static String upcaseAfterNumber(String filename) {
+        char[] filechars = filename.toCharArray();
+        for (int i = 1; i < filechars.length; i++) {
+            if (CharMatcher.inRange('0', '9').matches(filechars[i - 1])) {
+                filechars[i] = Character.toUpperCase(filechars[i]);
+            }
+        }
+        return new String(filechars);
     }
 }

@@ -21,6 +21,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.salesforce.jprotoc.HelloWorldProto.*;
+
 import static org.awaitility.Awaitility.await;
 
 @SuppressWarnings("ALL")

@@ -14,6 +14,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import com.salesforce.jprotoc.HelloWorldProto.*;
+
 import static org.junit.Assert.*;
 
 /**
@@ -63,7 +65,7 @@ public class Jdk8GeneratorStructureTest {
     public void GeneratedStubSubclassHasExpectedMethods() throws Exception {
         Class<?> clazz = Class.forName("com.salesforce.jprotoc.GreeterGrpc8$GreeterCompletableFutureStub");
 
-        Method method = clazz.getMethod("sayHello", com.salesforce.jprotoc.HelloRequest.class);
+        Method method = clazz.getMethod("sayHello", HelloRequest.class);
         assertNotNull(method);
         assertTrue(Modifier.isPublic(method.getModifiers()));
         assertEquals("CompletableFuture", method.getReturnType().getSimpleName());

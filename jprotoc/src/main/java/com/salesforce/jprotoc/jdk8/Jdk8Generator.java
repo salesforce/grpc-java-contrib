@@ -25,7 +25,11 @@ import java.util.List;
  */
 public class Jdk8Generator extends Generator {
     public static void main(String[] args) {
-        ProtocPlugin.generate(new Jdk8Generator());
+        if (args.length == 0) {
+            ProtocPlugin.generate(new Jdk8Generator());
+        } else {
+            ProtocPlugin.debug(new Jdk8Generator(), args[0]);
+        }
     }
 
     private static final String CLASS_SUFFIX = "Grpc8";
@@ -130,12 +134,7 @@ public class Jdk8Generator extends Generator {
     }
 
     private PluginProtos.CodeGeneratorResponse.File buildFile(ServiceContext context) {
-        String content = applyTemplate("Jdk8Stub.mustache", context);
-        return PluginProtos.CodeGeneratorResponse.File
-                .newBuilder()
-                .setName(absoluteFileName(context))
-                .setContent(content)
-                .build();
+        return makeFile(absoluteFileName(context), applyTemplate("Jdk8Stub.mustache", context));
     }
 
     private String getComments(DescriptorProtos.SourceCodeInfo.Location location) {

@@ -10,6 +10,9 @@ ignore:
   - "rxgrpc/rxgrpc/src/main/java/com/salesforce/rxgrpc/RxGrpcGenerator.java"
 
 coverage:
-  range: 50...75
+  range: 10..80
   round: down
   precision: 2
+
+  status:
+    patch: off

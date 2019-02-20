@@ -79,9 +79,9 @@ public final class ProtoTypeMap {
         // Identify any nested Enums
         m.getEnumTypeList().forEach(
             e -> types.put(
-                protoPackage + "." + e.getName(),
+                protoPackage + "." + m.getName() + "." + e.getName(),
                 toJavaTypeName(e.getName(),
-                enclosingClassName,
+                enclosingClassName + "." + m.getName(),
                 javaPackage)));
 
         // Recursively identify any nested types

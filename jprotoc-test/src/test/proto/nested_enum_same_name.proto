@@ -11,9 +11,9 @@ message Outer {  // Level 0
      Outer.Foo e = 1;
 }
 
-//message Foo {
-//    string bar = 1;
-//}
+message Foo {
+    string bar = 1;
+}
 
 service Nested {
     rpc doNested (Outer) returns (Outer) {}

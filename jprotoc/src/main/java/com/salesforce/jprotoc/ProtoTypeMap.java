@@ -71,16 +71,17 @@ public final class ProtoTypeMap {
 
     private static void recursivelyAddTypes(ImmutableMap.Builder<String, String> types, DescriptorProtos.DescriptorProto m, String protoPackage, String enclosingClassName, String javaPackage) {
         // Identify current type
+        String protoTypeName = protoPackage + "." + m.getName();
         types.put(
-            protoPackage + "." + m.getName(),
+            protoTypeName,
             toJavaTypeName(m.getName(), enclosingClassName, javaPackage));
 
         // Identify any nested Enums
         m.getEnumTypeList().forEach(
             e -> types.put(
-                protoPackage + "." + e.getName(),
+                protoPackage + "." + m.getName() + "." + e.getName(),
                 toJavaTypeName(e.getName(),
-                enclosingClassName,
+                enclosingClassName + "." + m.getName(),
                 javaPackage)));
 
         // Recursively identify any nested types

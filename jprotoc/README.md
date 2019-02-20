@@ -26,7 +26,13 @@ Create a main class similar to this:
 ```java
 public class MyGenerator extends Generator {
     public static void main(String[] args) {
-        ProtocPlugin.generate(new MyGenerator());
+        if (args.length == 0) {
+            // Generate from protoc via stdin
+            ProtocPlugin.generate(new MyGenerator());
+        } else {
+            // Process from a descriptor_dump file via command line arg
+            ProtocPlugin.debug(new MyGenerator(), args[0]);
+        }
     }
 
     @Override
@@ -176,3 +182,36 @@ that the option gets registered:
       // ?
     }
     ```
+
+Debugging protoc plugins
+========================
+jProtoc includes a dump plugin, which writes the protoc descriptor set to a file. This file can be passed in as a
+command line option to a jProtoc plugin's main method to run the plugin independently of protoc.
+
+1. Run the dump plugin as part of your build.
+
+```xml
+<configuration>
+    <protocPlugins>
+        <protocPlugin>
+            <id>dump</id>
+            <groupId>com.salesforce.servicelibs</groupId>
+            <artifactId>jprotoc</artifactId>
+            <version>${project.version}</version>
+            <mainClass>com.salesforce.jprotoc.dump.DumpGenerator</mainClass>
+        </protocPlugin>
+    </protocPlugins>
+</configuration>
+```
+
+The dump plugin will emit `descriptor_dump` and `descriptor_dump.json` as output. Use the json file to better 
+understand how protoc structures the input to your plugin. Use the binary file as an input to your plugin for 
+debugging.
+
+2. Run your plugin using `descriptor_dump` as input.
+
+```bash
+> java -jar myPlugin.jar path/to/descriptor_dump
+```
+
+Or, use your IDE to debug, passing in a command line option.

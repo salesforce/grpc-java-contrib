@@ -12,6 +12,7 @@ import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
+import com.google.protobuf.ByteString;
 import com.google.protobuf.compiler.PluginProtos;
 
 import javax.annotation.Nonnull;
@@ -68,5 +69,33 @@ public abstract class Generator {
         InputStreamReader resourceReader = new InputStreamReader(resource, Charsets.UTF_8);
         Mustache template = mustacheFactory.compile(resourceReader, resourcePath);
         return template.execute(new StringWriter(), generatorContext).toString();
+    }
+
+    /**
+     * Creates a protobuf file message from a given name and content.
+     * @param fileName The name of the file to generate.
+     * @param fileContent The content of the generated file.
+     * @return The protobuf file.
+     */
+    protected PluginProtos.CodeGeneratorResponse.File makeFile(String fileName, String fileContent) {
+        return PluginProtos.CodeGeneratorResponse.File
+                .newBuilder()
+                .setName(fileName)
+                .setContent(fileContent)
+                .build();
+    }
+
+    /**
+     * Creates a protobuf file message from a given name and content.
+     * @param fileName The name of the file to generate.
+     * @param fileContent The content of the generated file.
+     * @return The protobuf file.
+     */
+    protected PluginProtos.CodeGeneratorResponse.File makeFile(String fileName, byte[] fileContent) {
+        return PluginProtos.CodeGeneratorResponse.File
+                .newBuilder()
+                .setName(fileName)
+                .setContentBytes(ByteString.copyFrom(fileContent))
+                .build();
     }
 }

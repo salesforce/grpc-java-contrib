@@ -14,7 +14,6 @@ import com.google.protobuf.DescriptorProtos;
 import java.util.Collection;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * {@code ProtoTypeMap} maintains a dictionary for looking up Java type names when given proto types.

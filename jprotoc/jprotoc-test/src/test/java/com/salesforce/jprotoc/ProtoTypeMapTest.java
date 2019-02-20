@@ -1,6 +1,7 @@
 package com.salesforce.jprotoc;
 
 import com.google.common.io.ByteStreams;
+import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.compiler.PluginProtos;
 import org.junit.BeforeClass;
@@ -9,6 +10,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,7 +31,8 @@ public class ProtoTypeMapTest {
         byte[] generatorRequestBytes = ByteStreams.toByteArray(new FileInputStream(new File(dumpPath)));
         PluginProtos.CodeGeneratorRequest request = PluginProtos.CodeGeneratorRequest.parseFrom(
                 generatorRequestBytes, ExtensionRegistry.newInstance());
-        protoTypeMap =  ProtoTypeMap.of(request.getProtoFileList());
+        List<DescriptorProtos.FileDescriptorProto> fileProtos = request.getProtoFileList();
+        protoTypeMap =  ProtoTypeMap.of(fileProtos);
     }
 
 
@@ -58,6 +61,18 @@ public class ProtoTypeMapTest {
         assertProtoTypeMapping(".nested.Outer.MiddleAA.Inner", nested.NestedOuterClass.Outer.MiddleAA.Inner.class);
         assertProtoTypeMapping(".nested.Outer.MiddleBB", nested.NestedOuterClass.Outer.MiddleBB.class);
         assertProtoTypeMapping(".nested.Outer.MiddleBB.Inner", nested.NestedOuterClass.Outer.MiddleBB.Inner.class);
+    }
+
+    /**
+     * Verify that nested proto message types map correctly when {@code option java_multiple_files = true}.
+     */
+    @Test
+    public void nestedTypeMappingsMultipleFiles() {
+        assertProtoTypeMapping(".nested_multiple_files.Outer", nested_multiple_files.Outer.class);
+        assertProtoTypeMapping(".nested_multiple_files.Outer.MiddleAA", nested_multiple_files.Outer.MiddleAA.class);
+        assertProtoTypeMapping(".nested_multiple_files.Outer.MiddleAA.Inner", nested_multiple_files.Outer.MiddleAA.Inner.class);
+        assertProtoTypeMapping(".nested_multiple_files.Outer.MiddleBB", nested_multiple_files.Outer.MiddleBB.class);
+        assertProtoTypeMapping(".nested_multiple_files.Outer.MiddleBB.Inner", nested_multiple_files.Outer.MiddleBB.Inner.class);
     }
 
     /**

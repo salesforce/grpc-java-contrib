@@ -21,6 +21,7 @@ import javax.annotation.Nullable;
  */
 public final class ProtoTypeMap {
 
+    private static final Joiner DOT_JOINER = Joiner.on('.').skipNulls();
     private final ImmutableMap<String, String> types;
 
     private ProtoTypeMap(@Nonnull ImmutableMap<String, String> types) {
@@ -58,7 +59,7 @@ public final class ProtoTypeMap {
             fileDescriptor.getEnumTypeList().forEach(
                 e -> types.put(
                         protoPackage + "." + e.getName(),
-                        toJavaTypeName(e.getName(), enclosingClassName, javaPackage)));
+                        DOT_JOINER.join(javaPackage, enclosingClassName, e.getName())));
 
             // Identify top-level messages, and nested types
             fileDescriptor.getMessageTypeList().forEach(
@@ -74,15 +75,13 @@ public final class ProtoTypeMap {
         String protoTypeName = protoPackage + "." + m.getName();
         types.put(
             protoTypeName,
-            toJavaTypeName(m.getName(), enclosingClassName, javaPackage));
+            DOT_JOINER.join(javaPackage, enclosingClassName, m.getName()));
 
         // Identify any nested Enums
         m.getEnumTypeList().forEach(
             e -> types.put(
                 protoPackage + "." + m.getName() + "." + e.getName(),
-                toJavaTypeName(e.getName(),
-                enclosingClassName + "." + m.getName(),
-                javaPackage)));
+                DOT_JOINER.join(javaPackage, enclosingClassName, m.getName(), e.getName())));
 
         // Recursively identify any nested types
         m.getNestedTypeList().forEach(
@@ -90,7 +89,7 @@ public final class ProtoTypeMap {
                 types,
                 n,
                 protoPackage + "." + m.getName(),
-                enclosingClassName + "." + m.getName(),
+                DOT_JOINER.join(enclosingClassName, m.getName()),
                 javaPackage));
     }
 

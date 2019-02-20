@@ -12,12 +12,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.salesforce.servicelibs</groupId>
-    <artifactId>grpc-contrib-parent</artifactId>
+    <artifactId>grpc-contrib-demos-parent</artifactId>
     <packaging>pom</packaging>
     <version>0.8.2-SNAPSHOT</version>
 
-    <name>grpc-java-contrib</name>
-    <description>Useful extensions for the grpc-java library.</description>
+    <name>grpc-java-contrib-demos</name>
     <url>https://github.com/salesforce/grpc-java-contrib</url>
 
     <licenses>
@@ -47,12 +46,7 @@
     </developers>
 
     <modules>
-        <module>grpc-contrib</module>
-        <module>jprotoc</module>
-        <module>grpc-spring</module>
-        <module>jprotoc-test</module>
-        <module>demos/grpc-java-contrib-demo</module>
-        <module>grpc-testing-contrib</module>
+        <module>grpc-java-contrib-demo</module>
     </modules>
 
     <properties>
@@ -253,8 +247,8 @@
                     <failsOnError>true</failsOnError>
                     <failOnViolation>true</failOnViolation>
                     <consoleOutput>true</consoleOutput>
-                    <configLocation>checkstyle.xml</configLocation>
-                    <suppressionsLocation>checkstyle_ignore.xml</suppressionsLocation>
+                    <configLocation>../checkstyle.xml</configLocation>
+                    <suppressionsLocation>../checkstyle_ignore.xml</suppressionsLocation>
                 </configuration>
             </plugin>
 
@@ -290,72 +284,5 @@
             <url>${mavenBaseUrl}/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-
-    <profiles>
-        <profile>
-            <id>public-release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10.4</version>
-                        <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.1</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.8</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
 

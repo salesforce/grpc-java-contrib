@@ -14,13 +14,13 @@ import com.google.protobuf.DescriptorProtos;
 import java.util.Collection;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * {@code ProtoTypeMap} maintains a dictionary for looking up Java type names when given proto types.
  */
 public final class ProtoTypeMap {
 
+    private static final Joiner DOT_JOINER = Joiner.on('.').skipNulls();
     private final ImmutableMap<String, String> types;
 
     private ProtoTypeMap(@Nonnull ImmutableMap<String, String> types) {
@@ -58,7 +58,7 @@ public final class ProtoTypeMap {
             fileDescriptor.getEnumTypeList().forEach(
                 e -> types.put(
                         protoPackage + "." + e.getName(),
-                        toJavaTypeName(e.getName(), enclosingClassName, javaPackage)));
+                        DOT_JOINER.join(javaPackage, enclosingClassName, e.getName())));
 
             // Identify top-level messages, and nested types
             fileDescriptor.getMessageTypeList().forEach(
@@ -74,15 +74,13 @@ public final class ProtoTypeMap {
         String protoTypeName = protoPackage + "." + m.getName();
         types.put(
             protoTypeName,
-            toJavaTypeName(m.getName(), enclosingClassName, javaPackage));
+            DOT_JOINER.join(javaPackage, enclosingClassName, m.getName()));
 
         // Identify any nested Enums
         m.getEnumTypeList().forEach(
             e -> types.put(
                 protoPackage + "." + m.getName() + "." + e.getName(),
-                toJavaTypeName(e.getName(),
-                enclosingClassName + "." + m.getName(),
-                javaPackage)));
+                DOT_JOINER.join(javaPackage, enclosingClassName, m.getName(), e.getName())));
 
         // Recursively identify any nested types
         m.getNestedTypeList().forEach(
@@ -90,7 +88,7 @@ public final class ProtoTypeMap {
                 types,
                 n,
                 protoPackage + "." + m.getName(),
-                enclosingClassName + "." + m.getName(),
+                DOT_JOINER.join(enclosingClassName, m.getName()),
                 javaPackage));
     }
 
@@ -102,24 +100,6 @@ public final class ProtoTypeMap {
     public String toJavaTypeName(@Nonnull String protoTypeName) {
         Preconditions.checkNotNull(protoTypeName, "protoTypeName");
         return types.get(protoTypeName);
-    }
-
-    /**
-     * Returns the full Java type name based on the given protobuf type parameters.
-     *
-     * @param className the protobuf type name
-     * @param enclosingClassName the optional enclosing class for the given type
-     * @param javaPackage the proto file's configured java package name
-     */
-    public static String toJavaTypeName(
-            @Nonnull String className,
-            @Nullable String enclosingClassName,
-            @Nullable String javaPackage) {
-
-        Preconditions.checkNotNull(className, "className");
-
-        Joiner dotJoiner = Joiner.on('.').skipNulls();
-        return dotJoiner.join(javaPackage, enclosingClassName, className);
     }
 
     private static String getJavaOuterClassname(

@@ -14,7 +14,7 @@
     <groupId>com.salesforce.servicelibs</groupId>
     <artifactId>jprotoc-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.8.2-SNAPSHOT</version>
+    <version>0.9.0</version>
 
     <url>https://github.com/salesforce/grpc-java-contrib</url>
 
@@ -56,6 +56,8 @@
         <mavenBaseUrl>https://oss.sonatype.org/content/repositories</mavenBaseUrl>
 
         <!-- Dependency Versions -->
+        <contrib.version>0.8.1</contrib.version>
+
         <grpc.version>1.12.0</grpc.version>
         <protoc.version>3.5.1</protoc.version> <!-- Same version as grpc-proto -->
         <slf4j.version>1.7.21</slf4j.version>
@@ -94,12 +96,7 @@
             <dependency>
                 <groupId>com.salesforce.servicelibs</groupId>
                 <artifactId>grpc-contrib</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.salesforce.servicelibs</groupId>
-                <artifactId>grpc-spring</artifactId>
-                <version>${project.version}</version>
+                <version>${contrib.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.salesforce.servicelibs</groupId>
@@ -123,11 +120,6 @@
             </dependency>
             <dependency>
                 <groupId>io.grpc</groupId>
-                <artifactId>grpc-context</artifactId>
-                <version>${grpc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.grpc</groupId>
                 <artifactId>grpc-stub</artifactId>
                 <version>${grpc.version}</version>
             </dependency>
@@ -135,16 +127,6 @@
                 <groupId>com.github.spullara.mustache.java</groupId>
                 <artifactId>compiler</artifactId>
                 <version>${mustache-java.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>${spring.version}</version>
             </dependency>
             <!-- Provided dependencies -->
             <dependency>
@@ -160,18 +142,6 @@
                 <scope>provided</scope>
             </dependency>
             <!-- Test dependencies -->
-            <dependency>
-                <groupId>io.grpc</groupId>
-                <artifactId>grpc-testing</artifactId>
-                <version>${grpc.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.grpc</groupId>
-                <artifactId>grpc-testing-proto</artifactId>
-                <version>${grpc.version}</version>
-                <scope>test</scope>
-            </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -194,18 +164,6 @@
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
                 <version>${commons-lang.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${spring.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

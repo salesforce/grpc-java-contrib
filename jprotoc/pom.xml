@@ -16,6 +16,8 @@
     <packaging>pom</packaging>
     <version>0.9.0</version>
 
+    <name>jProtoc</name>
+    <description>A library for writing protobuf plugins in Java</description>
     <url>https://github.com/salesforce/grpc-java-contrib</url>
 
     <licenses>

@@ -103,24 +103,6 @@ public final class ProtoTypeMap {
         return types.get(protoTypeName);
     }
 
-    /**
-     * Returns the full Java type name based on the given protobuf type parameters.
-     *
-     * @param className the protobuf type name
-     * @param enclosingClassName the optional enclosing class for the given type
-     * @param javaPackage the proto file's configured java package name
-     */
-    public static String toJavaTypeName(
-            @Nonnull String className,
-            @Nullable String enclosingClassName,
-            @Nullable String javaPackage) {
-
-        Preconditions.checkNotNull(className, "className");
-
-        Joiner dotJoiner = Joiner.on('.').skipNulls();
-        return dotJoiner.join(javaPackage, enclosingClassName, className);
-    }
-
     private static String getJavaOuterClassname(
             DescriptorProtos.FileDescriptorProto fileDescriptor,
             DescriptorProtos.FileOptions fileOptions) {

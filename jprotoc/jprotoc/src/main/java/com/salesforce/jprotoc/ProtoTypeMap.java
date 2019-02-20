@@ -72,6 +72,7 @@ public final class ProtoTypeMap {
     private static void recursivelyAddTypes(ImmutableMap.Builder<String, String> types, DescriptorProtos.DescriptorProto m, String protoPackage, String enclosingClassName, String javaPackage) {
         // Identify current type
         String protoTypeName = protoPackage + "." + m.getName();
+        String subEnclosingClassName = enclosingClassName == null ? m.getName() : enclosingClassName + "." + m.getName();
         types.put(
             protoTypeName,
             toJavaTypeName(m.getName(), enclosingClassName, javaPackage));
@@ -81,7 +82,7 @@ public final class ProtoTypeMap {
             e -> types.put(
                 protoPackage + "." + m.getName() + "." + e.getName(),
                 toJavaTypeName(e.getName(),
-                enclosingClassName + "." + m.getName(),
+                subEnclosingClassName,
                 javaPackage)));
 
         // Recursively identify any nested types
@@ -90,7 +91,7 @@ public final class ProtoTypeMap {
                 types,
                 n,
                 protoPackage + "." + m.getName(),
-                enclosingClassName + "." + m.getName(),
+                subEnclosingClassName,
                 javaPackage));
     }
 

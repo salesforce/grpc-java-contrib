@@ -8,8 +8,6 @@
 package com.salesforce.jprotoc;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
@@ -26,6 +24,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.google.common.base.Preconditions.*;
+
 /**
  * ProtocPlugin is the main entry point for running one or more java-base protoc plugins. This class handles
  * I/O marshaling and error reporting.
@@ -40,7 +40,7 @@ public final class ProtocPlugin {
      * @param generator The generator to run.
      */
     public static void generate(@Nonnull Generator generator) {
-        Preconditions.checkNotNull(generator, "generator");
+        checkNotNull(generator, "generator");
         generate(Collections.singletonList(generator));
     }
 
@@ -61,9 +61,9 @@ public final class ProtocPlugin {
      */
     public static void generate(
             @Nonnull List<Generator> generators, List<GeneratedExtension> extensions) {
-        Preconditions.checkNotNull(generators, "generators");
-        Preconditions.checkArgument(!generators.isEmpty(), "generators.isEmpty()");
-        Preconditions.checkNotNull(extensions, "extensions");
+        checkNotNull(generators, "generators");
+        checkArgument(!generators.isEmpty(), "generators.isEmpty()");
+        checkNotNull(extensions, "extensions");
 
         // As per https://developers.google.com/protocol-buffers/docs/reference/java-generated#extension,
         // extensions must be registered in order to be processed.
@@ -102,7 +102,7 @@ public final class ProtocPlugin {
      * @param dumpPath The path to a descriptor dump on the filesystem.
      */
     public static void debug(@Nonnull Generator generator, @Nonnull String dumpPath) {
-        Preconditions.checkNotNull(generator, "generator");
+        checkNotNull(generator, "generator");
         debug(Collections.singletonList(generator), dumpPath);
     }
 
@@ -127,10 +127,10 @@ public final class ProtocPlugin {
             @Nonnull List<Generator> generators,
             List<GeneratedExtension> extensions,
             @Nonnull String dumpPath) {
-        Preconditions.checkNotNull(generators, "generators");
-        Preconditions.checkArgument(!generators.isEmpty(), "generators.isEmpty()");
-        Preconditions.checkNotNull(extensions, "extensions");
-        Preconditions.checkNotNull(dumpPath, "dumpPath");
+        checkNotNull(generators, "generators");
+        checkArgument(!generators.isEmpty(), "generators.isEmpty()");
+        checkNotNull(extensions, "extensions");
+        checkNotNull(dumpPath, "dumpPath");
 
         // As per https://developers.google.com/protocol-buffers/docs/reference/java-generated#extension,
         // extensions must be registered in order to be processed.
@@ -152,11 +152,20 @@ public final class ProtocPlugin {
             }
 
             // Write files if present
-            Joiner dotJoiner = Joiner.on('.').skipNulls();
             for (PluginProtos.CodeGeneratorResponse.File file : response.getFileList()) {
-                String name = dotJoiner.join(file.getName(), file.getInsertionPoint());
+                File outFile;
+                if (Strings.isNullOrEmpty(file.getInsertionPoint())) {
+                    outFile = new File(file.getName());
+                } else {
+                    // Append insertion point to file name
+                    String name = Files.getNameWithoutExtension(file.getName()) +
+                            "-" +
+                            file.getInsertionPoint() +
+                            Files.getFileExtension(file.getName());
+                    outFile = new File(name);
+                }
 
-                File outFile = new File(name);
+                Files.createParentDirs(outFile);
                 Files.write(file.getContent(), outFile, Charsets.UTF_8);
                 Files.write(file.getContentBytes().toByteArray(), outFile);
             }
@@ -169,9 +178,9 @@ public final class ProtocPlugin {
     private static PluginProtos.CodeGeneratorResponse generate(
             @Nonnull List<Generator> generators,
             @Nonnull PluginProtos.CodeGeneratorRequest request) {
-        Preconditions.checkNotNull(generators, "generators");
-        Preconditions.checkArgument(!generators.isEmpty(), "generators.isEmpty()");
-        Preconditions.checkNotNull(request, "request");
+        checkNotNull(generators, "generators");
+        checkArgument(!generators.isEmpty(), "generators.isEmpty()");
+        checkNotNull(request, "request");
 
         // Run each file generator, collecting the output
         Stream<PluginProtos.CodeGeneratorResponse.File> oldWay = generators

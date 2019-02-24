@@ -14,7 +14,7 @@
     <groupId>com.salesforce.servicelibs</groupId>
     <artifactId>jprotoc-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.1-SNAPSHOT</version>
+    <version>0.9.1</version>
 
     <name>jProtoc</name>
     <description>A library for writing protobuf plugins in Java</description>

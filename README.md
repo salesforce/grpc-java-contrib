@@ -8,15 +8,14 @@ Useful extensions for using the grpc-java library.
 
 This project is broken down into multiple sub-modules, each solving a different sub-problem.
 
-* [*grpc-contrib*](https://github.com/salesforce/grpc-java-contrib/tree/master/grpc-contrib) - A collection of utility classes to work with grpc-java.
-* [*grpc-testing-contrib*](https://github.com/salesforce/grpc-java-contrib/tree/master/grpc-testing-contrib) - A collection of utility classes for testing grpc-java.
-* [*grpc-spring*](https://github.com/salesforce/grpc-java-contrib/tree/master/grpc-spring) - Tools for automatically wiring up and starting a grpc service using Spring.
+* [*grpc-contrib*](https://github.com/salesforce/grpc-java-contrib/tree/master/contrib/grpc-contrib) - A collection of utility classes to work with grpc-java.
+* [*grpc-testing-contrib*](https://github.com/salesforce/grpc-java-contrib/tree/master/contrib/grpc-testing-contrib) - A collection of utility classes for testing grpc-java.
+* [*grpc-spring*](https://github.com/salesforce/grpc-java-contrib/tree/master/contrib/grpc-spring) - Tools for automatically wiring up and starting a grpc service using Spring.
 * [*jprotoc*](https://github.com/salesforce/grpc-java-contrib/tree/master/jprotoc) - A framework for building protoc extension plugins in Java.
-* [*reactive-grpc*](https://github.com/salesforce/reactive-grpc) - Protoc extension plugins for reactive programming using RxJava and Spring Reactor.
 
 Demos
 =====
-A pair of demo applications are in the `grpc-java-contrib-demo` directory.
+A pair of demo applications are in the [`grpc-java-contrib-demo`](https://github.com/salesforce/grpc-java-contrib/tree/master/demos/grpc-java-contrib-demo) directory.
 
 * *time-service-demo* - Hosts a simple gRPC service that reports the current time. Demonstrates grpc-spring service hosting.
 * *time-client-demo* - Connects to the time service. Demonstrates `StaticResolver` and jProtoc.

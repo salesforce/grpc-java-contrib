@@ -98,6 +98,11 @@ public class ProtoTypeMapTest {
         assertProtoTypeMapping(".com.salesforce.invalid.enye.TimeResponse", com.salesforce.invalid.enye.WeylandYutani.TimeResponse.class);
     }
 
+    @Test
+    public void wonkyCasedNames() {
+        assertProtoTypeMapping(".HELLOworld.HelloUPPERRequest", HELLOworld.HelloUPPERRequest.class);
+    }
+
     private void assertProtoTypeMapping(String protoTypeName, Class clazz) {
         assertThat(protoTypeMap.toJavaTypeName(protoTypeName)).isEqualTo(fileNameToLexicalName(clazz.getName()));
     }

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package HELLOworld;
+
+// The greeting service definition.
+service Greeter {
+    // Sends a greeting
+    rpc SayHello (HelloUPPERRequest) returns (HelloUPPERRequest) {}
+}
+
+// The request message containing the user's name.
+message HelloUPPERRequest {
+    string name = 1;
+}

@@ -35,9 +35,9 @@ public final class MoreMetadata {
      * @param clazz the type to serialize
      * @param <T>
      */
-    public static final <T> Metadata.AsciiMarshaller<T> JSON_MARSHALLER(Class<T> clazz) {
+    public static <T> Metadata.AsciiMarshaller<T> JSON_MARSHALLER(Class<T> clazz) {
         return new Metadata.AsciiMarshaller<T>() {
-            TypeToken<T> typeToken = TypeToken.of(clazz);
+            private TypeToken<T> typeToken = TypeToken.of(clazz);
             private Gson gson = new Gson();
 
             @Override

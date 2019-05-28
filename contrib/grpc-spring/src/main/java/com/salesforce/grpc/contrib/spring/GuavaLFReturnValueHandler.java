@@ -45,7 +45,7 @@ import java.util.List;
  * {@literal @}Controller
  * public class MyController {
  *     {@literal @}RequestMapping(method = RequestMethod.GET, value = "/home")
- *     ListenableFuture<ModelAndView> home(HttpServletRequest request, Model model) {
+ *     ListenableFuture&lt;ModelAndView&gt; home(HttpServletRequest request, Model model) {
  *         // work that returns a ListenableFuture...
  *     }
  * }

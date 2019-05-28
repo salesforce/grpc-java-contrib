@@ -31,9 +31,9 @@ import java.util.function.BiFunction;
  *         stub.someServiceOperation(...);
  *     } catch (Throwable t) {
  *         if (hasStatusCode(t, Status.Code.UNAUTHENTICATED)) {
- *             doWithStatus(t, (status, metadata) -> showLoginPrompt());
+ *             doWithStatus(t, (status, metadata) → showLoginPrompt());
  *         } else if (hasStatus(t) {
- *             doWithStatus(t, (status, metadata) -> handleGrpcProblem(status));
+ *             doWithStatus(t, (status, metadata) → handleGrpcProblem(status));
  *         } else {
  *             throw t;
  *         }

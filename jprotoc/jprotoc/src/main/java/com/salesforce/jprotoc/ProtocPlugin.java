@@ -17,7 +17,6 @@ import com.google.protobuf.compiler.PluginProtos;
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -140,7 +139,7 @@ public final class ProtocPlugin {
         }
 
         try {
-            byte[] generatorRequestBytes = ByteStreams.toByteArray(new FileInputStream(new File(dumpPath)));
+            byte[] generatorRequestBytes = Files.toByteArray(new File(dumpPath));
             PluginProtos.CodeGeneratorRequest request = PluginProtos.CodeGeneratorRequest.parseFrom(
                     generatorRequestBytes, extensionRegistry);
 

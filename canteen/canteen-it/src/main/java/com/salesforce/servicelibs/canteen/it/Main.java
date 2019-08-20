@@ -1,4 +1,4 @@
-package com.salesforce.servicelibs.canteen.bootstrap;
+package com.salesforce.servicelibs.canteen.it;
 
 public class Main {
     public static void main(String[] args) {
@@ -7,11 +7,11 @@ public class Main {
         if (args.length == 1) {
             choice = args[0];
         } else {
-            System.out.print("0 = Success, 1 = Failure > ");
+            System.out.print("1 = Success, 0 = Failure > ");
             choice = System.console().readLine();
         }
 
-        if (choice.equals("0")) {
+        if (choice.equals("1")) {
             System.out.println("success");
             System.exit(0);
         } else {

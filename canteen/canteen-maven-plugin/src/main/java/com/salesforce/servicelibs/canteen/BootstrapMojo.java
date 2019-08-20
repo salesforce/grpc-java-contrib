@@ -29,8 +29,8 @@ import java.util.Set;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singleton;
 
-@Mojo( name = "canteen", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
-public class CanteenMojo extends AbstractMojo {
+@Mojo( name = "bootstrap", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
+public class BootstrapMojo extends AbstractMojo {
     private static final String CANTEEN_BOOTSTRAP = "canteen-bootstrap";
     private static final List<String> PLATFORMS = Arrays.asList("osx-x86_64", "linux-x86_64", "windows-x86_64");
 

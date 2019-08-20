@@ -12,6 +12,7 @@
     <modules>
         <module>canteen-bootstrap</module>
         <module>canteen-maven-plugin</module>
+        <module>canteen-it</module>
     </modules>
 
     <properties>

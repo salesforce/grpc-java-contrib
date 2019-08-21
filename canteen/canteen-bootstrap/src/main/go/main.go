@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 	"syscall"
 )
@@ -27,19 +28,26 @@ func main() {
 	args := []string{"-jar", strings.TrimPrefix(jarName, "./")}
 	args = append(args, jarArgs...)
 
-	cmd := exec.Command(binary, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command(binary, args...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Stdin = os.Stdin
 
-	if err := cmd.Run(); err != nil {
-		if err, ok := err.(*exec.ExitError); ok {
-			if status, ok := err.Sys().(syscall.WaitStatus); ok {
-				// Exit with the same code as the Java program
-				os.Exit(status.ExitStatus())
+		if err := cmd.Run(); err != nil {
+			if err, ok := err.(*exec.ExitError); ok {
+				if status, ok := err.Sys().(syscall.WaitStatus); ok {
+					// Exit with the same code as the Java program
+					os.Exit(status.ExitStatus())
+				}
+			} else {
+				log.Fatalf("Bootstrap execution error: %v", err)
 			}
-		} else {
-			log.Fatalf("Bootstrap execution error: %v", err)
+		}
+	} else {
+		err = syscall.Exec(binary, append([]string{"java"}, args...), nil)
+		if err != nil {
+			log.Fatalf("Bootstrap execution error: %v", os.Environ())
 		}
 	}
 }

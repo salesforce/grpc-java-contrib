@@ -93,5 +93,6 @@ The `canteen-maven-plugin` uses the same technique to prepend a simple platform 
 cross-compiled with Go to the front of a jar.
 
 When you execute a Canteen packaged jar, the bootstrap program captures all the command line arguments and the name
-of the current file. It then spawns a child process as `java -jar $args`, proxying `stdin`, `stdout`, and `stderr`
-between the shell and the child process.
+of the current file. On Windows, the bootstrap spawns a child process as `java -jar $args`, proxying `stdin`, `stdout`,
+and `stderr` between the shell and the child process. On Linux and MacOS, the bootstrap transfers process control to
+Java by invoking `syscall.Exec()`;

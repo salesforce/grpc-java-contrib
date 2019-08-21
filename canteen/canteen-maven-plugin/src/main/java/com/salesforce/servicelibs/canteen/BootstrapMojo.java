@@ -1,7 +1,13 @@
+/*
+ *  Copyright (c) 2019, Salesforce.com, Inc.
+ *  All rights reserved.
+ *  Licensed under the BSD 3-Clause license.
+ *  For full license text, see LICENSE.txt file in the repo root  or https://opensource.org/licenses/BSD-3-Clause
+ */
+
 package com.salesforce.servicelibs.canteen;
 
 import com.google.common.io.ByteStreams;
-import com.google.common.io.Files;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
@@ -29,53 +35,53 @@ import java.util.Set;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singleton;
 
-@Mojo( name = "bootstrap", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
+@Mojo(name = "bootstrap", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
 public class BootstrapMojo extends AbstractMojo {
     private static final String CANTEEN_BOOTSTRAP = "canteen-bootstrap";
     private static final List<String> PLATFORMS = Arrays.asList("osx-x86_64", "linux-x86_64", "windows-x86_64");
 
     @Component
-    protected RepositorySystem repositorySystem;
+    private RepositorySystem repositorySystem;
 
     @Component
-    protected ResolutionErrorHandler resolutionErrorHandler;
+    private ResolutionErrorHandler resolutionErrorHandler;
 
     @Component
     private MavenProjectHelper projectHelper;
 
-    @Parameter( defaultValue = "${plugin}", readonly = true ) // Maven 3 only
-    protected PluginDescriptor plugin;
+    @Parameter(defaultValue = "${plugin}", readonly = true)
+    private PluginDescriptor plugin;
 
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
-    protected MavenProject project;
+    private MavenProject project;
 
     @Parameter(defaultValue = "${session}", readonly = true, required = true)
-    protected MavenSession session;
+    private MavenSession session;
 
     @Parameter(required = true, readonly = true, property = "localRepository")
-    protected ArtifactRepository localRepository;
+    private ArtifactRepository localRepository;
 
     @Parameter(required = true, readonly = true, defaultValue = "${project.remoteArtifactRepositories}")
-    protected List<ArtifactRepository> remoteRepositories;
+    private List<ArtifactRepository> remoteRepositories;
 
     @Parameter(defaultValue = "${project.build.directory}", required = true)
-    protected File outputDirectory;
+    private File outputDirectory;
 
     @Parameter(defaultValue = "${project.build.finalName}", readonly = true)
-    protected String finalName;
+    private String finalName;
 
     /**
      * The directory (typically under /target) where Canteen bootstrap binaries are temporarily staged.
      */
     @Parameter(required = true, defaultValue = "${project.build.directory}/" + CANTEEN_BOOTSTRAP)
-    protected File canteenBootstrapDirectory;
+    private File canteenBootstrapDirectory;
 
     /**
      * Classifier to use when locating the artifact to bootstrap. If no classifier is provided, the module default
      * artifact will be used.
      */
     @Parameter(required = false)
-    protected String classifier;
+    private String classifier;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -208,8 +214,8 @@ public class BootstrapMojo extends AbstractMojo {
     private Artifact getArtifact(String classifier) {
         if (classifier != null) {
             for (Artifact attachedArtifact : this.project.getAttachedArtifacts()) {
-                if (classifier.equals(attachedArtifact.getClassifier()) && attachedArtifact.getFile() != null
-                        && attachedArtifact.getFile().isFile()) {
+                if (classifier.equals(attachedArtifact.getClassifier()) && attachedArtifact.getFile() != null &&
+                        attachedArtifact.getFile().isFile()) {
                     return attachedArtifact;
                 }
             }

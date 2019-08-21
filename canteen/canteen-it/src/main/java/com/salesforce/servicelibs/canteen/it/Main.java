@@ -1,9 +1,20 @@
+/*
+ *  Copyright (c) 2019, Salesforce.com, Inc.
+ *  All rights reserved.
+ *  Licensed under the BSD 3-Clause license.
+ *  For full license text, see LICENSE.txt file in the repo root  or https://opensource.org/licenses/BSD-3-Clause
+ */
+
 package com.salesforce.servicelibs.canteen.it;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-public class Main {
+public final class Main {
+    private Main() { }
+
+    private static final int THE_ANSWER_TO_EVERYTHING = 42;
+
     public static void main(String[] args) throws Exception {
         String choice;
 
@@ -20,7 +31,7 @@ public class Main {
             System.exit(0);
         } else {
             System.err.println("failure");
-            System.exit(42);
+            System.exit(THE_ANSWER_TO_EVERYTHING);
         }
     }
 }

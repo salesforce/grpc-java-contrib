@@ -1,3 +1,10 @@
+/*
+ *  Copyright (c) 2019, Salesforce.com, Inc.
+ *  All rights reserved.
+ *  Licensed under the BSD 3-Clause license.
+ *  For full license text, see LICENSE.txt file in the repo root  or https://opensource.org/licenses/BSD-3-Clause
+ */
+
 package com.salesforce.servicelibs.canteen.it;
 
 import org.junit.Test;
@@ -5,7 +12,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 

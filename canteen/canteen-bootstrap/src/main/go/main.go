@@ -24,7 +24,7 @@ func main() {
 		log.Fatalf("Java execution error: %v", err)
 	}
 
-	args := []string{"-jar", strings.TrimLeft(jarName, "./")}
+	args := []string{"-jar", strings.TrimPrefix(jarName, "./")}
 	args = append(args, jarArgs...)
 
 	cmd := exec.Command(binary, args...)

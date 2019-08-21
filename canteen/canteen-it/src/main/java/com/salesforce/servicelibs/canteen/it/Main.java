@@ -1,14 +1,18 @@
 package com.salesforce.servicelibs.canteen.it;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String choice;
 
         if (args.length == 1) {
             choice = args[0];
         } else {
             System.out.print("1 = Success, 0 = Failure > ");
-            choice = System.console().readLine();
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            choice = br.readLine();
         }
 
         if (choice.equals("1")) {

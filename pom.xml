@@ -12,6 +12,7 @@
         <module>contrib</module>
         <module>jprotoc</module>
         <module>demos</module>
+        <module>canteen</module>
     </modules>
 
 </project>

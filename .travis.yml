@@ -1,7 +1,18 @@
+dist: xenial
+
 language: java
 jdk:
   - openjdk8
   - openjdk11
+
+env:
+  - GO111MODULE=on
+
+before_install:
+  - eval "$(gimme 1.12)"
+
+script:
+  - mvn install
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

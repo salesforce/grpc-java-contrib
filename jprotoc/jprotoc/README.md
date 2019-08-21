@@ -88,6 +88,28 @@ POM file. For more documentation, see the Maven protoc plugin's
 </configuration>
 ```
 
+## Packaging your plugin for native execution
+
+jProtoc plugins can be packaged as native executables using the [`canteen-maven-plugin`](https://github.com/salesforce/grpc-java-contrib/tree/master/canteen).
+Canteen repackages jar files so they can be executed from the command line directly without requiring a `java -jar`
+invocation.
+
+```xml
+<!-- Make the jar self-executing with Canteen -->
+<plugin>
+    <groupId>com.salesforce.servicelibs</groupId>
+    <artifactId>canteen-maven-plugin</artifactId>
+    <version>${canteen.version}</version>
+    <executions>
+        <execution>
+            <goals>
+                <goal>bootstrap</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
+
 Using the Jdk8 Protoc generator
 ===============================
 1. Add the following to your POM:

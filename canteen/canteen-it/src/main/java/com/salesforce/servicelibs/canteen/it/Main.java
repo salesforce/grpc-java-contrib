@@ -7,6 +7,8 @@
 
 package com.salesforce.servicelibs.canteen.it;
 
+import com.google.common.base.Strings;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
@@ -21,7 +23,7 @@ public final class Main {
         if (args.length == 1) {
             choice = args[0];
         } else {
-            System.out.print("1 = Success, 0 = Failure > ");
+            System.out.print("1 = Success, 0 = Failure >" + Strings.repeat(" ", 2));
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             choice = br.readLine();
         }

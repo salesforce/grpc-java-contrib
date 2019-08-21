@@ -20,7 +20,22 @@ Bundle your jar as an executable jar, and add the `canteen-maven-plugin` to your
 ```xml
 <build>
     <plugins>
-        <!-- Make the jar executable (for java -jar) -->
+        <!-- Shade dependencies into an uber jar -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.2.1</version>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    
+        <!-- Populate the jar's manifest main class to make it executable -->
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>

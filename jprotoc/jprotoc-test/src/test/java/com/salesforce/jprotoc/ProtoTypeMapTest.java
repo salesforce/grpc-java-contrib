@@ -26,7 +26,7 @@ public class ProtoTypeMapTest {
     @BeforeClass
     public static void buildProtoTypeMap() throws IOException {
         // Dump file generated during the maven generate-test-sources phase
-        final String dumpPath = "target/generated-test-sources/protobuf/java/descriptor_dump";
+        final String dumpPath = "target/generated-test-sources/protobuf/dump/descriptor_dump";
 
         byte[] generatorRequestBytes = ByteStreams.toByteArray(new FileInputStream(new File(dumpPath)));
         PluginProtos.CodeGeneratorRequest request = PluginProtos.CodeGeneratorRequest.parseFrom(

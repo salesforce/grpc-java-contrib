@@ -11,6 +11,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.async.DeferredResult;
@@ -70,17 +71,19 @@ public class GuavaLFReturnValueHandler implements HandlerMethodReturnValueHandle
         final DeferredResult<Object> deferredResult = new DeferredResult<>();
         @SuppressWarnings("unchecked")
         ListenableFuture<Object> futureValue = (ListenableFuture<Object>) returnValue;
-        Futures.addCallback(futureValue, new FutureCallback<Object>() {
-            @Override
-            public void onSuccess(@Nullable Object result) {
-                deferredResult.setResult(result);
-            }
+        Futures.addCallback(futureValue,
+                new FutureCallback<Object>() {
+                    @Override
+                    public void onSuccess(@Nullable Object result) {
+                        deferredResult.setResult(result);
+                    }
 
-            @Override
-            public void onFailure(Throwable ex) {
-                deferredResult.setErrorResult(ex);
-            }
-        });
+                    @Override
+                    public void onFailure(Throwable ex) {
+                        deferredResult.setErrorResult(ex);
+                    }
+                },
+                MoreExecutors.directExecutor());
 
         startDeferredResultProcessing(mavContainer, webRequest, deferredResult);
     }

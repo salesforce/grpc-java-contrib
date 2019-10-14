@@ -58,7 +58,7 @@
         <mavenBaseUrl>https://oss.sonatype.org/content/repositories</mavenBaseUrl>
 
         <!-- Dependency Versions -->
-        <contrib.version>0.8.1</contrib.version>
+        <contrib.version>0.8.2-SNAPSHOT</contrib.version>
 
         <grpc.version>1.24.0</grpc.version>
         <protoc.version>3.9.1</protoc.version> <!-- Same version as grpc-proto -->

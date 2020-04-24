@@ -7,6 +7,9 @@
 
 package com.salesforce.grpc.contrib.interceptor;
 
+import java.util.Arrays;
+import java.util.EnumSet;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,13 +34,13 @@ public class DebugClientInterceptor implements ClientInterceptor {
     private static final String RESPONSE = "Response";
 
     public enum Level {
-        NONE, STATUS, HEADERS, MESSAGE
+        STATUS, HEADERS, MESSAGE
     }
 
-    private Level level = Level.NONE;
+    private EnumSet<Level> levels = EnumSet.of(Level.STATUS);
 
-    public DebugClientInterceptor(Level level) {
-        this.level = level;
+    public DebugClientInterceptor(Level... levels) {
+        this.levels = EnumSet.copyOf(Arrays.asList(levels));
     }
 
     @Override
@@ -56,10 +59,7 @@ public class DebugClientInterceptor implements ClientInterceptor {
                 logHeaders(REQUEST, headers);
                 super.start(
                         new ForwardingClientCallListener.SimpleForwardingClientCallListener<RespT>(responseListener) {
-                            /**
-                             * for logging level of {@code HEADERS} or {@code MESSAGE}, the status will be
-                             * logged after headers and message
-                             */
+
                             @Override
                             public void onClose(Status status, Metadata trailers) {
                                 logStatus(status, method);
@@ -82,38 +82,32 @@ public class DebugClientInterceptor implements ClientInterceptor {
         };
     }
 
-    /**
-     * override this method to change the way outbound request method name is logged.
-     */
-    protected <ReqT, RespT> void logMethod(MethodDescriptor<ReqT, RespT> method) {
-        if (level == Level.STATUS || level == Level.HEADERS || level == Level.MESSAGE) {
-            logger.debug("{} path : {}", REQUEST, method.getFullMethodName());
+    private <ReqT, RespT> void logMethod(MethodDescriptor<ReqT, RespT> method) {
+        if (levels.contains(Level.STATUS)) {
+            log(String.format("%s path : %s", REQUEST, method.getFullMethodName()));
         }
     }
 
-    /**
-     * override this method to change the way status and method name is logged for inbound response.
-     */
-    protected <ReqT, RespT> void logStatus(Status status, MethodDescriptor<ReqT, RespT> method) {
-        if (level == Level.STATUS || level == Level.HEADERS || level == Level.MESSAGE) {
-            logger.debug("{} status: {} {} for path :{}", RESPONSE, status.getCode().value(), status.getCode(),
-                    method.getFullMethodName());
+    private <ReqT, RespT> void logStatus(Status status, MethodDescriptor<ReqT, RespT> method) {
+        if (levels.contains(Level.STATUS)) {
+            log(String.format("%s status: %s %s for path : %s", RESPONSE, status.getCode().value(), status.getCode(),
+                    method.getFullMethodName()));
         }
     }
-    /**
-     * override this method to change the way headers are logged.
-     */
-    protected void logHeaders(String type, Metadata headers) {
-        if (level == Level.HEADERS || level == Level.MESSAGE) {
-            logger.debug("{} headers : {}", type, headers);
+
+    private void logHeaders(String type, Metadata headers) {
+        if (levels.contains(Level.HEADERS)) {
+            log(String.format("%s headers : %s", type, headers));
         }
     }
-    /**
-     * override this method to change the way message is logged.
-     */
-    protected <RespT> void logMessage(String type, RespT message) {
-        if (this.level == Level.MESSAGE) {
-            logger.debug("{} message : {}", type, message);
+
+    private <RespT> void logMessage(String type, RespT message) {
+        if (levels.contains(Level.MESSAGE)) {
+            log(String.format("%s message : %s", type, message));
         }
+    }
+
+    protected void log(String logmessage) {
+        logger.debug(logmessage);
     }
 }

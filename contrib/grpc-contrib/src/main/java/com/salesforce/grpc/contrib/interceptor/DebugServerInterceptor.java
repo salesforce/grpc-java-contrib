@@ -29,7 +29,7 @@ public class DebugServerInterceptor implements ServerInterceptor {
     private static final String RESPONSE = "Response";
 
     public enum Level {
-        METHOD, HEADERS, MESSAGE
+        METHOD, HEADERS, MESSAGE, CANCEL
     }
 
     private EnumSet<Level> levels = EnumSet.of(Level.METHOD);
@@ -68,7 +68,7 @@ public class DebugServerInterceptor implements ServerInterceptor {
 
             @Override
             public void onCancel() {
-                log(String.format("Call for method %s cancelled", call.getMethodDescriptor().getFullMethodName()));
+                logCancellation(call.getMethodDescriptor());
                 super.onCancel();
 
             }
@@ -91,6 +91,12 @@ public class DebugServerInterceptor implements ServerInterceptor {
     private <T> void logMessage(String type, T message) {
         if (levels.contains(Level.MESSAGE)) {
             log(String.format("%s message : %s", type, message));
+        }
+    }
+
+    private <ReqT, RespT> void logCancellation(MethodDescriptor<ReqT, RespT> method) {
+        if (levels.contains(Level.CANCEL)) {
+            log(String.format("Call for method %s cancelled", method.getFullMethodName()));
         }
     }
 

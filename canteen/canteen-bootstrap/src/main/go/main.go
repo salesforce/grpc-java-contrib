@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path"
 	"runtime"
 	"strings"
 	"syscall"
@@ -22,7 +23,19 @@ func main() {
 
 	binary, err := exec.LookPath("java")
 	if err != nil {
-		log.Fatalf("Java execution error: %v", err)
+		javaHome, javaHomeSet := os.LookupEnv("JAVA_HOME")
+		if !javaHomeSet {
+			log.Fatalf("Java not found in PATH and JAVA_HOME not set: %v", err)
+		}
+
+		stat, err := os.Stat(javaHome)
+		if err != nil {
+			log.Fatalf("Java not found in JAVA_HOME: %v", err)
+		} else if !stat.IsDir() {
+			log.Fatalf("JAVA_HOME is not a directory: %v", err)
+		} else {
+			binary = path.Join(javaHome, "bin", "java")
+		}
 	}
 
 	args := []string{"-jar", strings.TrimPrefix(jarName, "./")}

@@ -60,7 +60,7 @@ func main() {
 	} else {
 		err = syscall.Exec(binary, append([]string{"java"}, args...), os.Environ())
 		if err != nil {
-			log.Fatalf("Bootstrap execution error: %v", os.Environ())
+			log.Fatalf("Bootstrap execution error: %v", err)
 		}
 	}
 }

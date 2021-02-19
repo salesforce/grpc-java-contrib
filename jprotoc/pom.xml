@@ -61,7 +61,7 @@
         <contrib.version>0.8.2-SNAPSHOT</contrib.version>
 
         <grpc.version>1.24.0</grpc.version>
-        <protoc.version>3.9.1</protoc.version> <!-- Same version as grpc-proto -->
+        <protoc.version>3.15.0</protoc.version> <!-- Same version as grpc-proto -->
         <slf4j.version>1.7.21</slf4j.version>
         <gson.version>2.7</gson.version> <!-- Same version as grpc-proto -->
         <mustache-java.version>0.9.4</mustache-java.version>

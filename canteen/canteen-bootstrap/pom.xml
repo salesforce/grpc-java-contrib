@@ -51,6 +51,27 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>osx-aarch_64</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>compile</phase>
+                        <configuration>
+                            <workingDirectory>${project.basedir}/src/main/go</workingDirectory>
+                            <executable>go</executable>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>-o</argument>
+                                <argument>${project.build.directory}/${binary.name}-${project.version}-osx-aarch_64.exe</argument>
+                                <argument>.</argument>
+                            </arguments>
+                            <environmentVariables>
+                                <GOOS>darwin</GOOS>
+                                <GOARCH>arm64</GOARCH>
+                            </environmentVariables>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>linux_x86_64</id>
                         <goals>
                             <goal>exec</goal>
@@ -68,6 +89,27 @@
                             <environmentVariables>
                                 <GOOS>linux</GOOS>
                                 <GOARCH>amd64</GOARCH>
+                            </environmentVariables>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>linux-aarch_64</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>compile</phase>
+                        <configuration>
+                            <workingDirectory>${project.basedir}/src/main/go</workingDirectory>
+                            <executable>go</executable>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>-o</argument>
+                                <argument>${project.build.directory}/${binary.name}-${project.version}-linux-aarch_64.exe</argument>
+                                <argument>.</argument>
+                            </arguments>
+                            <environmentVariables>
+                                <GOOS>linux</GOOS>
+                                <GOARCH>arm64</GOARCH>
                             </environmentVariables>
                         </configuration>
                     </execution>
@@ -116,6 +158,21 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>osx-aarch_64</id>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/${binary.name}-${project.version}-osx-aarch_64.exe</file>
+                                    <type>exe</type>
+                                    <classifier>osx-aarch_64</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>linux_x86_64</id>
                         <goals>
                             <goal>attach-artifact</goal>
@@ -126,6 +183,21 @@
                                     <file>${project.build.directory}/${binary.name}-${project.version}-linux-x86_64.exe</file>
                                     <type>exe</type>
                                     <classifier>linux-x86_64</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>linux-aarch_64</id>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/${binary.name}-${project.version}-linux-aarch_64.exe</file>
+                                    <type>exe</type>
+                                    <classifier>linux-aarch_64</classifier>
                                 </artifact>
                             </artifacts>
                         </configuration>

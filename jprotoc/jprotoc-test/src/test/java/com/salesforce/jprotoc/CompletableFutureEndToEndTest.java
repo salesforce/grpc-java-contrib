@@ -42,7 +42,7 @@ public class CompletableFutureEndToEndTest {
         server.start();
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", server.getPort())
-                .usePlaintext(true)
+                .usePlaintext()
                 .build();
 
         GreeterGrpc8.GreeterCompletableFutureStub stub = GreeterGrpc8.newCompletableFutureStub(channel);

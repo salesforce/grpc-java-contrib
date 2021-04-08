@@ -58,16 +58,13 @@
         <mavenBaseUrl>https://oss.sonatype.org/content/repositories</mavenBaseUrl>
 
         <!-- Dependency Versions -->
-        <contrib.version>0.8.2-SNAPSHOT</contrib.version>
-
-        <grpc.version>1.24.0</grpc.version>
-        <protoc.version>3.9.1</protoc.version> <!-- Same version as grpc-proto -->
-        <slf4j.version>1.7.21</slf4j.version>
-        <gson.version>2.7</gson.version> <!-- Same version as grpc-proto -->
+        <protoc.version>3.15.8</protoc.version>
+        <gson.version>2.7</gson.version>
         <mustache-java.version>0.9.4</mustache-java.version>
-        <spring.version>4.2.0.RELEASE</spring.version>
 
         <!-- Test Dependency Versions -->
+        <contrib.version>0.8.1</contrib.version>
+        <grpc.version>1.37.0</grpc.version>
         <junit.version>4.13.1</junit.version>
         <assertj.version>3.6.2</assertj.version>
         <commons-lang.version>2.6</commons-lang.version>
@@ -102,11 +99,27 @@
              ~ Protobuf would require keeping them manually aligned with gRPC. Instead, Guava and Protobuf are
              ~ referenced transitively via gRPC itself.
             -->
-
+            <dependency>
+                <groupId>com.github.spullara.mustache.java</groupId>
+                <artifactId>compiler</artifactId>
+                <version>${mustache-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+            <!-- Test dependencies -->
             <dependency>
                 <groupId>com.salesforce.servicelibs</groupId>
                 <artifactId>grpc-contrib</artifactId>
                 <version>${contrib.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.grpc</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.salesforce.servicelibs</groupId>
@@ -130,27 +143,14 @@
             </dependency>
             <dependency>
                 <groupId>io.grpc</groupId>
-                <artifactId>grpc-stub</artifactId>
+                <artifactId>grpc-api</artifactId>
                 <version>${grpc.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.spullara.mustache.java</groupId>
-                <artifactId>compiler</artifactId>
-                <version>${mustache-java.version}</version>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-stub</artifactId>
+                <version>${grpc.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${gson.version}</version>
-            </dependency>
-            <!-- Provided dependencies -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>

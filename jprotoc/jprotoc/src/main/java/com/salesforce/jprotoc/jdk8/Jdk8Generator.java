@@ -18,6 +18,7 @@ import com.salesforce.jprotoc.ProtocPlugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,6 +37,11 @@ public class Jdk8Generator extends Generator {
 
     private static final String SERVICE_JAVADOC_PREFIX = "    ";
     private static final String METHOD_JAVADOC_PREFIX  = "        ";
+
+    @Override
+    protected List<PluginProtos.CodeGeneratorResponse.Feature> supportedFeatures() {
+        return Collections.singletonList(PluginProtos.CodeGeneratorResponse.Feature.FEATURE_PROTO3_OPTIONAL);
+    }
 
     @Override
     public List<PluginProtos.CodeGeneratorResponse.File> generateFiles(PluginProtos.CodeGeneratorRequest request) throws GeneratorException {

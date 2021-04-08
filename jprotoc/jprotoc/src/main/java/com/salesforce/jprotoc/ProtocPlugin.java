@@ -190,10 +190,22 @@ public final class ProtocPlugin {
                 .stream()
                 .flatMap(gen -> gen.generateFiles(request).stream());
 
+        int featureMask = generators
+                .stream()
+                .map(gen -> gen.supportedFeatures().stream())
+                // OR each generator's feature set together into a mask
+                .map(featureStream -> featureStream.map(PluginProtos.CodeGeneratorResponse.Feature::getNumber)
+                        .reduce((l, r) -> l | r)
+                        .orElse(PluginProtos.CodeGeneratorResponse.Feature.FEATURE_NONE_VALUE))
+                // AND together all the masks
+                .reduce((l, r) -> l & r)
+                .orElse(PluginProtos.CodeGeneratorResponse.Feature.FEATURE_NONE_VALUE);
+
         // Send the files back to protoc
         return PluginProtos.CodeGeneratorResponse
                 .newBuilder()
                 .addAllFile(Stream.concat(oldWay, newWay).collect(Collectors.toList()))
+                .setSupportedFeatures(featureMask)
                 .build();
     }
 

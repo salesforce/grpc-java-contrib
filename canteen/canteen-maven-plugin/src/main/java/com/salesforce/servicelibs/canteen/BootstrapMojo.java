@@ -35,10 +35,14 @@ import java.util.Set;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singleton;
 
+/**
+ * BootstrapMojo creates new Maven artifacts for each supported platform by prepending the platform-specific
+ * bootstrap to the default artifact jar file.
+ */
 @Mojo(name = "bootstrap", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
 public class BootstrapMojo extends AbstractMojo {
     private static final String CANTEEN_BOOTSTRAP = "canteen-bootstrap";
-    private static final List<String> PLATFORMS = Arrays.asList("osx-x86_64", "linux-x86_64", "windows-x86_64");
+    private static final List<String> PLATFORMS = Arrays.asList("osx-x86_64", "osx-aarch_64", "linux-x86_64", "linux-aarch_64", "windows-x86_64");
 
     @Component
     private RepositorySystem repositorySystem;

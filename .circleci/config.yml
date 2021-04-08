@@ -16,7 +16,8 @@ shared: &shared
     - run:
         name: Install Golang
         command: |
-          sudo apt-cache search .
+          sudo add-apt-repository ppa:longsleep/golang-backports
+          sudo apt update
           sudo apt-get install golang-go
 
     - checkout

@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package my.optional;
+
+message SomeParameter {
+  optional string id = 1;
+}

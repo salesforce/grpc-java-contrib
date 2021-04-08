@@ -27,7 +27,7 @@ import java.util.stream.Stream;
  * Generator is the base class for all protoc generators managed by {@link ProtocPlugin}.
  */
 public abstract class Generator {
-    private static MustacheFactory mustacheFactory = new DefaultMustacheFactory();
+    private static final MustacheFactory MUSTACHE_FACTORY = new DefaultMustacheFactory();
 
     /**
      * Processes a generator request into a set of files to output.
@@ -52,6 +52,16 @@ public abstract class Generator {
     }
 
     /**
+     * Signals to protoc which additional generator features this Generator supports. By default, this method returns
+     * FEATURE_NONE. You must override this method and supply a value, like FEATURE_PROTO3_OPTIONAL.
+     *
+     * @return A list of enumerated features.
+     */
+    protected List<PluginProtos.CodeGeneratorResponse.Feature> supportedFeatures() {
+        return Collections.singletonList(PluginProtos.CodeGeneratorResponse.Feature.FEATURE_NONE);
+    }
+
+    /**
      * Executes a mustache template against a generatorContext object to generate an output string.
      * @param resourcePath Embedded resource template to use.
      * @param generatorContext Context object to bind the template to.
@@ -67,7 +77,7 @@ public abstract class Generator {
         }
 
         InputStreamReader resourceReader = new InputStreamReader(resource, Charsets.UTF_8);
-        Mustache template = mustacheFactory.compile(resourceReader, resourcePath);
+        Mustache template = MUSTACHE_FACTORY.compile(resourceReader, resourcePath);
         return template.execute(new StringWriter(), generatorContext).toString();
     }
 

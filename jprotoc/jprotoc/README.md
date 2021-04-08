@@ -36,6 +36,11 @@ public class MyGenerator extends Generator {
     }
 
     @Override
+    protected List<PluginProtos.CodeGeneratorResponse.Feature> supportedFeatures() {
+       return Collections.singletonList(PluginProtos.CodeGeneratorResponse.Feature.FEATURE_PROTO3_OPTIONAL);
+    }
+
+    @Override
     public Stream<PluginProtos.CodeGeneratorResponse.File> generate(PluginProtos.CodeGeneratorRequest request) 
         throws GeneratorException {
         

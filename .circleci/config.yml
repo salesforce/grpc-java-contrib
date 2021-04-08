@@ -19,6 +19,7 @@ shared: &shared
           sudo curl -sL -o /usr/bin/gimme https://raw.githubusercontent.com/travis-ci/gimme/master/gimme
           sudo chmod +x /usr/bin/gimme
           sudo bash -c eval "$(gimme 1.12)"
+          go version
 
     - checkout
 

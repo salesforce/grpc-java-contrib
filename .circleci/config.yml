@@ -15,7 +15,9 @@ shared: &shared
   steps:
     - run:
         name: Install Golang
-        command: sudo apt-get install golang-go
+        command: |
+          apt-cache search golang
+          sudo apt-get install golang-go
 
     - checkout
 

@@ -16,7 +16,7 @@ shared: &shared
     - run:
         name: Install Golang
         command: |
-          bash -c 'eval "$(curl -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme | GIMME_GO_VERSION=1.4 bash)"'
+          sudo bash -c 'eval "$(curl -sL https://raw.githubusercontent.com/travis-ci/gimme/master/gimme | GIMME_GO_VERSION=1.12 bash)"'
 
     - checkout
 

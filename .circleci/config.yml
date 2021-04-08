@@ -16,8 +16,8 @@ shared: &shared
     - run:
         name: Install Golang
         command: |
-          curl -LO https://golang.org/dl/go1.16.3.linux-amd64.tar.gz
-          sudo tar -C /usr/local -xzf go1.16.3.linux-amd64.tar.gz
+          sudo curl -L https://golang.org/dl/go1.16.3.linux-amd64.tar.gz -o /usr/local/go1.16.3.linux-amd64.tar.gz
+          sudo tar -C /usr/local -xzf /usr/local/go1.16.3.linux-amd64.tar.gz
 
     - checkout
 

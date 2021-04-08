@@ -28,7 +28,7 @@ shared: &shared
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-    - run: mvn install -DexcludedGroups=unstable
+    - run: bash -c 'PATH=$PATH:/usr/local/go/bin mvn install'
 
     - save_cache:
         paths:

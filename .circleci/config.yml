@@ -16,11 +16,9 @@ shared: &shared
     - run:
         name: Install Golang
         command: |
-          sudo apt-get install software-properties-common
-          sudo add-apt-repository ppa:longsleep/golang-backports
-          sudo apt update
-          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F6BC817356A3D45E
-          sudo apt-get install golang-go
+          sudo curl -sL -o /usr/bin/gimme https://raw.githubusercontent.com/travis-ci/gimme/master/gimme
+          sudo chmod +x /usr/bin/gimme
+          sudo eval "$(gimme 1.12)"
 
     - checkout
 

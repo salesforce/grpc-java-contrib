@@ -16,7 +16,8 @@ shared: &shared
     - run:
         name: Install Golang
         command: |
-          curl -LO https://get.golang.org/$(uname)/go_installer && chmod +x go_installer && ./go_installer && rm go_installer
+          curl -LO https://golang.org/dl/go1.16.3.linux-amd64.tar.gz
+          tar -C /usr/local -xzf go1.16.3.linux-amd64.tar.gz
 
     - checkout
 

@@ -121,8 +121,7 @@ public final class ProtoTypeMap {
         }
 
         filename = makeInvalidCharactersUnderscores(filename);
-        filename = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, filename);
-        filename = upcaseAfterNumber(filename);
+        filename = convertToCamelCase(filename);
         filename = appendOuterClassSuffix(filename, fileDescriptor);
         return filename;
     }
@@ -157,15 +156,32 @@ public final class ProtoTypeMap {
     }
 
     /**
-     * Upper case characters after numbers, like {@code Weyland9Yutani}.
+     * Adjust a class name to follow the JavaBean spec.
+     * - capitalize the first letter
+     * - remove embedded underscores & capitalize the following letter
+     * - capitalize letter after a number
+     *
+     * @param name method name
+     * @return lower name
      */
-    private static String upcaseAfterNumber(String filename) {
-        char[] filechars = filename.toCharArray();
-        for (int i = 1; i < filechars.length; i++) {
-            if (CharMatcher.inRange('0', '9').matches(filechars[i - 1])) {
-                filechars[i] = Character.toUpperCase(filechars[i]);
+    private static String convertToCamelCase(String name) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(Character.toUpperCase(name.charAt(0)));
+
+        for (int i = 1; i < name.length(); i++) {
+            char c = name.charAt(i);
+            char prev = name.charAt(i - 1);
+
+            if (c != '_') {
+                if (prev == '_' || CharMatcher.inRange('0', '9').matches(prev)) {
+                    sb.append(Character.toUpperCase(c));
+                } else {
+                    sb.append(c);
+                }
             }
         }
-        return new String(filechars);
+
+        return sb.toString();
     }
+
 }

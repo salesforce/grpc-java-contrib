@@ -1,5 +1,7 @@
 package com.salesforce.jprotoc;
 
+import HELLOworld.FunWITHcasEs;
+import HELLOworld.HelloUPPERRequest;
 import com.google.common.io.ByteStreams;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.ExtensionRegistry;
@@ -61,6 +63,11 @@ public class ProtoTypeMapTest {
         assertProtoTypeMapping(".nested.Outer.MiddleAA.Inner", nested.NestedOuterClass.Outer.MiddleAA.Inner.class);
         assertProtoTypeMapping(".nested.Outer.MiddleBB", nested.NestedOuterClass.Outer.MiddleBB.class);
         assertProtoTypeMapping(".nested.Outer.MiddleBB.Inner", nested.NestedOuterClass.Outer.MiddleBB.Inner.class);
+    }
+
+    @Test
+    public void nestedTypeCamelCase() {
+        assertProtoTypeMapping(".pkg.Inner", pkg.NestedCamelCase.Inner.class);
     }
 
     /**

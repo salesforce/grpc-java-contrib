@@ -1,7 +1,5 @@
 package com.salesforce.jprotoc;
 
-import HELLOworld.FunWITHcasEs;
-import HELLOworld.HelloUPPERRequest;
 import com.google.common.io.ByteStreams;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.ExtensionRegistry;

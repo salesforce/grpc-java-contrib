@@ -63,6 +63,11 @@ public class ProtoTypeMapTest {
         assertProtoTypeMapping(".nested.Outer.MiddleBB.Inner", nested.NestedOuterClass.Outer.MiddleBB.Inner.class);
     }
 
+    @Test
+    public void nestedTypeCamelCase() {
+        assertProtoTypeMapping(".pkg.Inner", pkg.NestedCamelCase.Inner.class);
+    }
+
     /**
      * Verify that nested proto message types map correctly when {@code option java_multiple_files = true}.
      */

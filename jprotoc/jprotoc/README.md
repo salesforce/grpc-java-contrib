@@ -242,3 +242,18 @@ debugging.
 ```
 
 Or, use your IDE to debug, passing in a command line option.
+
+Unit testing protoc plugins
+===========================
+JProtoc includes a static class called `ProtocPluginTesting` for use in unit tests. Its API is similar to
+`ProtocPlugin.debug()`, but it returns a `PluginProtos.CodeGeneratorResponse` instead of writing output to disk
+or a stream. An example unit test is:
+
+```java
+ @Test
+ public void verifyGeneratorWorks() throws IOException {
+     PluginProtos.CodeGeneratorResponse response = ProtocPluginTesting.test(new Jdk8Generator(), ProtocPluginTesting.MAVEN_DUMP_PATH);
+     assertThat(response.getError()).isNullOrEmpty();
+     assertThat(response.getFileList()).isNotEmpty();
+    }
+```

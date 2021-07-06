@@ -174,7 +174,7 @@ public final class ProtocPlugin {
         }
     }
 
-    private static PluginProtos.CodeGeneratorResponse generate(
+    static PluginProtos.CodeGeneratorResponse generate(
             @Nonnull List<Generator> generators,
             @Nonnull PluginProtos.CodeGeneratorRequest request) {
         checkNotNull(generators, "generators");

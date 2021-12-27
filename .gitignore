@@ -8,3 +8,4 @@ dependency-reduced-pom.xml
 .checkstyle
 .classpath
 .project
+.java-version

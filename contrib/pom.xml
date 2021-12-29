@@ -61,13 +61,13 @@
         <!-- Dependency Versions -->
         <grpc.version>1.24.0</grpc.version>
         <protoc.version>3.9.1</protoc.version> <!-- Same version as grpc-proto -->
-        <slf4j.version>1.7.21</slf4j.version>
+        <slf4j.version>1.7.32</slf4j.version>
         <gson.version>2.7</gson.version> <!-- Same version as grpc-proto -->
         <mustache-java.version>0.9.4</mustache-java.version>
-        <spring.version>4.2.0.RELEASE</spring.version>
+        <spring.version>4.3.30.RELEASE</spring.version>
 
         <!-- Test Dependency Versions -->
-        <junit.version>4.13.1</junit.version>
+        <junit.version>4.13.2</junit.version>
         <assertj.version>3.6.2</assertj.version>
         <commons-lang.version>2.6</commons-lang.version>
         <awaitility.version>2.0.0</awaitility.version>

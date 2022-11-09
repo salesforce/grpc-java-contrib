@@ -62,7 +62,7 @@
         <grpc.version>1.50.2</grpc.version>
         <protoc.version>3.19.6</protoc.version> <!-- Same version as grpc-proto -->
         <slf4j.version>1.7.32</slf4j.version>
-        <gson.version>2.7</gson.version> <!-- Same version as grpc-proto -->
+        <gson.version>2.8.9</gson.version> <!-- Same version as grpc-proto -->
         <mustache-java.version>0.9.4</mustache-java.version>
         <spring.version>5.2.21.RELEASE</spring.version>
 

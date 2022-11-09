@@ -80,7 +80,7 @@ public class FallbackResolverTest {
         }
 
         @Override
-        public NameResolver newNameResolver(URI targetUri, Attributes params) {
+        public NameResolver newNameResolver(URI targetUri, NameResolver.Args params) {
             return resolver;
         }
 

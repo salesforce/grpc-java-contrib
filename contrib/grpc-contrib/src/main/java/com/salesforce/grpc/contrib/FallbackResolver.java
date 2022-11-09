@@ -58,7 +58,7 @@ public final class FallbackResolver extends NameResolver.Factory {
     }
 
     @Override
-    public NameResolver newNameResolver(URI targetUri, Attributes params) {
+    public NameResolver newNameResolver(URI targetUri, NameResolver.Args params) {
         for (NameResolverProvider provider : providers) {
             NameResolver resolver = provider.newNameResolver(targetUri, params);
             if (resolver != null) {

@@ -49,7 +49,7 @@ public class GrpcServerHostEndToEndTest {
 
         ManagedChannel channel = ManagedChannelBuilder
                 .forAddress("localhost", grpcServerHost.getPort())
-                .usePlaintext(true)
+                .usePlaintext()
                 .build();
 
         GreeterGrpc.GreeterFutureStub stub = GreeterGrpc.newFutureStub(channel);

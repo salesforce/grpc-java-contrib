@@ -90,7 +90,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.2</version>
+                <version>3.1.0</version>
                 <configuration>
                     <!-- Don't install, since there isn't anything to install -->
                     <skip>true</skip>

@@ -12,6 +12,7 @@ import com.salesforce.grpc.contrib.HelloRequest;
 import com.salesforce.grpc.contrib.HelloResponse;
 import com.salesforce.grpc.contrib.Statuses;
 import io.grpc.*;
+import io.grpc.Status.Code;
 import io.grpc.stub.StreamObserver;
 import io.grpc.testing.GrpcServerRule;
 import org.assertj.core.api.Condition;
@@ -114,7 +115,7 @@ public class AmbientContextEnforcerTest {
                 .has(new Condition<Throwable>() {
                     @Override
                     public boolean matches(Throwable throwable) {
-                        return Statuses.hasStatusCode(throwable, Status.Code.FAILED_PRECONDITION);
+                        return Statuses.hasStatusCode(throwable, Code.FAILED_PRECONDITION);
                     }
                 });
     }
@@ -141,7 +142,7 @@ public class AmbientContextEnforcerTest {
                     .has(new Condition<Throwable>() {
                         @Override
                         public boolean matches(Throwable throwable) {
-                            return Statuses.hasStatusCode(throwable, Status.Code.FAILED_PRECONDITION);
+                            return Statuses.hasStatusCode(throwable, Code.FAILED_PRECONDITION);
                         }
                     });
         });

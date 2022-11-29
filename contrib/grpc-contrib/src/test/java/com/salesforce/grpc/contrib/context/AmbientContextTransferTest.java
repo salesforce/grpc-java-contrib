@@ -17,16 +17,15 @@ import io.grpc.Metadata;
 import io.grpc.ServerInterceptors;
 import io.grpc.stub.StreamObserver;
 import io.grpc.testing.GrpcServerRule;
-import org.awaitility.Duration;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.awaitility.Awaitility.await;
 
 public class AmbientContextTransferTest {
@@ -191,7 +190,7 @@ public class AmbientContextTransferTest {
                     response -> assertThat(AmbientContext.current().get(ctxKey)).isEqualTo(expectedCtxValue),
                     Context.currentContextExecutor(Executors.newSingleThreadExecutor()));
 
-            await().atMost(Duration.ONE_SECOND).until(futureResponse::isDone);
+            await().atMost(Duration.ofSeconds(1)).until(futureResponse::isDone);
         });
 
         assertThat(ctxValue.get()).isEqualTo(expectedCtxValue);

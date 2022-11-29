@@ -154,8 +154,8 @@ public final class StaticResolver {
 
         @Nullable
         @Override
-        public NameResolver newNameResolver(URI uri, NameResolver.Args args) {
-            return provider.newNameResolver(uri, args);
+        public NameResolver newNameResolver(URI targetUri, NameResolver.Args args) {
+            return provider.newNameResolver(targetUri, args);
         }
 
         @Override

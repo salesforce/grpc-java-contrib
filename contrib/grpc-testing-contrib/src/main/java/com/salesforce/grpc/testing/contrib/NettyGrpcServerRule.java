@@ -108,7 +108,7 @@ public class NettyGrpcServerRule extends ExternalResource {
         server = serverBuilder.build().start();
         port = server.getPort();
 
-        NettyChannelBuilder channelBuilder = NettyChannelBuilder.forAddress("localhost", port).usePlaintext(true);
+        NettyChannelBuilder channelBuilder = NettyChannelBuilder.forAddress("localhost", port).usePlaintext();
         configureChannelBuilder.accept(channelBuilder);
         channel = channelBuilder.build();
     }

@@ -35,7 +35,7 @@ public final class TimeClient {
         Channel channel = ManagedChannelBuilder
                 .forTarget(abstractName)
                 .nameResolverFactory(StaticResolver.factory(new InetSocketAddress(host, port)))
-                .usePlaintext(true)
+                .usePlaintext()
                 .build();
 
         // Create a CompletableFuture-based stub

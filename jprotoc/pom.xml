@@ -58,17 +58,17 @@
         <mavenBaseUrl>https://oss.sonatype.org/content/repositories</mavenBaseUrl>
 
         <!-- Dependency Versions -->
-        <protoc.version>3.15.8</protoc.version>
-        <gson.version>2.8.9</gson.version>
+        <protoc.version>3.21.9</protoc.version>
+        <gson.version>2.10</gson.version>
         <mustache-java.version>0.9.10</mustache-java.version>
 
         <!-- Test Dependency Versions -->
         <contrib.version>0.8.1</contrib.version>
-        <grpc.version>1.37.0</grpc.version>
+        <grpc.version>1.51.0</grpc.version>
         <junit.version>4.13.1</junit.version>
-        <assertj.version>3.6.2</assertj.version>
+        <assertj.version>3.23.1</assertj.version>
         <commons-lang.version>2.6</commons-lang.version>
-        <awaitility.version>2.0.0</awaitility.version>
+        <awaitility.version>4.2.0</awaitility.version>
         <mockito.version>2.27.0</mockito.version>
 
         <java.version>1.8</java.version>
@@ -183,7 +183,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <version>3.10.1</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
@@ -193,21 +193,21 @@
 
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M3</version>
+                <version>3.0.0-M7</version>
                 <configuration>
-                    <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+                    <argLine>-Xmx1024m</argLine>
                 </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.2.0</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>8.29</version>
+                        <version>9.3</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -230,7 +230,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.9</version>
+                <version>0.8.8</version>
                 <executions>
                     <execution>
                         <goals>
@@ -250,7 +250,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.4.1</version>
                 <configuration>
                     <author>false</author>
                     <breakiterator>true</breakiterator>
@@ -272,7 +272,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -304,7 +304,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>3.0.1</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -319,7 +319,7 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.8</version>
+                        <version>1.6.13</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>

@@ -92,7 +92,7 @@ public final class StaticResolver {
 
         @Nullable
         @Override
-        public NameResolver newNameResolver(URI targetUri, Attributes params) {
+        public NameResolver newNameResolver(URI targetUri, NameResolver.Args args) {
             if (scheme.equals(targetUri.getScheme())) {
                 final String authority = targetUri.getAuthority();
 
@@ -154,8 +154,8 @@ public final class StaticResolver {
 
         @Nullable
         @Override
-        public NameResolver newNameResolver(URI targetUri, Attributes params) {
-            return provider.newNameResolver(targetUri, params);
+        public NameResolver newNameResolver(URI targetUri, NameResolver.Args args) {
+            return provider.newNameResolver(targetUri, args);
         }
 
         @Override

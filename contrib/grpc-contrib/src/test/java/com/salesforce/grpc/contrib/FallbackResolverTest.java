@@ -7,7 +7,6 @@
 
 package com.salesforce.grpc.contrib;
 
-import io.grpc.Attributes;
 import io.grpc.NameResolver;
 import io.grpc.NameResolverProvider;
 import org.junit.Test;
@@ -18,6 +17,8 @@ import static org.junit.Assert.*;
 
 @SuppressWarnings("ALL")
 public class FallbackResolverTest {
+
+    private final NameResolverFakes fakes = new NameResolverFakes();
     @Test
     public void firstShouldFind() throws Exception {
         NameResolver fakeResolver = new FakeResolver();
@@ -26,7 +27,7 @@ public class FallbackResolverTest {
 
         NameResolver.Factory factory = FallbackResolver.startWith(canResolve).thenCheck(cannotResolve);
 
-        assertEquals(fakeResolver, factory.newNameResolver(new URI("aaa://foo"), Attributes.EMPTY));
+        assertEquals(fakeResolver, factory.newNameResolver(new URI("aaa://foo"), fakes.fakeArgs));
     }
 
     @Test
@@ -37,7 +38,7 @@ public class FallbackResolverTest {
 
         NameResolver.Factory factory = FallbackResolver.startWith(cannotResolve).thenCheck(canResolve);
 
-        assertEquals(fakeResolver, factory.newNameResolver(new URI("bbb://foo"), Attributes.EMPTY));
+        assertEquals(fakeResolver, factory.newNameResolver(new URI("bbb://foo"), fakes.fakeArgs));
     }
 
     @Test
@@ -46,7 +47,7 @@ public class FallbackResolverTest {
 
         NameResolver.Factory factory = FallbackResolver.startWith(cannotResolve).thenCheck(cannotResolve);
 
-        assertNull(factory.newNameResolver(new URI("bbb://foo"), Attributes.EMPTY));
+        assertNull(factory.newNameResolver(new URI("bbb://foo"), fakes.fakeArgs));
     }
 
     @Test
@@ -80,7 +81,7 @@ public class FallbackResolverTest {
         }
 
         @Override
-        public NameResolver newNameResolver(URI targetUri, Attributes params) {
+        public NameResolver newNameResolver(URI targetUri, NameResolver.Args args) {
             return resolver;
         }
 

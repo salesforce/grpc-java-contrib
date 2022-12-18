@@ -52,7 +52,7 @@ public class GrpcServerHostInProcessEndToEndTest {
 
         ManagedChannel channel = InProcessChannelBuilder
                 .forName(SERVER_NAME)
-                .usePlaintext(true)
+                .usePlaintext()
                 .build();
 
         GreeterGrpc.GreeterFutureStub stub = GreeterGrpc.newFutureStub(channel);

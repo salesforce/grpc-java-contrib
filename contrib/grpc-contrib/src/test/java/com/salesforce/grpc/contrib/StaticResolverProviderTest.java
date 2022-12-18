@@ -20,12 +20,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 
 public class StaticResolverProviderTest {
+
+    private final NameResolverFakes fakes = new NameResolverFakes();
+
     private final InetSocketAddress staticAddress = new InetSocketAddress("localhost", 55555);
 
     @Test
     public void ProviderShouldProvide() {
         NameResolverProvider provider = StaticResolver.provider(staticAddress);
-        NameResolver resolver = provider.newNameResolver(URI.create("mesh://some.service"), Attributes.EMPTY);
+        NameResolver resolver = provider.newNameResolver(URI.create("mesh://some.service"), fakes.fakeArgs);
 
         assertThat(resolver).isNotNull();
     }
@@ -33,7 +36,7 @@ public class StaticResolverProviderTest {
     @Test
     public void ResolverShouldHaveCorrectAuthority() {
         NameResolverProvider provider = StaticResolver.provider(staticAddress);
-        NameResolver resolver = provider.newNameResolver(URI.create("mesh://some.service"), Attributes.EMPTY);
+        NameResolver resolver = provider.newNameResolver(URI.create("mesh://some.service"), fakes.fakeArgs);
 
         assertThat(resolver.getServiceAuthority()).isEqualTo("some.service");
     }
@@ -41,7 +44,7 @@ public class StaticResolverProviderTest {
     @Test
     public void ResolverShouldResolve() {
         NameResolverProvider provider = StaticResolver.provider(staticAddress);
-        NameResolver resolver = provider.newNameResolver(URI.create("mesh://some.service"), Attributes.EMPTY);
+        NameResolver resolver = provider.newNameResolver(URI.create("mesh://some.service"), fakes.fakeArgs);
 
         AtomicBoolean isResolved = new AtomicBoolean();
 

@@ -58,7 +58,7 @@
         <mavenBaseUrl>https://oss.sonatype.org/content/repositories</mavenBaseUrl>
 
         <!-- Dependency Versions -->
-        <protoc.version>3.21.9</protoc.version>
+        <protoc.version>3.22.1</protoc.version>
         <gson.version>2.10</gson.version>
         <mustache-java.version>0.9.10</mustache-java.version>
 

@@ -44,21 +44,13 @@ public final class ProtoTypeMap {
             final DescriptorProtos.FileOptions fileOptions = fileDescriptor.getOptions();
 
             final String protoPackage = fileDescriptor.hasPackage() ? "." + fileDescriptor.getPackage() : "";
-            final String javaPackage = Strings.emptyToNull(
-                    fileOptions.hasJavaPackage() ?
-                            fileOptions.getJavaPackage() :
-                            fileDescriptor.getPackage());
-            final String enclosingClassName =
-                    fileOptions.getJavaMultipleFiles() ?
-                            null :
-                            getJavaOuterClassname(fileDescriptor, fileOptions);
-
+            final String javaPackage = Strings.emptyToNull(fileOptions.hasJavaPackage() ? fileOptions.getJavaPackage() : fileDescriptor.getPackage());
+            final String enclosingClassName = fileOptions.getJavaMultipleFiles() ? null : getJavaOuterClassname(fileDescriptor);
 
             // Identify top-level enums
-            fileDescriptor.getEnumTypeList().forEach(
-                e -> types.put(
-                        protoPackage + "." + e.getName(),
-                        DOT_JOINER.join(javaPackage, enclosingClassName, e.getName())));
+            fileDescriptor.getEnumTypeList().forEach(e -> types.put(
+                    protoPackage + "." + e.getName(),
+                    DOT_JOINER.join(javaPackage, enclosingClassName, e.getName())));
 
             // Identify top-level messages, and nested types
             fileDescriptor.getMessageTypeList().forEach(
@@ -102,9 +94,15 @@ public final class ProtoTypeMap {
         return types.get(protoTypeName);
     }
 
-    private static String getJavaOuterClassname(
-            DescriptorProtos.FileDescriptorProto fileDescriptor,
-            DescriptorProtos.FileOptions fileOptions) {
+    /**
+     * Computes the Java outer class name for a given FileDescriptorProto, for use when multiple classes are generated
+     * in the same outer class.
+     * @param fileDescriptor
+     * @return
+     */
+    public static String getJavaOuterClassname(DescriptorProtos.FileDescriptorProto fileDescriptor) {
+        Preconditions.checkNotNull(fileDescriptor, "fileDescriptor");
+        DescriptorProtos.FileOptions fileOptions = fileDescriptor.getOptions();
 
         if (fileOptions.hasJavaOuterClassname()) {
             return fileOptions.getJavaOuterClassname();

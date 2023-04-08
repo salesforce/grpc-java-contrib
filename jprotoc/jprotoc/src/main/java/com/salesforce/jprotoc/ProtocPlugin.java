@@ -160,6 +160,7 @@ public final class ProtocPlugin {
                     String name = Files.getNameWithoutExtension(file.getName()) +
                             "-" +
                             file.getInsertionPoint() +
+                            "." +
                             Files.getFileExtension(file.getName());
                     outFile = new File(name);
                 }

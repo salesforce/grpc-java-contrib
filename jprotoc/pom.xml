@@ -58,13 +58,13 @@
         <mavenBaseUrl>https://oss.sonatype.org/content/repositories</mavenBaseUrl>
 
         <!-- Dependency Versions -->
-        <protoc.version>3.21.9</protoc.version>
+        <protoc.version>3.22.2</protoc.version>
         <gson.version>2.10</gson.version>
         <mustache-java.version>0.9.10</mustache-java.version>
 
         <!-- Test Dependency Versions -->
         <contrib.version>0.8.1</contrib.version>
-        <grpc.version>1.51.0</grpc.version>
+        <grpc.version>1.54.0</grpc.version>
         <junit.version>4.13.1</junit.version>
         <assertj.version>3.23.1</assertj.version>
         <commons-lang.version>2.6</commons-lang.version>

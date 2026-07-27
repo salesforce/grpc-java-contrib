@@ -19,8 +19,7 @@ A pair of demo applications are in the [`grpc-java-contrib-demo`](https://github
 
 Usage
 =====
-These libraries are still fairly immature. For now, you will have to clone this repo and build it yourself. Setting
-up CI and deploying to Maven Central is still in our future.
+Binaries are published to Maven Central under the `com.salesforce.servicelibs` group id.
 
 See each respective module for documentation on its usage.
 

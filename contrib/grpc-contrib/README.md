@@ -19,4 +19,3 @@ Subpackages
 * *context* - Implements an ambient context that is transparently passed from service to service.
 * *instancemode* - Adds per-call and per-session service instantiation modes to gRPC.
 * *interceptor* - Useful client and server interceptor implementations.
-* *session* - Adds client session tracking support to gRPC.

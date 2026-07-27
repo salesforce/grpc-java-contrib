@@ -1,5 +1,5 @@
 [![Javadocs](https://javadoc.io/badge/com.salesforce.servicelibs/grpc-spring.svg)](https://javadoc.io/doc/com.salesforce.servicelibs/grpc-spring)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.salesforce.servicelibs/grpc-spring/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.salesforce.servicelibs/grpc-spring)
+[![Maven Central](https://img.shields.io/maven-central/v/com.salesforce.servicelibs/grpc-spring)](https://central.sonatype.com/artifact/com.salesforce.servicelibs/grpc-spring)
 
 Using GrpcServerHost
 ====================

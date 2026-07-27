@@ -1,5 +1,5 @@
 [![Javadocs](https://javadoc.io/badge/com.salesforce.servicelibs/grpc-contrib.svg)](https://javadoc.io/doc/com.salesforce.servicelibs/grpc-contrib)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.salesforce.servicelibs/grpc-contrib/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.salesforce.servicelibs/grpc-contrib)
+[![Maven Central](https://img.shields.io/maven-central/v/com.salesforce.servicelibs/grpc-contrib)](https://central.sonatype.com/artifact/com.salesforce.servicelibs/grpc-contrib)
 
 Classes
 ==============
@@ -19,4 +19,3 @@ Subpackages
 * *context* - Implements an ambient context that is transparently passed from service to service.
 * *instancemode* - Adds per-call and per-session service instantiation modes to gRPC.
 * *interceptor* - Useful client and server interceptor implementations.
-* *session* - Adds client session tracking support to gRPC.
